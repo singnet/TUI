@@ -33,8 +33,7 @@ fi
 
 # 4. Install Docker image with ETCD
 if [ ! -f "docker-etcd-setup.sh" ]; then
-    wget https://raw.githubusercontent.com/singnet/platform-setup/main/docker-etcd-setup.sh
-    bash docker-etcd-setup.sh
+    bash application/terminal/docker-etcd.sh
     sudo usermod -aG docker $USER
 fi
 
