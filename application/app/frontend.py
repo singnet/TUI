@@ -1,7 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import ModalScreen, Screen
-from textual.widgets import Button, Footer, Header, Label, ListView, ListItem
+from textual.widgets import Button, Footer, Header, Label, ListView, ListItem, Input
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -15,7 +15,7 @@ class WelcomeScreen(Screen):
         if event.button.id == "start_button":
             # Need to add function calls to backend for CLI, Daemon and Wallet checks
             cli_installed: bool = True
-            daemon_installed: bool = True
+            daemon_installed: bool = False
             wallet_added: bool = True
             if (cli_installed and daemon_installed and wallet_added):
                 self.app.switch_screen(wallet_page())
@@ -25,8 +25,42 @@ class WelcomeScreen(Screen):
 class wallet_setup_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
+            Button("Create Wallet", id="create_wallet_button"),
+            Button("Import Wallet", id="import_wallet_button"),
             id="wallet_setup"
         )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "create_wallet_button":
+            self.app.switch_screen(create_wallet_page())
+        elif event.button.id == "import_wallet_button":
+            self.app.switch_screen(import_wallet_page())
+
+class create_wallet_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Grid(
+            id="create_wallet"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "create_wallet_button":
+            self.app.switch_screen(wallet_page())
+        elif event.button.id == "import_wallet_button":
+            self.app.switch_screen(organization_page())
+
+class import_wallet_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Grid(
+            Input(placeholder="Wallet Address", id="wallet_addr_input"),
+            Input(placeholder="Wallet Private Key", id="wallet_priv_input"),
+            Button("Import", id="import_wallet_confirm"),
+            id="import_wallet"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "import_wallet_confirm":
+            # NOTE: Save wallet information to cache file
+            self.app.switch_screen(wallet_page())
 
 def nav_sidebar_vert() -> Vertical:
     ret_vert = Vertical(
