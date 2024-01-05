@@ -68,7 +68,7 @@
     background: grey;
 }
 
-#projects_page_content {
+#services_page_content {
     color: white;
     height: 100%;
     width: 80%;

@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# 0. Check if machine is ubuntu
+if [ ! -f "/etc/lsb-release" ]; then
+    echo "This sNET-CLI is only compatible with Ubuntu, please ensure the system you are attempting to run the install script on is Ubuntu"
+    exit 1
+fi
+
+# 0.5 Check if machine is amd64
+if [ ! "$(uname -m)" == "x86_64" ]; then
+    echo "This sNET-CLI is only compatible with amd64, please ensure the system you are attempting to run the install script on is amd64"
+    exit 1
+fi
+
 # 1. Update and install packages for Ubuntu
 sudo apt -y remove needrestart
 REQUIRED_PKGS="git golang-cfssl nodejs npm make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl protobuf-compiler"
@@ -14,10 +26,25 @@ done
 # 2. Install PyEnv
 if [ ! -d "$HOME/.pyenv" ]; then
     curl -s -S -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-    export PATH="$HOME/.pyenv/bin:$PATH" 
-    eval "$(pyenv init -)" 
-    eval "$(pyenv virtualenv-init -)"
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
+    echo 'eval "$(pyenv init -)"' >> ~/.profile
 fi
+
+if [ -f "~/.bash_profile" ]; then
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
+    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
+    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+fi
+
+if [ -f "~/.bash_login"]; then
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_login
+    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_login
+    echo 'eval "$(pyenv init -)"' >> ~/.bash_login
+fi 
 
 # 3. Create ENV using PyEnv
 ENV_NAME="venv-snet-3.7.17"
@@ -54,10 +81,9 @@ fi
 docker start docker-etcd-node-1 || docker restart docker-etcd-node-1
 
 # 7. Install daemon
-if [ ! -f "/usr/local/bin/snetd" ]; then
+if [ ! -f "~/snet/snetd" ]; then
     wget "https://drive.google.com/u/0/uc?id=1jbme-TD_HVOlyvkdcT_B0iOOzUpM9c3r&export=download" -O snetd
     sudo chmod +x snetd
-    sudo mv snetd /usr/local/bin/snetd
 fi
 if [ ! -f "snetd.config.json" ]; then
     touch snetd.config.json

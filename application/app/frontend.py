@@ -2,6 +2,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Button, Footer, Header, Label, ListView, ListItem, Input
+import back.backend as be
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -13,40 +14,46 @@ class WelcomeScreen(Screen):
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "start_button":
-            # Need to add function calls to backend for CLI, Daemon and Wallet checks
-            cli_installed: bool = True
-            daemon_installed: bool = False
-            wallet_added: bool = True
+            cli_installed: bool = be.check_cli()
+            daemon_installed: bool = be.check_daemon()
+            wallet_added: bool = be.check_wallet()
             if (cli_installed and daemon_installed and wallet_added):
                 self.app.switch_screen(wallet_page())
+            elif (not cli_installed):
+                pass
+            elif (not daemon_installed):
+                pass
             else:
-                self.app.switch_screen(wallet_setup_page())
+                self.app.switch_screen(import_wallet_page())
 
-class wallet_setup_page(Screen):
-    def compose(self) -> ComposeResult:
-        yield Grid(
-            Button("Create Wallet", id="create_wallet_button"),
-            Button("Import Wallet", id="import_wallet_button"),
-            id="wallet_setup"
-        )
+# class wallet_setup_page(Screen):
+#     def compose(self) -> ComposeResult:
+#         yield Grid(
+#             Button("Create Wallet", id="create_wallet_button"),
+#             Button("Import Wallet", id="import_wallet_button"),
+#             id="wallet_setup"
+#         )
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "create_wallet_button":
-            self.app.switch_screen(create_wallet_page())
-        elif event.button.id == "import_wallet_button":
-            self.app.switch_screen(import_wallet_page())
+#     def on_button_pressed(self, event: Button.Pressed) -> None:
+#         if event.button.id == "create_wallet_button":
+#             self.app.switch_screen(create_wallet_page())
+#         elif event.button.id == "import_wallet_button":
+#             self.app.switch_screen(import_wallet_page())
 
-class create_wallet_page(Screen):
-    def compose(self) -> ComposeResult:
-        yield Grid(
-            id="create_wallet"
-        )
+# class create_wallet_page(Screen):
+#     def compose(self) -> ComposeResult:
+#         yield Grid(
+#             id="create_wallet"
+#         )
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "create_wallet_button":
-            self.app.switch_screen(wallet_page())
-        elif event.button.id == "import_wallet_button":
-            self.app.switch_screen(organization_page())
+#     def on_button_pressed(self, event: Button.Pressed) -> None:
+#         if event.button.id == "create_wallet_button":
+#             self.app.switch_screen(wallet_page())
+#         elif event.button.id == "import_wallet_button":
+#             self.app.switch_screen(organization_page())
+                
+class daemon_error(Screen):
+    pass
 
 class import_wallet_page(Screen):
     def compose(self) -> ComposeResult:
@@ -66,7 +73,7 @@ def nav_sidebar_vert() -> Vertical:
     ret_vert = Vertical(
                 Button("Wallet", id="wallet_page", classes="nav_sidebar_button"),
                 Button("Organization", id="organization_page", classes="nav_sidebar_button"),
-                Button("Projects", id="projects_page", classes="nav_sidebar_button"),
+                Button("Services", id="services_page", classes="nav_sidebar_button"),
                 Button("Settings", id="settings_page", classes="nav_sidebar_button"),
                 classes="nav_sidebar",
                 name="nav_sidebar_name",
@@ -92,8 +99,8 @@ class wallet_page(Screen):
             self.app.switch_screen(wallet_page())
         elif event.button.id == "organization_page":
             self.app.switch_screen(organization_page())
-        elif event.button.id == "projects_page":
-            self.app.switch_screen(projects_page())
+        elif event.button.id == "services_page":
+            self.app.switch_screen(services_page())
         elif event.button.id == "settings_page":
             self.app.switch_screen(settings_page())
 
@@ -114,21 +121,21 @@ class organization_page(Screen):
             self.app.switch_screen(wallet_page())
         elif event.button.id == "organization_page":
             self.app.switch_screen(organization_page())
-        elif event.button.id == "projects_page":
-            self.app.switch_screen(projects_page())
+        elif event.button.id == "services_page":
+            self.app.switch_screen(services_page())
         elif event.button.id == "settings_page":
             self.app.switch_screen(settings_page())
 
-class projects_page(Screen):
+class services_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
             nav_sidebar_vert(),
             Grid(
-                Label("Projects Page", id="projects_page_title"),
-                id="projects_page_content"
+                Label("Services Page", id="services_page_title"),
+                id="services_page_content"
             ),
-            id="projects_page"
+            id="services_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -136,8 +143,8 @@ class projects_page(Screen):
             self.app.switch_screen(wallet_page())
         elif event.button.id == "organization_page":
             self.app.switch_screen(organization_page())
-        elif event.button.id == "projects_page":
-            self.app.switch_screen(projects_page())
+        elif event.button.id == "services_page":
+            self.app.switch_screen(services_page())
         elif event.button.id == "settings_page":
             self.app.switch_screen(settings_page())
 
@@ -158,8 +165,8 @@ class settings_page(Screen):
             self.app.switch_screen(wallet_page())
         elif event.button.id == "organization_page":
             self.app.switch_screen(organization_page())
-        elif event.button.id == "projects_page":
-            self.app.switch_screen(projects_page())
+        elif event.button.id == "services_page":
+            self.app.switch_screen(services_page())
         elif event.button.id == "settings_page":
             self.app.switch_screen(settings_page())
 
