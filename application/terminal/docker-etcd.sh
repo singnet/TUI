@@ -29,7 +29,6 @@ fi
 
 echo -e "${blue}Oragnization Name:${grey}"
 read org_name
-export ORG_NAME=org_name
 echo -e "${blue}Validity of the certificates in years:${grey}"
 read years
 echo -e "${green}"
@@ -74,7 +73,8 @@ echo "{
                 \"usages\": [
                     \"signing\",
                     \"key encipherment\",
-                    \"server auth\"
+                    \"server auth\",
+                    \"client auth\"
                 ]
             },
             \"client\": {
@@ -125,8 +125,8 @@ echo "{
         \"127.0.0.1\"
     ],
     \"key\": {
-        \"algo\": \"ecdsa\",
-        \"size\": 256
+        \"algo\": \"rsa\",
+        \"size\": 2048
     },
     \"names\": [
         {
@@ -147,8 +147,8 @@ echo "{
       \"127.0.0.1\"
     ],
     \"key\": {
-        \"algo\": \"ecdsa\",
-        \"size\": 256
+        \"algo\": \"rsa\",
+        \"size\": 2048
     },
     \"names\": [
         {
@@ -164,8 +164,8 @@ echo "{
     \"CN\": \"client\",
     \"hosts\": [\"\"],
     \"key\": {
-        \"algo\": \"ecdsa\",
-        \"size\": 256
+        \"algo\": \"rsa\",
+        \"size\": 2048
     },
     \"names\": [
         {
