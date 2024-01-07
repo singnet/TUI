@@ -13,17 +13,10 @@ if [ ! "$(uname -m)" == "x86_64" ]; then
 fi
 
 # 1. Update and install packages for Ubuntu
-# sudo apt -y remove needrestart
 echo "Updating and installing packages"
 sudo apt -y update && sudo apt -y upgrade
 REQUIRED_PKGS="git golang-cfssl nodejs npm make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl protobuf-compiler"
 sudo apt install -y $REQUIRED_PKGS
-# for pkg in $REQUIRED_PKGS; do
-#     if ! dpkg -l | grep -qw $pkg; then
-        
-#         break
-#     fi
-# done
 
 cd "$HOME"
 
@@ -33,25 +26,25 @@ if [ ! -d "$HOME/.pyenv" ]; then
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
     echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
-fi
 
-if [ -f "$HOME/.profile" ]; then
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.profile
-    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.profile
-    echo 'eval "$(pyenv init -)"' >> $HOME/.profile
-fi
+    if [ -f "$HOME/.profile" ]; then
+        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.profile
+        echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.profile
+        echo 'eval "$(pyenv init -)"' >> $HOME/.profile
+    fi
 
-if [ -f "$HOME/.bash_profile" ]; then
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bash_profile
-    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bash_profile
-    echo 'eval "$(pyenv init -)"' >> $HOME/.bash_profile
-fi
+    if [ -f "$HOME/.bash_profile" ]; then
+        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bash_profile
+        echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bash_profile
+        echo 'eval "$(pyenv init -)"' >> $HOME/.bash_profile
+    fi
 
-if [ -f "$HOME/.bash_login" ]; then
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bash_login
-    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bash_login
-    echo 'eval "$(pyenv init -)"' >> $HOME/.bash_login
-fi 
+    if [ -f "$HOME/.bash_login" ]; then
+        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bash_login
+        echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bash_login
+        echo 'eval "$(pyenv init -)"' >> $HOME/.bash_login
+    fi 
+fi
 
 # 2.5 Reset shell for pyenv
 echo "PyEnv installed and set up, please continue to 'install_2.sh'"

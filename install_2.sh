@@ -37,16 +37,12 @@ export PUBLIC_ETCD_NODE_URL="https://13.48.190.33:2379"
 # 6. Generating certificates for project
 export SNET_CERT_FOLDER="/var/lib/etcd/cfssl"
 if [ ! -d "$SNET_CERT_FOLDER" ]; then
-    # Testing
-    echo "Started cert gen"
     sudo mkdir -p $SNET_CERT_FOLDER
     # Assuming you have the JSON files for certificates in the correct place
     cfssl gencert -initca $SNET_CERT_FOLDER/ca-csr.json | cfssljson -bare ca -
     cfssl gencert -ca=$SNET_CERT_FOLDER/ca.pem -ca-key=$SNET_CERT_FOLDER/ca-key.pem -config=$SNET_CERT_FOLDER/ca-config.json -profile=server $SNET_CERT_FOLDER/server.json | cfssljson -bare server
     cfssl gencert -ca=$SNET_CERT_FOLDER/ca.pem -ca-key=$SNET_CERT_FOLDER/ca-key.pem -config=$SNET_CERT_FOLDER/ca-config.json -profile=peer $SNET_CERT_FOLDER/member-1.json | cfssljson -bare member-1
     cfssl gencert -ca=$SNET_CERT_FOLDER/ca.pem -ca-key=$SNET_CERT_FOLDER/ca-key.pem -config=$SNET_CERT_FOLDER/ca-config.json -profile=client $SNET_CERT_FOLDER/client.json | cfssljson -bare client
-    # Testing
-    echo "Ended cert gen"
 fi
 
 sudo docker start docker-etcd-node-1 || sudo docker restart docker-etcd-node-1
@@ -69,9 +65,9 @@ if [ ! -f "$WORK_DIR/snetd.config.json" ]; then
     "service_id":"<SERVICE_ID>",
     "passthrough_enabled":true,
     "passthrough_endpoint":"http://<SERVICE_HOST>:<SERVICE_PORT>",
-    "payment_channel_cert_path":"<PATH_TO_ETCD_CERTS>/client.pem",
-    "payment_channel_ca_path":"<PATH_TO_ETCD_CERTS>/ca.pem",
-    "payment_channel_key_path":"<PATH_TO_ETCD_CERTS>/client-key.pem",
+    "payment_channel_cert_path":"'$SNET_CERT_FOLDER'/client.pem",
+    "payment_channel_ca_path":"'$SNET_CERT_FOLDER'/ca.pem",
+    "payment_channel_key_path":"'$SNET_CERT_FOLDER'/client-key.pem",
     "log":{"level":"debug","output":{"type":"stdout"}}
 }' > $HOME/snet/snetd.config.json
 fi

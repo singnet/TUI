@@ -64,8 +64,11 @@ def run_shell_command(command):
     except subprocess.CalledProcessError as e:
         return e.stderr
     
-def check_daemon() -> bool:
-    return True
+# def check_daemon() -> bool:
+#     # Check whether the daemon is installed
+#     # Check whether the config has been edited
+#     # Check whether the daemon can be run
+#     return True
 
 def check_cli() -> bool:
     return True

@@ -15,16 +15,15 @@ class WelcomeScreen(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "start_button":
             cli_installed: bool = be.check_cli()
-            daemon_installed: bool = be.check_daemon()
+            # daemon_installed: bool = be.check_daemon()
             wallet_added: bool = be.check_wallet()
-            if (cli_installed and daemon_installed and wallet_added):
+            if (cli_installed and wallet_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
                 pass
-            elif (not daemon_installed):
-                pass
-            else:
+            elif (not wallet_added):
                 self.app.switch_screen(import_wallet_page())
+                
 
 # class wallet_setup_page(Screen):
 #     def compose(self) -> ComposeResult:
