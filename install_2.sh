@@ -20,13 +20,13 @@ if [ ! -d "$WORK_DIR/$ENV_NAME" ]; then
 fi
 
 # 4. Install Docker image with ETCD
-cd "$HOME/snet" && mkdir -p etcd
-if [ ! -f "$HOME/snet/etcd/docker-etcd-setup.sh" ]; then
-    cd "$HOME"
+cd $WORK_DIR
+mkdir -p etcd
+if [ ! -f "$WORK_DIR/etcd/docker-etcd-setup.sh" ]; then
     git clone https://github.com/ishaan-ghosh/sNET-TUI.git
-    sleep 5
-    cp $HOME/sNET_TUI/application/terminal/docker-etcd.sh $HOME/snet/etcd/
-    bash $HOME/snet/etcd/docker-etcd.sh
+    cp $WORK_DIR/sNET-TUI/application/terminal/docker-etcd.sh $WORK_DIR/etcd/
+    cd $WORK_DIR/etcd
+    bash docker-etcd.sh
     sudo usermod -aG docker $USER
 fi
 
@@ -49,7 +49,7 @@ if [ ! -d "$SNET_CERT_FOLDER" ]; then
     echo "Ended cert gen"
 fi
 
-docker start docker-etcd-node-1 || docker restart docker-etcd-node-1
+sudo docker start docker-etcd-node-1 || sudo docker restart docker-etcd-node-1
 
 # 7. Install daemon
 if [ ! -f "$WORK_DIR/snetd" ]; then
@@ -60,33 +60,34 @@ fi
 
 if [ ! -f "$WORK_DIR/snetd.config.json" ]; then
     echo '{
-        "blockchain_enabled":true,
-        "blockchain_network_selected":"goerli",
-        "daemon_end_point":"0.0.0.0:<DAEMON_PORT>",
-        "daemon_group_name":"<DAEMON_GROUP>",
-        "ipfs_end_point":"http://ipfs.singularitynet.io:80",
-        "organization_id":"<ORGANIZATION_ID>",
-        "service_id":"<SERVICE_ID>",
-        "passthrough_enabled":true,
-        "passthrough_endpoint":"http://<SERVICE_HOST>:<SERVICE_PORT>",
-        "payment_channel_cert_path":"<PATH_TO_ETCD_CERTS>/client.pem",
-        "payment_channel_ca_path":"<PATH_TO_ETCD_CERTS>/ca.pem",
-        "payment_channel_key_path":"<PATH_TO_ETCD_CERTS>/client-key.pem",
-        "log":{"level":"debug","output":{"type":"stdout"}}
+    "blockchain_enabled":true,
+    "blockchain_network_selected":"goerli",
+    "daemon_end_point":"0.0.0.0:<DAEMON_PORT>",
+    "daemon_group_name":"<DAEMON_GROUP>",
+    "ipfs_end_point":"http://ipfs.singularitynet.io:80",
+    "organization_id":"<ORGANIZATION_ID>",
+    "service_id":"<SERVICE_ID>",
+    "passthrough_enabled":true,
+    "passthrough_endpoint":"http://<SERVICE_HOST>:<SERVICE_PORT>",
+    "payment_channel_cert_path":"<PATH_TO_ETCD_CERTS>/client.pem",
+    "payment_channel_ca_path":"<PATH_TO_ETCD_CERTS>/ca.pem",
+    "payment_channel_key_path":"<PATH_TO_ETCD_CERTS>/client-key.pem",
+    "log":{"level":"debug","output":{"type":"stdout"}}
 }' > $HOME/snet/snetd.config.json
 fi
 
 # 8. Install snet-cli
 if [ ! -d "$WORK_DIR/snet-cli" ]; then
-    source $HOME/snet/venv/bin/activate
-    git clone https://github.com/singnet/snet-cli.git $HOME/snet/snet-cli
+    cd $WORK_DIR
+    source $ENV_NAME/bin/activate
+    git clone https://github.com/singnet/snet-cli.git
     cd $HOME/snet/snet-cli/packages/snet_cli
     ./scripts/blockchain install
     python -m pip install -e .
 fi
 
 # Patch for deprecated RIPEMD160 (if necessary)
-echo "from Crypto.Hash.RIPEMD160 import RIPEMD160Hash, new" > $HOME/snet/venv/lib/python3.7/site-packages/Crypto/Hash/RIPEMD.py
+echo "from Crypto.Hash.RIPEMD160 import RIPEMD160Hash, new" > $HOME/snet/$ENV_NAME/lib/python3.7/site-packages/Crypto/Hash/RIPEMD.py
 
 
 # Check if CLI is able to run properly, it doesnt need to be an output check but you need to check something. 
@@ -95,3 +96,5 @@ source $ENV_NAME/bin/activate
 snet
 
 echo "Installation and setup completed!"
+# Reset shell for CLI
+exec $SHELL
