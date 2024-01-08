@@ -61,7 +61,7 @@ class cli_error_page(Screen):
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "exit_button":
-            quit(1)
+            self.app.exit()
 
 class import_wallet_page(Screen):
     def compose(self) -> ComposeResult:
