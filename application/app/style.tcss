@@ -1,3 +1,4 @@
+/* Welcome screen */
 #welcome {
     align: center middle;
 }
@@ -7,19 +8,21 @@
     border: solid white;
 }
 
+/* Create Identity screen */
 #create_identity_button {
     width: 40%;
     border: solid white;
     background: rgba(40, 40, 40, 0.5);
     align: center middle;
-    margin-left: 70;
-    margin-top: 10;
+    margin-left: 50;
+    margin-top: 5;
 }
 
 #create_identity_button:hover {
     background: rgba(40, 40, 40, 0.9);
 }
 
+/* Navigation sidebar */
 .nav_sidebar {
     color: blue;
     height: 100%;
@@ -39,6 +42,7 @@
     background: rgba(40, 40, 40, 0.9);
 }
 
+/* Wallet screen */
 #wallet_page_content {
     color: white;
     height: 100%;
@@ -47,6 +51,7 @@
     background: grey;
 }
 
+/* Organization screen */
 #organization_page_content {
     color: white;
     height: 100%;
@@ -55,6 +60,7 @@
     background: grey;
 }
 
+/* Services screen */
 #services_page_content {
     color: white;
     height: 100%;
@@ -63,10 +69,45 @@
     background: grey;
 }
 
-#settings_page_content {
-    color: white;
-    height: 100%;
-    width: 80%;
-    align: right middle;
-    background: grey;
+/* Error Exit screen */
+#error_exit_label {
+    align: center middle;
+    width: 70%;
+    margin-left: 5;
+    margin-top: 5;
+}
+#error_exit_button {
+    align: center middle;
+    width: 40%;
+    border: solid white;
+    background: rgba(40, 40, 40, 0.5);
+    margin-left: 50;
+    margin-top: 5;
+}
+
+/* Exit screen */
+exit_page {
+    align: center middle;
+}
+
+#exit_page {
+    grid-size: 2;
+    grid-gutter: 1 2;
+    grid-rows: 1fr 3;
+    padding: 0 1;
+    width: 60;
+    height: 11;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+#exit_question {
+    column-span: 2;
+    height: 1fr;
+    width: 1fr;
+    content-align: center middle;
+}
+
+#exit_button, #cancel_exit_button {
+    width: 100%;
 }

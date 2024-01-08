@@ -33,9 +33,9 @@ class Organization():
 def run_shell_command(command):
     try:
         result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        return result.stdout, result.stderr
+        return result.stdout, result.stderr, result.returncode
     except subprocess.CalledProcessError as e:
-        return e.stdout, e.stderr
+        return e.stdout, e.stderr, e.returncode
     
 def run_shell_command_with_input(command, input_text):
     try:
@@ -43,20 +43,21 @@ def run_shell_command_with_input(command, input_text):
         output, error = process.communicate(input=input_text)
         
         if process.returncode == 0:
-            return output
+            return output, process.returncode
         else:
-            return error
+            return error, process.returncode
     except Exception as e:
         return str(e)
 
 def check_cli() -> bool:
     stdout, stderr = run_shell_command('snet')
-    if "error: the following arguments are required: COMMAND" in stderr:
+    if "error: the following arguments are required: COMMAND" == stderr[0:53]:
         return True
     return False
 
 def check_identity() -> bool:
     stdout, stderr = run_shell_command('snet account balance')
-    if "Please create your first identity by running 'snet identity create'" in stdout:
+    # NOTE: Need to check for correct output, not incorrect. getting false positives
+    if "Please create your first identity by running 'snet identity create'" == stdout[1:59]:
         return False
     return True

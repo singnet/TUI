@@ -36,6 +36,7 @@ mdurl
 msgpack
 multidict
 parsimonious
+pexpect
 pkgutil_resolve_name
 protobuf
 pycryptodome
