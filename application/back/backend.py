@@ -79,6 +79,6 @@ def check_cli() -> bool:
 
 def check_wallet() -> bool:
     result = run_shell_command('snet account balance')
-    if "Please create your first identity by running 'snet identity create'." in result:
+    if "\nPlease create your first identity by running 'snet identity create'" in result:
         return False
     return True

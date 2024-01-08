@@ -14,6 +14,7 @@ class WelcomeScreen(Screen):
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "start_button":
+            # Change the "start_button" to a textual loading bar
             cli_installed: bool = be.check_cli()
             # daemon_installed: bool = be.check_daemon()
             wallet_added: bool = be.check_wallet()
