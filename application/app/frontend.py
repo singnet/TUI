@@ -47,7 +47,7 @@ class create_identity_page(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "import_wallet_confirm":
+        if event.button.id == "create_identity_button":
             # NOTE: Save wallet information to cache file
             self.app.switch_screen(wallet_page())
 
