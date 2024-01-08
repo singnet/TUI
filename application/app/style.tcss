@@ -7,20 +7,7 @@
     border: solid white;
 }
 
-#create_wallet_button {
-    width: 40%;
-    border: solid white;
-    background: rgba(40, 40, 40, 0.5);
-    align: center middle;
-    margin-left: 70;
-    margin-top: 15;
-}
-
-#create_wallet_button:hover {
-    background: rgba(40, 40, 40, 0.9);
-}
-
-#import_wallet_button {
+#create_identity_button {
     width: 40%;
     border: solid white;
     background: rgba(40, 40, 40, 0.5);
@@ -29,7 +16,7 @@
     margin-top: 10;
 }
 
-#import_wallet_button:hover {
+#create_identity_button:hover {
     background: rgba(40, 40, 40, 0.9);
 }
 

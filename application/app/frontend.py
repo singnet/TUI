@@ -25,33 +25,6 @@ class WelcomeScreen(Screen):
             elif (not identity_added):
                 self.app.switch_screen(create_identity_page())
                 
-
-# class wallet_setup_page(Screen):
-#     def compose(self) -> ComposeResult:
-#         yield Grid(
-#             Button("Create Wallet", id="create_wallet_button"),
-#             Button("Import Wallet", id="import_wallet_button"),
-#             id="wallet_setup"
-#         )
-
-#     def on_button_pressed(self, event: Button.Pressed) -> None:
-#         if event.button.id == "create_wallet_button":
-#             self.app.switch_screen(create_wallet_page())
-#         elif event.button.id == "import_wallet_button":
-#             self.app.switch_screen(import_wallet_page())
-
-# class create_wallet_page(Screen):
-#     def compose(self) -> ComposeResult:
-#         yield Grid(
-#             id="create_wallet"
-#         )
-
-#     def on_button_pressed(self, event: Button.Pressed) -> None:
-#         if event.button.id == "create_wallet_button":
-#             self.app.switch_screen(wallet_page())
-#         elif event.button.id == "import_wallet_button":
-#             self.app.switch_screen(organization_page())
-                
 class cli_error_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
@@ -69,7 +42,7 @@ class create_identity_page(Screen):
         yield Grid(
             Input(placeholder="Wallet Address", id="wallet_addr_input"),
             Input(placeholder="Wallet Private Key", id="wallet_priv_input"),
-            Button("Import", id="import_wallet_confirm"),
+            Button("Create Identity", id="create_identity_button"),
             id="import_wallet"
         )
 

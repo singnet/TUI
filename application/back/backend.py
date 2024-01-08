@@ -2,28 +2,6 @@ import subprocess
 # from web3 import Web3
 # from eth_account import Account
 
-class Wallet():
-    def __init__(self) -> None:
-        pass
-
-# class Wallet:
-
-#     def __init__(self):
-#         self.w3 = Web3()
-
-#     def create(self):
-#         account = Account.create()
-#         seed = account.seed_phrase()
-#         private_key = account.privateKey.hex()
-#         address = account.address
-#         return private_key, address, seed
-
-#     def import_from_seed(self, seed_phrase):
-#         account = Account.from_mnemonic(seed_phrase)
-#         private_key = account.privateKey.hex()
-#         address = account.address
-#         return private_key, address    
-
 class Organization():
     def __init__(self, org_identity, wallet_priv_key, network) -> None:
         self.identity_name = org_identity
@@ -79,7 +57,6 @@ def check_cli() -> bool:
 
 def check_identity() -> bool:
     stdout, stderr = run_shell_command('snet account balance')
-    if "Please create your first identity by running 'snet identity create'" in stdout or \
-       "Please create your first identity by running 'snet identity create'" in stderr:
+    if "Please create your first identity by running 'snet identity create'" in stdout:
         return False
     return True
