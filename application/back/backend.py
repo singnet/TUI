@@ -51,11 +51,6 @@ class Organization():
     
     def create_organization(self, organization_name, member_addresses):
         return run_shell_command(f"snet organization create {organization_name} {member_addresses}")
-    
-
-class Service():
-    def __init__(self) -> None:
-        pass
 
 def run_shell_command(command):
     try:
@@ -64,14 +59,26 @@ def run_shell_command(command):
     except subprocess.CalledProcessError as e:
         return e.stderr
     
-# def check_daemon() -> bool:
-#     # Check whether the daemon is installed
-#     # Check whether the config has been edited
-#     # Check whether the daemon can be run
-#     return True
+def run_shell_command_with_input(command, input_text):
+    try:
+        process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        output, error = process.communicate(input=input_text)
+        
+        if process.returncode == 0:
+            return output
+        else:
+            return error
+    except Exception as e:
+        return str(e)
 
 def check_cli() -> bool:
-    return True
+    result = run_shell_command('snet')
+    if "error: the following arguments are required: COMMAND" in result:
+        return True
+    return False
 
 def check_wallet() -> bool:
+    result = run_shell_command('snet account balance')
+    if "Please create your first identity by running 'snet identity create'." in result:
+        return False
     return True
