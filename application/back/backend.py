@@ -55,9 +55,9 @@ class Organization():
 def run_shell_command(command):
     try:
         result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        return result.stdout
+        return result.stdout, result.stderr
     except subprocess.CalledProcessError as e:
-        return e.stderr
+        return e.stdout, e.stderr
     
 def run_shell_command_with_input(command, input_text):
     try:
@@ -72,13 +72,14 @@ def run_shell_command_with_input(command, input_text):
         return str(e)
 
 def check_cli() -> bool:
-    result = run_shell_command('snet')
-    if "error: the following arguments are required: COMMAND" in result:
+    stdout, stderr = run_shell_command('snet')
+    if "error: the following arguments are required: COMMAND" in stderr:
         return True
     return False
 
-def check_wallet() -> bool:
-    result = run_shell_command('snet account balance')
-    if "\nPlease create your first identity by running 'snet identity create'" in result:
+def check_identity() -> bool:
+    stdout, stderr = run_shell_command('snet account balance')
+    if "Please create your first identity by running 'snet identity create'" in stdout or \
+       "Please create your first identity by running 'snet identity create'" in stderr:
         return False
     return True

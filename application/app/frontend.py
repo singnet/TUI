@@ -17,13 +17,13 @@ class WelcomeScreen(Screen):
             # Change the "start_button" to a textual loading bar
             cli_installed: bool = be.check_cli()
             # daemon_installed: bool = be.check_daemon()
-            wallet_added: bool = be.check_wallet()
-            if (cli_installed and wallet_added):
+            identity_added: bool = be.check_identity()
+            if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
                 self.app.switch_screen(cli_error_page())
-            elif (not wallet_added):
-                self.app.switch_screen(import_wallet_page())
+            elif (not identity_added):
+                self.app.switch_screen(create_identity_page())
                 
 
 # class wallet_setup_page(Screen):
@@ -64,7 +64,7 @@ class cli_error_page(Screen):
         if event.button.id == "exit_button":
             self.app.exit()
 
-class import_wallet_page(Screen):
+class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
             Input(placeholder="Wallet Address", id="wallet_addr_input"),
