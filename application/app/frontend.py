@@ -23,8 +23,8 @@ class WelcomeScreen(Screen):
         global error_exit_label
         if event.button.id == "start_button":
             # Change the "start_button" to a textual loading bar
-            cli_installed: bool = True #be.check_cli()
-            identity_added: bool = False #be.check_identity()
+            cli_installed: bool = be.check_cli()
+            identity_added: bool = be.check_identity()
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
