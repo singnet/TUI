@@ -9,6 +9,7 @@ import pexpect
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
 popup_output: str
+cur_org: Organization
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -22,8 +23,8 @@ class WelcomeScreen(Screen):
         global error_exit_label
         if event.button.id == "start_button":
             # Change the "start_button" to a textual loading bar
-            cli_installed: bool = be.check_cli()
-            identity_added: bool = be.check_identity()
+            cli_installed: bool = True #be.check_cli()
+            identity_added: bool = False #be.check_identity()
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
@@ -36,7 +37,7 @@ class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
         yield Grid(
-            Label(error_exit_label, id="error_exit_label"),
+            Label("ERROR - " + error_exit_label, id="error_exit_label"),
             Button("Exit", id="error_exit_button"),
             id = "error_exit"
         )
@@ -58,8 +59,6 @@ class popup_output_page(Screen):
         if event.button.id == "output_exit_button":
             self.app.pop_screen()
 
-cur_org: Organization
-
 class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
@@ -79,25 +78,29 @@ class create_identity_page(Screen):
                 self.create_organization(org_id, True, None, network)
             else:
                 wallet_priv = self.get_child_by_id("create_identity").get_child_by_id("wallet_priv_input").value
-                self.create_organization(org_id, False, wallet_priv, network)
                 self.app.switch_screen(wallet_page())
+                self.create_organization(org_id, False, wallet_priv, network)
+                
     
-    def create_organization(self, org_id, mnemonic = True, wallet_priv = None, network = "goerli") -> Organization:
+    def create_organization(self, org_id, mnemonic = True, wallet_priv = None, network_select = "goerli") -> Organization:
         global popup_output
         global error_exit_label
+        global cur_org
         if mnemonic:
-            command = f"snet identity create {org_id} mnemonic --network {network}"
+            command = f"snet identity create {org_id} mnemonic --network {network_select}"
             stdOut, stdErr, errCode= be.run_shell_command(command)
             if errCode == 0:
+                cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
                 popup_output = stdOut
                 self.app.push_screen(popup_output_page())
             else:
                 error_exit_label = stdErr
                 self.app.switch_screen(error_exit_page())
         else:
-            command = f"snet identity create {org_id} key --private-key {wallet_priv} --network {network}"
+            command = f"snet identity create {org_id} key --private-key {wallet_priv} --network {network_select}"
             stdOut, stdErr, errCode = be.run_shell_command(command)
             if errCode == 0:
+                cur_org = Organization(org_identity=org_id, wallet_priv_key=wallet_priv, network=network_select)
                 popup_output = stdOut
                 self.app.push_screen(popup_output_page())
             else:

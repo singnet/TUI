@@ -3,10 +3,15 @@ import subprocess
 # from eth_account import Account
 
 class Organization():
-    def __init__(self, org_identity, wallet_priv_key, network) -> None:
+    def __init__(self, org_identity, network, wallet_priv_key=None, seed_phrase=None) -> None:
         self.identity_name = org_identity
         self.private_key = wallet_priv_key
         self.network = network
+        self.seed = seed_phrase
+        if wallet_priv_key == None:
+            self.mnemonic = True
+        else:
+            self.mnemonic = False
     
     def create_identity(self):
         return run_shell_command(f"snet identity create {self.identity_name} key --private-key {self.private_key} --network {self.network}")
@@ -50,13 +55,13 @@ def run_shell_command_with_input(command, input_text):
         return str(e)
 
 def check_cli() -> bool:
-    stdout, stderr = run_shell_command('snet')
+    stdout, stderr, errCode = run_shell_command('snet')
     if "error: the following arguments are required: COMMAND" == stderr[0:53]:
         return True
     return False
 
 def check_identity() -> bool:
-    stdout, stderr = run_shell_command('snet account balance')
+    stdout, stderr, errCode = run_shell_command('snet account balance')
     # NOTE: Need to check for correct output, not incorrect. getting false positives
     if "Please create your first identity by running 'snet identity create'" == stdout[1:59]:
         return False
