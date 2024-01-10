@@ -153,7 +153,7 @@ class wallet_page(Screen):
         yield Header()
         yield Horizontal(
             nav_sidebar_vert(),
-            Grid(
+            Horizontal(
                 Label(f"Account: {wallet_dict['account']}", id="wallet_page_account"),
                 Label(f"ETH: {wallet_dict['ETH']}", id="wallet_page_eth"),
                 Label(f"AGIX: {wallet_dict['AGI']}", id="wallet_page_agi"),
