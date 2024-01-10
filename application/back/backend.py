@@ -13,9 +13,6 @@ class Organization():
         else:
             self.mnemonic = False
     
-    def create_identity(self):
-        return run_shell_command(f"snet identity create {self.identity_name} key --private-key {self.private_key} --network {self.network}")
-    
     def init_metadata(self, org_name, org_id, org_type):
         return run_shell_command(f"snet organization metadata-init {org_name} {org_id} {org_type}")
     

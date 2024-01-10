@@ -103,7 +103,7 @@ class create_identity_page(Screen):
         global cur_org
         if mnemonic:
             command = f"snet identity create {org_id} mnemonic --mnemonic {wallet_info} --network {network_select}"
-            stdout, stderr, errCode = be.run_shell_command(command, wallet_info)
+            stdout, stderr, errCode = be.run_shell_command(command)
             if errCode == 0:
                 cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
                 popup_output = stdout
