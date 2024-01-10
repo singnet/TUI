@@ -76,6 +76,7 @@
     margin-left: 5;
     margin-top: 5;
 }
+
 #error_exit_button {
     align: center middle;
     width: 40%;

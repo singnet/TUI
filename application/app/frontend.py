@@ -15,7 +15,7 @@ cur_org: Organization
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
-            Label("Welcome to the installation tool"),
+            Label("Welcome to the SingularityNET CLI text interface"),
             Button("Start", id="start_button"),
             id = "welcome"
         )
@@ -96,19 +96,19 @@ class create_identity_page(Screen):
                     self.create_organization(org_id, mnemonic, wallet_info, network)
                 
     
-    def create_organization(self, org_id, mnemonic = True, wallet_info = None, network_select = "goerli") -> Organization:
+    def create_organization(self, org_id, mnemonic, wallet_info = None, network_select = "goerli") -> Organization:
         global popup_output
         global error_exit_label
         global cur_org
         if mnemonic:
-            command = f"snet identity create {org_id} mnemonic --network {network_select}"
-            output, errCode = be.run_shell_command_with_input(command, wallet_info)
+            command = f"snet identity create {org_id} mnemonic --mnemonic {wallet_info} --network {network_select}"
+            stdout, stderr, errCode = be.run_shell_command(command)
             if errCode == 0:
                 cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
-                popup_output = output
+                popup_output = stdout
                 self.app.push_screen(popup_output_page())
             else:
-                error_exit_label = output
+                error_exit_label = stderr
                 self.app.switch_screen(error_exit_page())
         else:
             command = f"snet identity create {org_id} key --private-key {wallet_info} --network {network_select.lower()}"
