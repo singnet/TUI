@@ -23,12 +23,13 @@ class WelcomeScreen(Screen):
         global error_exit_label
         if event.button.id == "start_button":
             # Change the "start_button" to a textual loading bar
-            cli_installed: bool = True#be.check_cli()
-            identity_added: bool = False#be.check_identity()
+
+            cli_installed, stdout, stderr, errCode = be.check_cli()
+            identity_added, stdout, stderr, errCode = be.check_identity()
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
-                error_exit_label  = "CLI not accessible. Please ensure the CLI is installed, and you are running the TUI through the CLI python environment, and try again."
+                error_exit_label  = stderr
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
                 self.app.switch_screen(create_identity_page())

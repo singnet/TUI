@@ -1,4 +1,5 @@
 import subprocess
+from typing import Union
 # from web3 import Web3
 # from eth_account import Account
 
@@ -53,15 +54,15 @@ def run_shell_command_with_input(command, input_text):
     except Exception as e:
         return str(e)
 
-def check_cli() -> bool:
+def check_cli():
     stdout, stderr, errCode = run_shell_command('snet')
     if "error: the following arguments are required: COMMAND" == stderr[0:53]:
-        return True
-    return False
+        return True, stdout, stderr, errCode
+    return False, stdout, stderr, errCode
 
 def check_identity() -> bool:
     stdout, stderr, errCode = run_shell_command('snet account balance')
     # NOTE: Need to check for correct output, not incorrect. getting false positives
     if "Please create your first identity by running 'snet identity create'" == stdout[1:59]:
-        return False
-    return True
+        return False, stdout, stderr, errCode
+    return True, stdout, stderr, errCode
