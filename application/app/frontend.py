@@ -5,11 +5,13 @@ from textual.widgets import Button, Header, Label, Input, Select, RadioButton, L
 import back.backend as be
 from back.backend import Organization
 import pexpect
+from time import sleep
 
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
 popup_output: str
 cur_org: Organization
+load_wait: float
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -21,11 +23,12 @@ class WelcomeScreen(Screen):
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global error_exit_label
+        global load_wait
         if event.button.id == "start_button":
+            load_wait = 5.0
             self.app.push_screen(loading_page())
             cli_installed, stdout1, stderr1, errCode1 = be.check_cli()
             identity_added, stdout2, stderr2, errCode2 = be.check_identity()
-            self.app.pop_screen()
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
@@ -36,7 +39,10 @@ class WelcomeScreen(Screen):
 
 class loading_page(Screen):
     def compose(self) -> ComposeResult:
+        global load_wait
         yield LoadingIndicator()
+        sleep(load_wait)
+        self.app.pop_screen()
 
 class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
@@ -110,10 +116,10 @@ class create_identity_page(Screen):
             output, errCode = be.run_shell_command_with_input(command, wallet_info)
             if errCode == 0:
                 cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
-                popup_output = stdOut
+                popup_output = output
                 self.app.push_screen(popup_output_page())
             else:
-                error_exit_label = stdErr
+                error_exit_label = output
                 self.app.switch_screen(error_exit_page())
         else:
             command = f"snet identity create {org_id} key --private-key {wallet_info} --network {network_select.lower()}"
