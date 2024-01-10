@@ -60,7 +60,7 @@ def check_cli():
         return True, stdout, stderr, errCode
     return False, stdout, stderr, errCode
 
-def check_identity() -> bool:
+def check_identity():
     stdout, stderr, errCode = run_shell_command('snet account balance')
     if "    account:" in stdout:
         return True, stdout, stderr, errCode

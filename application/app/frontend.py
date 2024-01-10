@@ -11,7 +11,6 @@ from time import sleep
 error_exit_label: str
 popup_output: str
 cur_org: Organization
-load_wait: float
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -23,10 +22,7 @@ class WelcomeScreen(Screen):
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global error_exit_label
-        global load_wait
         if event.button.id == "start_button":
-            load_wait = 5.0
-            self.app.push_screen(loading_page())
             cli_installed, stdout1, stderr1, errCode1 = be.check_cli()
             identity_added, stdout2, stderr2, errCode2 = be.check_identity()
             if (cli_installed and identity_added):
@@ -36,13 +32,6 @@ class WelcomeScreen(Screen):
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
                 self.app.switch_screen(create_identity_page())
-
-class loading_page(Screen):
-    def compose(self) -> ComposeResult:
-        global load_wait
-        yield LoadingIndicator()
-        sleep(load_wait)
-        self.app.pop_screen()
 
 class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
@@ -145,13 +134,30 @@ def nav_sidebar_vert() -> Vertical:
 
     return ret_vert
 
+def dict_create(output: str):
+    res = {}
+    lines = output.split('\n')
+    for line in lines:
+        if ':' in line:
+            key, value = line.split(':', 1)
+            key = key.strip()
+            value = value.strip()
+            res[key] = value
+
+    return res
+
 class wallet_page(Screen):
     def compose(self) -> ComposeResult:
+        check, stdout, stderr, errCode = be.check_identity()
+        wallet_dict = dict_create(stdout)
         yield Header()
         yield Horizontal(
             nav_sidebar_vert(),
             Grid(
-                Label("Wallet Page", id="wallet_page_title"),
+                Label(f"Account: {wallet_dict['account']}", id="wallet_page_title"),
+                Label(f"ETH: {wallet_dict['ETH']}", id="wallet_page_title"),
+                Label(f"AGIX: {wallet_dict['AGI']}", id="wallet_page_title"),
+                Label(f"MPE: {wallet_dict['MPE']}", id="wallet_page_title"),
                 id="wallet_page_content"
             ),
             id="wallet_page"
