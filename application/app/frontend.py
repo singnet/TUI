@@ -1,7 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import Screen
-from textual.widgets import Button, Header, Label, Input, Select, RadioButton
+from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
 import back.backend as be
 from back.backend import Organization
 import pexpect
@@ -22,17 +22,21 @@ class WelcomeScreen(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global error_exit_label
         if event.button.id == "start_button":
-            # Change the "start_button" to a textual loading bar
-
-            cli_installed, stdout, stderr, errCode = be.check_cli()
-            identity_added, stdout, stderr, errCode = be.check_identity()
+            self.app.push_screen(loading_page())
+            cli_installed, stdout1, stderr1, errCode1 = be.check_cli()
+            identity_added, stdout2, stderr2, errCode2 = be.check_identity()
+            self.app.pop_screen()
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
-                error_exit_label  = stdout
+                error_exit_label  = stderr1
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
                 self.app.switch_screen(create_identity_page())
+
+class loading_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield LoadingIndicator()
 
 class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
@@ -64,7 +68,7 @@ class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
             Input(placeholder="Organization Identity", id="org_identity_input"),
-            Input(placeholder="Wallet Private Key / 24 character seed phrase (Mnemonic)", id="wallet_info_input"),
+            Input(placeholder="Wallet Private Key / 24 word seed phrase (Mnemonic)", id="wallet_info_input"),
             Select(options=(("Goerli", "Goerli") for line in """Goerli""".splitlines()), prompt="Select Network", id="network_select"),
             RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
             Button("Create Identity", id="create_identity_button"),
@@ -77,18 +81,24 @@ class create_identity_page(Screen):
             org_id = self.get_child_by_id("create_identity").get_child_by_id("org_identity_input").value
             network = self.get_child_by_id("create_identity").get_child_by_id("network_select").value
             wallet_info = self.get_child_by_id("create_identity").get_child_by_id("wallet_info_input").value
-            # NOTE: Add wallet info checks
+            mnemonic = self.get_child_by_id("create_identity").get_child_by_type(RadioButton).value
             if not isinstance(org_id, str) or org_id == "":
                 popup_output = "ERROR - Organization Identity cannot be blank."
+                self.app.push_screen(popup_output_page())
+            elif not isinstance(wallet_info, str):
+                popup_output = "ERROR - Wallet private key / seed phrase must be entered"
+                self.app.push_screen(popup_output_page())
+            elif len(wallet_info) != 24 and mnemonic:
+                popup_output = "ERROR - Seed phrase must be 24 single-word characters"
                 self.app.push_screen(popup_output_page())
             else:
                 if not isinstance(network, str):
                     network = "goerli"
-                if self.get_child_by_id("create_identity").get_child_by_type(RadioButton).value == True:
-                    self.create_organization(org_id, True, wallet_info, network)
+                if mnemonic == True:
+                    self.create_organization(org_id, mnemonic, wallet_info, network)
                 else:
                     self.app.switch_screen(wallet_page())
-                    self.create_organization(org_id, False, wallet_info, network)
+                    self.create_organization(org_id, mnemonic, wallet_info, network)
                 
     
     def create_organization(self, org_id, mnemonic = True, wallet_info = None, network_select = "goerli") -> Organization:
