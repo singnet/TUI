@@ -46,11 +46,7 @@ def run_shell_command_with_input(command, input_text):
     try:
         process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         output, error = process.communicate(input=input_text)
-        
-        if process.returncode == 0:
-            return output, process.returncode
-        else:
-            return error, process.returncode
+        return output, error, process.returncode
     except Exception as e:
         return str(e)
 
