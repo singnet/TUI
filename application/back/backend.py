@@ -5,7 +5,6 @@ import subprocess
 class Organization():
     def __init__(self, org_identity, network, wallet_priv_key=None, seed_phrase=None) -> None:
         self.identity_name = org_identity
-        self.private_key = wallet_priv_key
         self.network = network
         self.seed = seed_phrase
         if wallet_priv_key == None:

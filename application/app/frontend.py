@@ -23,12 +23,12 @@ class WelcomeScreen(Screen):
         global error_exit_label
         if event.button.id == "start_button":
             # Change the "start_button" to a textual loading bar
-            cli_installed: bool = be.check_cli()
-            identity_added: bool = be.check_identity()
+            cli_installed: bool = True#be.check_cli()
+            identity_added: bool = False#be.check_identity()
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
-                error_exit_label  = "CLI not installed. Please ensure the CLI is installed, and you are running the TUI through the CLI python environment, and try again."
+                error_exit_label  = "CLI not accessible. Please ensure the CLI is installed, and you are running the TUI through the CLI python environment, and try again."
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
                 self.app.switch_screen(create_identity_page())
@@ -51,7 +51,7 @@ class popup_output_page(Screen):
         global popup_output
         yield Grid(
             Label(popup_output, id="popup_output_label"),
-            Button("Exit", id="output_exit_button"),
+            Button("OK", id="output_exit_button"),
             id = "output"
         )
     
@@ -63,7 +63,7 @@ class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
             Input(placeholder="Organization Identity", id="org_identity_input"),
-            Input(placeholder="Wallet Private Key (Ignored for mnemonic wallet)", id="wallet_priv_input"),
+            Input(placeholder="Wallet Private Key / 24 character seed phrase (Mnemonic)", id="wallet_info_input"),
             Select(options=(("Goerli", "Goerli") for line in """Goerli""".splitlines()), prompt="Select Network", id="network_select"),
             RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
             Button("Create Identity", id="create_identity_button"),
@@ -71,24 +71,32 @@ class create_identity_page(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
         if event.button.id == "create_identity_button":
             org_id = self.get_child_by_id("create_identity").get_child_by_id("org_identity_input").value
             network = self.get_child_by_id("create_identity").get_child_by_id("network_select").value
-            if self.get_child_by_id("create_identity").get_child_by_type(RadioButton).value == True:
-                self.create_organization(org_id, True, None, network)
+            wallet_info = self.get_child_by_id("create_identity").get_child_by_id("wallet_info_input").value
+            # NOTE: Add wallet info checks
+            if not isinstance(org_id, str) or org_id == "":
+                popup_output = "ERROR - Organization Identity cannot be blank."
+                self.app.push_screen(popup_output_page())
             else:
-                wallet_priv = self.get_child_by_id("create_identity").get_child_by_id("wallet_priv_input").value
-                self.app.switch_screen(wallet_page())
-                self.create_organization(org_id, False, wallet_priv, network)
+                if not isinstance(network, str):
+                    network = "goerli"
+                if self.get_child_by_id("create_identity").get_child_by_type(RadioButton).value == True:
+                    self.create_organization(org_id, True, wallet_info, network)
+                else:
+                    self.app.switch_screen(wallet_page())
+                    self.create_organization(org_id, False, wallet_info, network)
                 
     
-    def create_organization(self, org_id, mnemonic = True, wallet_priv = None, network_select = "goerli") -> Organization:
+    def create_organization(self, org_id, mnemonic = True, wallet_info = None, network_select = "goerli") -> Organization:
         global popup_output
         global error_exit_label
         global cur_org
         if mnemonic:
             command = f"snet identity create {org_id} mnemonic --network {network_select}"
-            stdOut, stdErr, errCode= be.run_shell_command(command)
+            output, errCode = be.run_shell_command_with_input(command, wallet_info)
             if errCode == 0:
                 cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
                 popup_output = stdOut
@@ -97,10 +105,10 @@ class create_identity_page(Screen):
                 error_exit_label = stdErr
                 self.app.switch_screen(error_exit_page())
         else:
-            command = f"snet identity create {org_id} key --private-key {wallet_priv} --network {network_select}"
+            command = f"snet identity create {org_id} key --private-key {wallet_info} --network {network_select.lower()}"
             stdOut, stdErr, errCode = be.run_shell_command(command)
             if errCode == 0:
-                cur_org = Organization(org_identity=org_id, wallet_priv_key=wallet_priv, network=network_select)
+                cur_org = Organization(org_identity=org_id, wallet_priv_key=wallet_info, network=network_select)
                 popup_output = stdOut
                 self.app.push_screen(popup_output_page())
             else:
