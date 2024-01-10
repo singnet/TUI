@@ -107,6 +107,7 @@ class create_identity_page(Screen):
             if errCode == 0:
                 cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
                 popup_output = stdout
+                self.app.switch_screen(wallet_page())
                 self.app.push_screen(popup_output_page())
             else:
                 error_exit_label = stdout
@@ -117,6 +118,7 @@ class create_identity_page(Screen):
             if errCode == 0:
                 cur_org = Organization(org_identity=org_id, wallet_priv_key=wallet_info, network=network_select)
                 popup_output = stdOut
+                self.app.switch_screen(wallet_page())
                 self.app.push_screen(popup_output_page())
             else:
                 error_exit_label = stdErr
