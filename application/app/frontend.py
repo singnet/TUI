@@ -108,7 +108,7 @@ class create_identity_page(Screen):
                 popup_output = stdout
                 self.app.push_screen(popup_output_page())
             else:
-                error_exit_label = stderr
+                error_exit_label = stdout
                 self.app.switch_screen(error_exit_page())
         else:
             command = f"snet identity create {org_id} key --private-key {wallet_info} --network {network_select.lower()}"
