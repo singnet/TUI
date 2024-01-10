@@ -3,14 +3,14 @@ from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import Screen
 from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
 import back.backend as be
-from back.backend import Organization
+from back.backend import Identity
 from time import sleep
 import re
 
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
 popup_output: str
-cur_org: Organization
+cur_org: Identity
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -91,13 +91,13 @@ class create_identity_page(Screen):
                     network = "goerli"
                 network = network.lower()
                 if mnemonic == True:
-                    self.create_organization(org_id, mnemonic, wallet_info, network)
+                    self.create_identity(org_id, mnemonic, wallet_info, network)
                 else:
                     self.app.switch_screen(wallet_page())
-                    self.create_organization(org_id, mnemonic, wallet_info, network)
+                    self.create_identity(org_id, mnemonic, wallet_info, network)
                 
     
-    def create_organization(self, org_id, mnemonic, wallet_info = None, network_select = "goerli") -> Organization:
+    def create_identity(self, org_id, mnemonic, wallet_info = None, network_select = "goerli"):
         global popup_output
         global error_exit_label
         global cur_org
@@ -105,7 +105,7 @@ class create_identity_page(Screen):
             command = f"snet identity create {org_id} mnemonic --mnemonic {wallet_info} --network {network_select}"
             stdout, stderr, errCode = be.run_shell_command(command)
             if errCode == 0:
-                cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
+                cur_org = Identity(org_identity=org_id, wallet_priv_key=None, network=network_select)
                 popup_output = stdout
                 self.app.switch_screen(wallet_page())
                 self.app.push_screen(popup_output_page())
@@ -119,7 +119,7 @@ class create_identity_page(Screen):
             command = f"snet identity create {org_id} key --private-key {wallet_info} --network {network_select.lower()}"
             stdOut, stdErr, errCode = be.run_shell_command(command)
             if errCode == 0:
-                cur_org = Organization(org_identity=org_id, wallet_priv_key=wallet_info, network=network_select)
+                cur_org = Identity(org_identity=org_id, wallet_priv_key=wallet_info, network=network_select)
                 popup_output = stdOut
                 self.app.switch_screen(wallet_page())
                 self.app.push_screen(popup_output_page())

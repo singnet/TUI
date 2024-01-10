@@ -3,7 +3,7 @@ from typing import Union
 # from web3 import Web3
 # from eth_account import Account
 
-class Organization():
+class Identity():
     def __init__(self, org_identity, network, wallet_priv_key=None, seed_phrase=None) -> None:
         self.identity_name = org_identity
         self.network = network
