@@ -56,13 +56,12 @@ def run_shell_command_with_input(command, input_text):
 
 def check_cli():
     stdout, stderr, errCode = run_shell_command('snet')
-    if "error: the following arguments are required: COMMAND" == stderr[0:53]:
+    if "error: the following arguments are required: COMMAND" in stderr:
         return True, stdout, stderr, errCode
     return False, stdout, stderr, errCode
 
 def check_identity() -> bool:
     stdout, stderr, errCode = run_shell_command('snet account balance')
-    # NOTE: Need to check for correct output, not incorrect. getting false positives
-    if "Please create your first identity by running 'snet identity create'" == stdout[1:59]:
-        return False, stdout, stderr, errCode
-    return True, stdout, stderr, errCode
+    if "    account:" in stdout:
+        return True, stdout, stderr, errCode
+    return False, stdout, stderr, errCode

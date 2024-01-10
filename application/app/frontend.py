@@ -29,7 +29,7 @@ class WelcomeScreen(Screen):
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
-                error_exit_label  = stderr
+                error_exit_label  = stdout
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
                 self.app.switch_screen(create_identity_page())
