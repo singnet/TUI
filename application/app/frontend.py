@@ -89,6 +89,7 @@ class create_identity_page(Screen):
             else:
                 if not isinstance(network, str):
                     network = "goerli"
+                network = network.lower()
                 if mnemonic == True:
                     self.create_organization(org_id, mnemonic, wallet_info, network)
                 else:
@@ -101,8 +102,8 @@ class create_identity_page(Screen):
         global error_exit_label
         global cur_org
         if mnemonic:
-            command = f"snet identity create {org_id} mnemonic --mnemonic {wallet_info} --network {network_select}"
-            stdout, stderr, errCode = be.run_shell_command(command)
+            command = f"snet identity create {org_id} mnemonic --network {network_select}"
+            stdout, stderr, errCode = be.run_shell_command_with_input(command, wallet_info)
             if errCode == 0:
                 cur_org = Organization(org_identity=org_id, wallet_priv_key=None, network=network_select)
                 popup_output = stdout
