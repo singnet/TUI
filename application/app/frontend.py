@@ -29,7 +29,7 @@ class WelcomeScreen(Screen):
             if (cli_installed and identity_added):
                 self.app.switch_screen(wallet_page())
             elif (not cli_installed):
-                error_exit_label  = stderr1
+                error_exit_label  = f"CLI not found, please double check installation and ensure you are running the TUI through the environment the CLI was installed in.\n\nCommand error output: {stderr1}"
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
                 self.app.switch_screen(create_identity_page())
