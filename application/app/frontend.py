@@ -4,8 +4,8 @@ from textual.screen import Screen
 from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
 import back.backend as be
 from back.backend import Organization
-import pexpect
 from time import sleep
+import re
 
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
@@ -149,7 +149,8 @@ def dict_create(output: str):
 class wallet_page(Screen):
     def compose(self) -> ComposeResult:
         check, stdout, stderr, errCode = be.check_identity()
-        wallet_dict = dict_create(stdout)
+        matches = re.findall(r'(\w+):\s*(\S+)', stdout)
+        wallet_dict = {key: value for key, value in matches}
         yield Header()
         yield Horizontal(
             nav_sidebar_vert(),
