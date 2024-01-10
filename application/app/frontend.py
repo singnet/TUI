@@ -154,10 +154,10 @@ class wallet_page(Screen):
         yield Horizontal(
             nav_sidebar_vert(),
             Grid(
-                Label(f"Account: {wallet_dict['account']}", id="wallet_page_title"),
-                Label(f"ETH: {wallet_dict['ETH']}", id="wallet_page_title"),
-                Label(f"AGIX: {wallet_dict['AGI']}", id="wallet_page_title"),
-                Label(f"MPE: {wallet_dict['MPE']}", id="wallet_page_title"),
+                Label(f"Account: {wallet_dict['account']}", id="wallet_page_account"),
+                Label(f"ETH: {wallet_dict['ETH']}", id="wallet_page_eth"),
+                Label(f"AGIX: {wallet_dict['AGI']}", id="wallet_page_agi"),
+                Label(f"MPE: {wallet_dict['MPE']}", id="wallet_page_mpe"),
                 id="wallet_page_content"
             ),
             id="wallet_page"
