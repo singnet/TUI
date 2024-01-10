@@ -110,7 +110,10 @@ class create_identity_page(Screen):
                 self.app.switch_screen(wallet_page())
                 self.app.push_screen(popup_output_page())
             else:
-                error_exit_label = stdout
+                out = stderr
+                if len(out) == 0:
+                    out = stdout
+                error_exit_label = out
                 self.app.switch_screen(error_exit_page())
         else:
             command = f"snet identity create {org_id} key --private-key {wallet_info} --network {network_select.lower()}"
@@ -121,7 +124,10 @@ class create_identity_page(Screen):
                 self.app.switch_screen(wallet_page())
                 self.app.push_screen(popup_output_page())
             else:
-                error_exit_label = stdErr
+                out = stderr
+                if len(out) == 0:
+                    out = stdout
+                error_exit_label = out
                 self.app.switch_screen(error_exit_page())
 
 def nav_sidebar_vert() -> Vertical:
