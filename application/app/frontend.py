@@ -78,13 +78,13 @@ class create_identity_page(Screen):
             wallet_info = self.get_child_by_id("create_identity").get_child_by_id("wallet_info_input").value
             mnemonic = self.get_child_by_id("create_identity").get_child_by_type(RadioButton).value
             if not isinstance(id_name, str) or id_name == "":
-                popup_output = "ERROR - Organization Identity cannot be blank."
+                popup_output = "ERROR: Organization Identity cannot be blank."
                 self.app.push_screen(popup_output_page())
             elif not isinstance(wallet_info, str):
-                popup_output = "ERROR - Wallet private key / seed phrase must be entered"
+                popup_output = "ERROR: Wallet private key / seed phrase must be entered"
                 self.app.push_screen(popup_output_page())
             elif len(wallet_info) != 24 and mnemonic:
-                popup_output = "ERROR - Seed phrase must be 24 single-word characters"
+                popup_output = "ERROR: Seed phrase must be 24 single-word characters"
                 self.app.push_screen(popup_output_page())
             else:
                 if not isinstance(network, str):
@@ -186,10 +186,10 @@ class identity_page(Screen):
         elif event.button.id == "identity_page_delete_identity_button":
             id_name = self.get_child_by_id("identity_page").get_child_by_id("identity_page_content").get_child_by_id("identity_page_delete_input").value
             if not isinstance(id_name, str) or id_name == "":
-                popup_output = "ERROR - Please enter the name of the Identity to be deleted"
+                popup_output = "ERROR: Please enter the name of the Identity to be deleted"
                 self.app.push_screen(popup_output_page())
             else:
-                stdout, stderr, errcode = be.delete_identity_cli()
+                stdout, stderr, errcode = be.delete_identity_cli(id_name)
                 if errcode == 0:
                     # TODO If identity deleted successfully
                     pass
