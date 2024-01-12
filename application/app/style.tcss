@@ -1,5 +1,5 @@
 /* Welcome screen */
-#welcome {
+#welcome_screen {
     align: center middle;
 }
 
@@ -43,7 +43,7 @@
 }
 
 /* Wallet screen */
-#wallet_page_content {
+#account_page_content {
     color: white;
     height: 100%;
     width: 80%;

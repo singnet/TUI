@@ -4,7 +4,6 @@ from textual.screen import Screen
 from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
 import back.backend as be
 from back.backend import Identity
-from time import sleep
 import re
 
 # Global variables for passing parameters between screens, as textual does not support this
@@ -15,18 +14,18 @@ cur_org: Identity
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
-            Label("Welcome to the SingularityNET CLI text interface"),
+            Label("Welcome to the SingularityNET text interface", id="welcome_label"),
             Button("Start", id="start_button"),
-            id = "welcome"
+            id = "welcome_screen"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global error_exit_label
         if event.button.id == "start_button":
             cli_installed, stdout1, stderr1, errCode1 = be.check_cli()
-            identity_added, stdout2, stderr2, errCode2 = be.check_identity()
+            identity_added, stdout2, stderr2, errCode2 = be.check_account_balance()
             if (cli_installed and identity_added):
-                self.app.switch_screen(wallet_page())
+                self.app.switch_screen(account_page())
             elif (not cli_installed):
                 error_exit_label  = f"CLI not found, please double check installation and ensure you are running the TUI through the environment the CLI was installed in.\n\nCommand error output: {stderr1}"
                 self.app.switch_screen(error_exit_page())
@@ -39,7 +38,7 @@ class error_exit_page(Screen):
         yield Grid(
             Label("ERROR - " + error_exit_label, id="error_exit_label"),
             Button("Exit", id="error_exit_button"),
-            id = "error_exit"
+            id = "error_exit_screen"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -50,9 +49,9 @@ class popup_output_page(Screen):
     def compose(self) -> ComposeResult:
         global popup_output
         yield Grid(
-            Label(popup_output, id="popup_output_label"),
+            Label("INFO - " + popup_output, id="popup_output_label"),
             Button("OK", id="output_exit_button"),
-            id = "output"
+            id = "popup_output_screen"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -62,7 +61,7 @@ class popup_output_page(Screen):
 class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
-            Input(placeholder="Organization Identity", id="org_identity_input"),
+            Input(placeholder="Identity Name", id="org_identity_input"),
             Input(placeholder="Wallet Private Key / 24 word seed phrase (Mnemonic)", id="wallet_info_input"),
             Select(options=(("Goerli", "Goerli") for line in """Goerli""".splitlines()), prompt="Select Network", id="network_select"),
             RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
@@ -73,11 +72,11 @@ class create_identity_page(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         if event.button.id == "create_identity_button":
-            org_id = self.get_child_by_id("create_identity").get_child_by_id("org_identity_input").value
+            id_name = self.get_child_by_id("create_identity").get_child_by_id("org_identity_input").value
             network = self.get_child_by_id("create_identity").get_child_by_id("network_select").value
             wallet_info = self.get_child_by_id("create_identity").get_child_by_id("wallet_info_input").value
             mnemonic = self.get_child_by_id("create_identity").get_child_by_type(RadioButton).value
-            if not isinstance(org_id, str) or org_id == "":
+            if not isinstance(id_name, str) or id_name == "":
                 popup_output = "ERROR - Organization Identity cannot be blank."
                 self.app.push_screen(popup_output_page())
             elif not isinstance(wallet_info, str):
@@ -89,92 +88,51 @@ class create_identity_page(Screen):
             else:
                 if not isinstance(network, str):
                     network = "goerli"
-                network = network.lower()
-                if mnemonic == True:
-                    self.create_identity(org_id, mnemonic, wallet_info, network)
                 else:
-                    self.app.switch_screen(wallet_page())
-                    self.create_identity(org_id, mnemonic, wallet_info, network)
+                    network = network.lower()
+                self.create_identity(id_name, mnemonic, wallet_info, network)
                 
     
-    def create_identity(self, org_id, mnemonic, wallet_info = None, network_select = "goerli"):
+    def create_identity(self, id_name, mnemonic, wallet_info = None, network_select = "goerli"):
         global popup_output
         global error_exit_label
         global cur_org
-        if mnemonic:
-            command = f"snet identity create {org_id} mnemonic --mnemonic {wallet_info} --network {network_select}"
-            stdout, stderr, errCode = be.run_shell_command(command)
-            if errCode == 0:
-                cur_org = Identity(org_identity=org_id, wallet_priv_key=None, network=network_select)
-                popup_output = stdout
-                self.app.switch_screen(wallet_page())
-                self.app.push_screen(popup_output_page())
-            else:
-                out = stderr
-                if len(out) == 0:
-                    out = stdout
-                error_exit_label = out
-                self.app.switch_screen(error_exit_page())
+        
+        stdout, stderr, errCode = be.create_identity_cli(id_name, wallet_info, network_select, mnemonic)
+        if errCode == 0:
+            cur_org = Identity(identity_name=id_name, wallet_priv_key=wallet_info, network=network_select)
+            popup_output = stdout
+            self.app.switch_screen(account_page())
+            self.app.push_screen(popup_output_page())
         else:
-            command = f"snet identity create {org_id} key --private-key {wallet_info} --network {network_select.lower()}"
-            stdOut, stdErr, errCode = be.run_shell_command(command)
-            if errCode == 0:
-                cur_org = Identity(org_identity=org_id, wallet_priv_key=wallet_info, network=network_select)
-                popup_output = stdOut
-                self.app.switch_screen(wallet_page())
-                self.app.push_screen(popup_output_page())
-            else:
-                out = stderr
-                if len(out) == 0:
-                    out = stdout
-                error_exit_label = out
-                self.app.switch_screen(error_exit_page())
+            out = stderr
+            if len(out) == 0:
+                out = stdout
+            error_exit_label = out
+            self.app.switch_screen(error_exit_page())
 
-def nav_sidebar_vert() -> Vertical:
-    ret_vert = Vertical(
-                Button("Wallet", id="wallet_page_nav", classes="nav_sidebar_button"),
-                Button("Organization", id="organization_page_nav", classes="nav_sidebar_button"),
-                Button("Services", id="services_page_nav", classes="nav_sidebar_button"),
-                Button("Exit", id="exit_page_nav", classes="nav_sidebar_button"),
-                classes="nav_sidebar",
-                name="nav_sidebar_name",
-                id="nav_sidebar"
-            )
-
-    return ret_vert
-
-def dict_create(output: str):
-    res = {}
-    lines = output.split('\n')
-    for line in lines:
-        if ':' in line:
-            key, value = line.split(':', 1)
-            key = key.strip()
-            value = value.strip()
-            res[key] = value
-
-    return res
-
-class wallet_page(Screen):
+class account_page(Screen):
     def compose(self) -> ComposeResult:
-        check, stdout, stderr, errCode = be.check_identity()
-        matches = re.findall(r'(\w+):\s*(\S+)', stdout)
-        wallet_dict = {key: value for key, value in matches}
+        wallet_dict = be.wallet_dict_create()
         yield Header()
         yield Horizontal(
-            nav_sidebar_vert(),
+            be.nav_sidebar_vert(),
             Grid(
-                Label(f"Account: {wallet_dict['account']}", id="wallet_page_account"),
-                Label(f"ETH: {wallet_dict['ETH']}", id="wallet_page_eth"),
-                Label(f"AGIX: {wallet_dict['AGI']}", id="wallet_page_agi"),
-                Label(f"MPE: {wallet_dict['MPE']}", id="wallet_page_mpe"),
-                id="wallet_page_content"
+                Label(f"Account: {wallet_dict['account']}", id="account_page_account"),
+                Label(f"ETH: {wallet_dict['ETH']}", id="account_page_eth"),
+                Label(f"AGIX: {wallet_dict['AGI']}", id="account_page_agi"),
+                Label(f"MPE: {wallet_dict['MPE']}", id="account_page_mpe"),
+                Button("Deposit", id="account_page_deposit_button"),
+                Button("Withdraw", id="account_page_withdraw_button"),
+                Button("Transfer", id="account_page_transfer_button"),
+                Button("Identity Settings", id="account_page_identity_settings_button"),
+                id="account_page_content"
             ),
-            id="wallet_page"
+            id="account_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "wallet_page_nav":
+        if event.button.id == "account_page_nav":
             pass
         elif event.button.id == "organization_page_nav":
             self.app.switch_screen(organization_page())
@@ -182,12 +140,73 @@ class wallet_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "identity_settings_button":
+            self.app.switch_screen(identity_page())
+        elif event.button.id == "account_page_deposit_button":
+            # TODO Create deposit popup and push it
+            pass
+        elif event.button.id == "account_page_withdraw_button":
+            # TODO Create withdraw popup and push it
+            pass
+        elif event.button.id == "account_page_transfer_button":
+            # TODO Create transfer popup and push it
+            pass
 
+class identity_page(Screen):
+    def compose(self) -> ComposeResult:
+        idList, listErr, listErrCode = be.run_shell_command("snet identity list")
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label(f"Identity List:\n{idList}", id="identity_page_title"),
+                Button("Create Identity Page", id="identity_page_create_identity_button"),
+                Input("Identity name to delete", id="identity_page_delete_input"),
+                Button("Delete Identity", id="identity_page_delete_identity_button"),
+                id="identity_page_content"
+            ),
+            id="identity_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "identity_page_create_identity_button":
+            self.app.switch_screen(create_identity_page())
+        elif event.button.id == "identity_page_delete_identity_button":
+            id_name = self.get_child_by_id("identity_page").get_child_by_id("identity_page_delete_input").value
+            if not isinstance(id_name, str) or id_name == "":
+                popup_output = "ERROR - Please enter the name of the Identity to be deleted"
+                self.app.push_screen(popup_output_page())
+            else:
+                stdout, stderr, errcode = be.delete_identity_cli()
+                if errcode == 0:
+                    # TODO If identity deleted successfully
+                    pass
+                else:
+                    # TODO If unsuccessful to delete identity
+                    output = stderr
+                    if output == "":
+                        output = stdout
+                    popup_output = output
+                    self.app.switch_screen(identity_page())
+                    self.app.push_screen(popup_output_page())
+                    pass
+
+
+# TODO Implement entire organization CLI command
 class organization_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
-            nav_sidebar_vert(),
+            be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Page", id="organization_page_title"),
                 id="organization_page_content"
@@ -196,8 +215,8 @@ class organization_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "wallet_page_nav":
-            self.app.switch_screen(wallet_page())
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
             pass
         elif event.button.id == "services_page_nav":
@@ -205,11 +224,12 @@ class organization_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
 
+# TODO Implement entire service CLI command
 class services_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
-            nav_sidebar_vert(),
+            be.nav_sidebar_vert(),
             Grid(
                 Label("Services Page", id="services_page_title"),
                 id="services_page_content"
@@ -218,14 +238,16 @@ class services_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "wallet_page_nav":
-            self.app.switch_screen(wallet_page())
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             pass
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+
+# TODO Implement all other commands under "misc" nav page
 
 class exit_page(Screen):
     def compose(self) -> ComposeResult:
