@@ -3,7 +3,6 @@ from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import Screen
 from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
 import back.backend as be
-from back.backend import Identity
 import re
 
 # Global variables for passing parameters between screens, as textual does not support this
