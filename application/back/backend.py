@@ -97,14 +97,14 @@ def delete_identity_cli(id_name):
 def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose):
     command = "snet account deposit"
     if not isinstance(agi_amount, str) and agi_amount <= 0:
-        return "Deposit amount must be greater than 0", 42
-    if isinstance(contract_address, str):
+        return "ERROR: Deposit amount must be greater than 0", 42
+    if isinstance(contract_address, str) and len(contract_address) > 0:
         command += f" --singularitynettoken-at {contract_address}"
-    if isinstance(mpe_address, str):
+    if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
-    if isinstance(gas_price, str):
+    if isinstance(gas_price, str) and len(gas_price) > 0:
         command += f" --gas-price {gas_price}"
-    if isinstance(wallet_index, str):
+    if isinstance(wallet_index, str) and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
         command += " --quiet"
@@ -118,12 +118,12 @@ def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet
 def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
     command = "snet account withdraw"
     if not isinstance(agi_amount, str) and agi_amount <= 0:
-        return "Withdraw amount must be greater than 0", 42
-    if isinstance(mpe_address, str):
+        return "Error: Withdraw amount must be greater than 0", 42
+    if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
-    if isinstance(gas_price, str):
+    if isinstance(gas_price, str) and len(gas_price) > 0:
         command += f" --gas-price {gas_price}"
-    if isinstance(wallet_index, str):
+    if isinstance(wallet_index, str) and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
         command += " --quiet"
@@ -136,15 +136,15 @@ def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, ve
 
 def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
     command = "snet account transfer"
-    if not isinstance(reciever_addr, str):
-        return "Please input the reciever address", 42
+    if not isinstance(reciever_addr, str) and len(reciever_addr) > 0:
+        return "ERROR: Please input the reciever address", 42
     if not isinstance(agi_amount, str) and agi_amount <= 0:
-        return "Withdraw amount must be greater than 0", 42
-    if isinstance(mpe_address, str):
+        return "ERROR: Withdraw amount must be greater than 0", 42
+    if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
-    if isinstance(gas_price, str):
+    if isinstance(gas_price, str) and len(gas_price) > 0:
         command += f" --gas-price {gas_price}"
-    if isinstance(wallet_index, str):
+    if isinstance(wallet_index, str) and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
         command += " --quiet"
