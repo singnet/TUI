@@ -36,7 +36,7 @@ class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
         yield Grid(
-            Label("ERROR - " + error_exit_label, id="error_exit_label"),
+            Label(f"ERROR - {error_exit_label}", id="error_exit_label"),
             Button("Exit", id="error_exit_button"),
             id = "error_exit_screen"
         )
@@ -49,7 +49,7 @@ class popup_output_page(Screen):
     def compose(self) -> ComposeResult:
         global popup_output
         yield Grid(
-            Label("INFO - " + popup_output, id="popup_output_label"),
+            Label(f"INFO - {popup_output}", id="popup_output_label"),
             Button("OK", id="output_exit_button"),
             id = "popup_output_screen"
         )
@@ -105,7 +105,7 @@ class create_identity_page(Screen):
         if errCode == 0:
             cur_org = Identity(identity_name=id_name, wallet_priv_key=wallet_info, network=network_select)
             popup_output = stdout
-            self.app.switch_screen(account_page())
+            self.app.switch_screen(identity_page())
             self.app.push_screen(popup_output_page())
         else:
             out = stderr
@@ -191,8 +191,8 @@ class identity_page(Screen):
             else:
                 stdout, stderr, errcode = be.delete_identity_cli(id_name)
                 output = stderr
-                if len(output) == 0:
-                    output = stdout
+                if len(output) == 0 and errcode == 0:
+                    output = f"Identity '{id_name} deleted!'"
                 popup_output = output
                 self.app.switch_screen(identity_page())
                 self.app.push_screen(popup_output_page())
