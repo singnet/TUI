@@ -140,7 +140,7 @@ class account_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
-        elif event.button.id == "identity_settings_button":
+        elif event.button.id == "account_page_identity_settings_button":
             self.app.switch_screen(identity_page())
         elif event.button.id == "account_page_deposit_button":
             # TODO Create deposit popup and push it
