@@ -79,8 +79,8 @@ def nav_sidebar_vert() -> Vertical:
     return ret_vert
 
 def wallet_dict_create():
-    check, stdout, stderr, errCode = check_account_balance()
-    matches = re.findall(r'(\w+):\s*(\S+)', stdout)
+    check, output, errCode = check_account_balance()
+    matches = re.findall(r'(\w+):\s*(\S+)', output)
     return {key: value for key, value in matches}
 
 def create_identity_cli(id_name, wallet_info, network, mnemonic):
@@ -115,7 +115,6 @@ def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet
 
     return run_shell_command(command)
 
-    
 def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
     command = "snet account withdraw"
     if not isinstance(agi_amount, str) and agi_amount <= 0:
