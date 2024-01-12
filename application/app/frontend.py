@@ -104,11 +104,18 @@ class create_identity_page(Screen):
         stdout, stderr, errCode = be.create_identity_cli(id_name, wallet_info, network_select, mnemonic)
         if errCode == 0:
             cur_org = Identity(identity_name=id_name, wallet_priv_key=wallet_info, network=network_select)
-        out = stderr
-        if len(out) == 0:
             out = stdout
-        error_exit_label = out
-        self.app.switch_screen(error_exit_page())
+            if len(out) == 0:
+                out = stderr
+            popup_output = out
+            self.app.switch_screen(account_page())
+            self.app.push_screen(popup_output_page())
+        else:
+            out = stderr
+            if len(out) == 0:
+                out = stdout
+            error_exit_label = out
+            self.app.switch_screen(error_exit_page())
 
 class account_page(Screen):
     def compose(self) -> ComposeResult:
