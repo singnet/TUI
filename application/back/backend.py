@@ -63,6 +63,7 @@ def nav_sidebar_vert() -> Vertical:
                 Button("Account", id="account_page_nav", classes="nav_sidebar_button"),
                 Button("Organization", id="organization_page_nav", classes="nav_sidebar_button"),
                 Button("Services", id="services_page_nav", classes="nav_sidebar_button"),
+                #Button("Misc.", id="misc_page_nav", classes="nav_sidebar_button"),
                 Button("Exit", id="exit_page_nav", classes="nav_sidebar_button"),
                 classes="nav_sidebar",
                 name="nav_sidebar_name",

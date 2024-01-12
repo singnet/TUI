@@ -192,10 +192,78 @@ class identity_page(Screen):
                 stdout, stderr, errcode = be.delete_identity_cli(id_name)
                 output = stderr
                 if len(output) == 0 and errcode == 0:
-                    output = f"Identity '{id_name} deleted!'"
+                    output = f"Identity '{id_name}' deleted!"
+                if len(output) == 0:
+                    output = stdout
                 popup_output = output
                 self.app.switch_screen(identity_page())
                 self.app.push_screen(popup_output_page())
+
+class account_deposit_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Account Deposit Page", id="account_deposit_page_title"),
+                id="account_deposit_page_content"
+            ),
+            id="account_deposit_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+
+class account_withdraw_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Account Deposit Page", id="account_withdraw_page_title"),
+                id="account_withdraw_page_content"
+            ),
+            id="account_withdraw_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+
+class account_transfer_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Account Deposit Page", id="account_transfer_page_title"),
+                id="account_transfer_page_content"
+            ),
+            id="account_transfer_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
 
 
 # TODO Implement entire organization CLI command
