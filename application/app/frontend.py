@@ -9,7 +9,6 @@ import re
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
 popup_output: str
-cur_org: Identity
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -22,12 +21,12 @@ class WelcomeScreen(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global error_exit_label
         if event.button.id == "start_button":
-            cli_installed, stdout1, stderr1, errCode1 = be.check_cli()
-            identity_added, stdout2, stderr2, errCode2 = be.check_account_balance()
+            cli_installed, output, errCode1 = be.check_cli()
+            identity_added, output2, errCode2 = be.check_account_balance()
             if (cli_installed and identity_added):
                 self.app.switch_screen(account_page())
             elif (not cli_installed):
-                error_exit_label  = f"CLI not found, please double check installation and ensure you are running the TUI through the environment the CLI was installed in.\n\nCommand error output: {stderr1}"
+                error_exit_label  = f"CLI not found, please double check installation and ensure you are running the TUI through the environment the CLI was installed in.\n\nCommand error output: {output}"
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
                 self.app.push_screen(create_identity_page())
@@ -62,7 +61,7 @@ class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
             Input(placeholder="Identity Name", id="org_identity_input"),
-            Input(placeholder="Wallet Private Key / 24 word seed phrase (Mnemonic)", id="wallet_info_input"),
+            Input(placeholder="Wallet Private Key / Seed phrase (Mnemonic)", id="wallet_info_input"),
             Select(options=(("Goerli", "Goerli") for line in """Goerli""".splitlines()), prompt="Select Network", id="network_select"),
             RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
             Button("Create Identity", id="create_identity_button"),
@@ -83,9 +82,6 @@ class create_identity_page(Screen):
             elif not isinstance(wallet_info, str):
                 popup_output = "ERROR: Wallet private key / seed phrase must be entered"
                 self.app.push_screen(popup_output_page())
-            elif len(wallet_info) != 24 and mnemonic:
-                popup_output = "ERROR: Seed phrase must be 24 single-word characters"
-                self.app.push_screen(popup_output_page())
             else:
                 if not isinstance(network, str):
                     network = "goerli"
@@ -101,17 +97,15 @@ class create_identity_page(Screen):
         global error_exit_label
         global cur_org
         
-        stdout, stderr, errCode = be.create_identity_cli(id_name, wallet_info, network_select, mnemonic)
+        output, errCode = be.create_identity_cli(id_name, wallet_info, network_select, mnemonic)
         if errCode == 0:
-            cur_org = Identity(identity_name=id_name, wallet_priv_key=wallet_info, network=network_select)
-            popup_output = stdout
+            popup_output = output
+            if len(popup_output) == 0:
+                popup_output = f"Identity '{id_name} created!'"
             self.app.switch_screen(identity_page())
             self.app.push_screen(popup_output_page())
         else:
-            out = stderr
-            if len(out) == 0:
-                out = stdout
-            error_exit_label = out
+            error_exit_label = output
             self.app.switch_screen(error_exit_page())
 
 class account_page(Screen):
@@ -146,18 +140,15 @@ class account_page(Screen):
         elif event.button.id == "account_page_identity_settings_button":
             self.app.switch_screen(identity_page())
         elif event.button.id == "account_page_deposit_button":
-            # TODO Create deposit popup and push it
-            pass
+            self.app.switch_screen(account_deposit_page())
         elif event.button.id == "account_page_withdraw_button":
-            # TODO Create withdraw popup and push it
-            pass
+            self.app.switch_screen(account_withdraw_page())
         elif event.button.id == "account_page_transfer_button":
-            # TODO Create transfer popup and push it
-            pass
+            self.app.switch_screen(account_transfer_page())
 
 class identity_page(Screen):
     def compose(self) -> ComposeResult:
-        idList, listErr, listErrCode = be.run_shell_command("snet identity list")
+        idList, listErrCode = be.run_shell_command("snet identity list")
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
@@ -189,12 +180,9 @@ class identity_page(Screen):
                 popup_output = "ERROR: Please enter the name of the Identity to be deleted"
                 self.app.push_screen(popup_output_page())
             else:
-                stdout, stderr, errcode = be.delete_identity_cli(id_name)
-                output = stderr
+                output, errcode = be.delete_identity_cli(id_name)
                 if len(output) == 0 and errcode == 0:
                     output = f"Identity '{id_name}' deleted!"
-                if len(output) == 0:
-                    output = stdout
                 popup_output = output
                 self.app.switch_screen(identity_page())
                 self.app.push_screen(popup_output_page())
@@ -205,13 +193,30 @@ class account_deposit_page(Screen):
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
-                Label("Account Deposit Page", id="account_deposit_page_title"),
+                Input(placeholder="Amount of AGI tokens to deposit in MPE wallet", id="account_deposit_amount_input"),
+                Input(placeholder="[OPTIONAL] Address of SingularityNetToken contract, if not specified we read address from 'networks'", id="account_deposit_contract_input"),
+                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from 'networks'", id="account_deposit_mpe_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="account_deposit_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="account_deposit_index_input"),
+                RadioButton(label="Quiet transaction printing", id="account_deposit_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="account_deposit_verbose_radio"),
+                Button(label="Deposit", id="account_deposit_confirm_button"),
                 id="account_deposit_page_content"
             ),
             id="account_deposit_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        agi_amount = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_amount_input").value
+        contract_address = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_contract_input").value
+        mpe_address = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_mpe_input").value
+        gas_price = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_gas_input").value
+        wallet_index = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_index_input").value
+        quiet = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_quiet_radio").value
+        verbose = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_verbose_radio").value
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -220,6 +225,10 @@ class account_deposit_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "account_deposit_confirm_button":
+            output, errCode = be.account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 class account_withdraw_page(Screen):
     def compose(self) -> ComposeResult:
@@ -227,13 +236,28 @@ class account_withdraw_page(Screen):
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
-                Label("Account Deposit Page", id="account_withdraw_page_title"),
+                Input(placeholder="Amount of AGI tokens to deposit in MPE wallet", id="account_withdraw_amount_input"),
+                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from 'networks'", id="account_withdraw_mpe_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="account_withdraw_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="account_withdraw_index_input"),
+                RadioButton(label="Quiet transaction printing", id="account_withdraw_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="account_withdraw_verbose_radio"),
+                Button(label="Withdraw", id="account_withdraw_confirm_button"),
                 id="account_withdraw_page_content"
             ),
             id="account_withdraw_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        agi_amount = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_amount_input").value
+        mpe_address = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_mpe_input").value
+        gas_price = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_gas_input").value
+        wallet_index = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_index_input").value
+        quiet = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_quiet_radio").value
+        verbose = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_verbose_radio").value
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -242,6 +266,10 @@ class account_withdraw_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "account_withdraw_confirm_button":
+            output, errCode = be.account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 class account_transfer_page(Screen):
     def compose(self) -> ComposeResult:
@@ -249,13 +277,30 @@ class account_transfer_page(Screen):
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
-                Label("Account Deposit Page", id="account_transfer_page_title"),
+                Input(placeholder="Address of the receiver", id="account_transfer_addr_input"),
+                Input(placeholder="Amount of AGI tokens to be transferred to another account inside MPE wallet", id="account_transfer_amount_input"),
+                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from 'networks'", id="account_transfer_mpe_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="account_transfer_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="account_transfer_index_input"),
+                RadioButton(label="Quiet transaction printing", id="account_transfer_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="account_transfer_verbose_radio"),
+                Button(label="Transfer", id="account_transfer_confirm_button"),
                 id="account_transfer_page_content"
             ),
             id="account_transfer_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        agi_amount = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_amount_input").value
+        reciever_addr = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_addr_input").value
+        mpe_address = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_mpe_input").value
+        gas_price = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_gas_input").value
+        wallet_index = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_index_input").value
+        quiet = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_quiet_radio").value
+        verbose = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_verbose_radio").value
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -264,6 +309,10 @@ class account_transfer_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "account_transfer_confirm_button":
+            output, errCode = be.account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 
 # TODO Implement entire organization CLI command

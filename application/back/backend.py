@@ -9,22 +9,28 @@ import re
 # from web3 import Web3
 # from eth_account import Account
 
-class Identity():
-    def __init__(self, identity_name, network, wallet_priv_key=None, seed_phrase=None) -> None:
-        self.identity_name = identity_name
-        self.network = network
-        self.seed = seed_phrase
-        if wallet_priv_key == None:
-            self.mnemonic = True
-        else:
-            self.mnemonic = False
-
 def run_shell_command(command):
     try:
         result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        return result.stdout, result.stderr, result.returncode
+        
+        stdout, stderr, errCode = result.stdout, result.stderr, result.returncode
+        
+        if errCode == 0:
+            return stdout, errCode
+        elif errCode == 42:
+            return stdout, errCode
+        else:
+            return stderr, errCode 
+        
     except subprocess.CalledProcessError as e:
-        return e.stdout, e.stderr, e.returncode
+        stdout, stderr, errCode = e.stdout, e.stderr, e.returncode
+
+        if errCode == 0:
+            return stdout, errCode
+        elif errCode == 42:
+            return stdout, errCode
+        else:
+            return stderr, errCode 
     
 def run_shell_command_with_input(command, input_text):
     try:
@@ -35,16 +41,16 @@ def run_shell_command_with_input(command, input_text):
         return str(e)
 
 def check_cli():
-    stdout, stderr, errCode = run_shell_command('snet')
-    if "error: the following arguments are required: COMMAND" in stderr:
-        return True, stdout, stderr, errCode
-    return False, stdout, stderr, errCode
+    output, errCode = run_shell_command('snet')
+    if "error: the following arguments are required: COMMAND" in output:
+        return True, output, errCode
+    return False, output, errCode
 
 def check_account_balance():
-    stdout, stderr, errCode = run_shell_command('snet account balance')
-    if "    account:" in stdout:
-        return True, stdout, stderr, errCode
-    return False, stdout, stderr, errCode
+    output, errCode = run_shell_command('snet account balance')
+    if "    account:" in output:
+        return True, output, errCode
+    return False, output, errCode
 
 def dict_create(output: str):
     res = {}
@@ -77,17 +83,77 @@ def wallet_dict_create():
     matches = re.findall(r'(\w+):\s*(\S+)', stdout)
     return {key: value for key, value in matches}
 
-def mpw_wallet_deposit(agi_amount):
-    stdout, stderr, errCode = run_shell_command('snet account deposit {}'.format(agi_amount))
-    return stdout, stderr, errCode
-
 def create_identity_cli(id_name, wallet_info, network, mnemonic):
     if mnemonic:
-        stdout, stderr, errCode = run_shell_command(f"snet identity create {id_name} mnemonic --mnemonic {wallet_info} --network {network}")
+        output, errCode = run_shell_command(f"snet identity create {id_name} mnemonic --mnemonic {wallet_info} --network {network}")
     else:
-        stdout, stderr, errCode = run_shell_command(f"snet identity create {id_name} mnemonic --mnemonic {wallet_info} --network {network}")
-    return stdout, stderr, errCode
+        output, errCode = run_shell_command(f"snet identity create {id_name} key --private-key {wallet_info} --network {network}")
+    return output, errCode
 
 def delete_identity_cli(id_name):
-    stdout, stderr, errCode = run_shell_command(f"snet identity delete {id_name}")
-    return stdout, stderr, errCode
+    output, errCode = run_shell_command(f"snet identity delete {id_name}")
+    return output, errCode
+
+def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose):
+    command = "snet account deposit"
+    if not isinstance(agi_amount, str) and agi_amount <= 0:
+        return "Deposit amount must be greater than 0", 42
+    if isinstance(contract_address, str):
+        command += f" --singularitynettoken-at {contract_address}"
+    if isinstance(mpe_address, str):
+        command += f" --multipartyescrow-at {mpe_address}"
+    if isinstance(gas_price, str):
+        command += f" --gas-price {gas_price}"
+    if isinstance(wallet_index, str):
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+    command += f" {agi_amount}"
+
+    return run_shell_command(command)
+
+    
+def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
+    command = "snet account withdraw"
+    if not isinstance(agi_amount, str) and agi_amount <= 0:
+        return "Withdraw amount must be greater than 0", 42
+    if isinstance(mpe_address, str):
+        command += f" --multipartyescrow-at {mpe_address}"
+    if isinstance(gas_price, str):
+        command += f" --gas-price {gas_price}"
+    if isinstance(wallet_index, str):
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+    command += f" {agi_amount}"
+
+    return run_shell_command(command)
+
+def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
+    command = "snet account transfer"
+    if not isinstance(reciever_addr, str):
+        return "Please input the reciever address", 42
+    if not isinstance(agi_amount, str) and agi_amount <= 0:
+        return "Withdraw amount must be greater than 0", 42
+    if isinstance(mpe_address, str):
+        command += f" --multipartyescrow-at {mpe_address}"
+    if isinstance(gas_price, str):
+        command += f" --gas-price {gas_price}"
+    if isinstance(wallet_index, str):
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+    command += f" {reciever_addr}"
+    command += f" {agi_amount}"
+
+    return run_shell_command(command)
+    
