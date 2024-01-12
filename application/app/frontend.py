@@ -190,18 +190,12 @@ class identity_page(Screen):
                 self.app.push_screen(popup_output_page())
             else:
                 stdout, stderr, errcode = be.delete_identity_cli(id_name)
-                if errcode == 0:
-                    # TODO If identity deleted successfully
-                    pass
-                else:
-                    # TODO If unsuccessful to delete identity
-                    output = stderr
-                    if output == "":
-                        output = stdout
-                    popup_output = output
-                    self.app.switch_screen(identity_page())
-                    self.app.push_screen(popup_output_page())
-                    pass
+                output = stderr
+                if output == "":
+                    output = stdout
+                popup_output = output
+                self.app.switch_screen(identity_page())
+                self.app.push_screen(popup_output_page())
 
 
 # TODO Implement entire organization CLI command
