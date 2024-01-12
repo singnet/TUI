@@ -104,10 +104,7 @@ class create_identity_page(Screen):
         stdout, stderr, errCode = be.create_identity_cli(id_name, wallet_info, network_select, mnemonic)
         if errCode == 0:
             cur_org = Identity(identity_name=id_name, wallet_priv_key=wallet_info, network=network_select)
-            out = stdout
-            if len(out) == 0:
-                out = stderr
-            popup_output = out
+            popup_output = stdout
             self.app.switch_screen(account_page())
             self.app.push_screen(popup_output_page())
         else:
