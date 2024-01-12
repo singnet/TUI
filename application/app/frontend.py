@@ -30,7 +30,7 @@ class WelcomeScreen(Screen):
                 error_exit_label  = f"CLI not found, please double check installation and ensure you are running the TUI through the environment the CLI was installed in.\n\nCommand error output: {stderr1}"
                 self.app.switch_screen(error_exit_page())
             elif (not identity_added):
-                self.app.switch_screen(create_identity_page())
+                self.app.push_screen(create_identity_page())
 
 class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
@@ -66,6 +66,7 @@ class create_identity_page(Screen):
             Select(options=(("Goerli", "Goerli") for line in """Goerli""".splitlines()), prompt="Select Network", id="network_select"),
             RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
             Button("Create Identity", id="create_identity_button"),
+            Button("Back", id="create_identity_back_button"),
             id="create_identity"
         )
 
@@ -91,6 +92,8 @@ class create_identity_page(Screen):
                 else:
                     network = network.lower()
                 self.create_identity(id_name, mnemonic, wallet_info, network)
+        elif event.button.id == "create_identity_back_button":
+            self.app.pop_screen()
                 
     
     def create_identity(self, id_name, mnemonic, wallet_info = None, network_select = "goerli"):
@@ -159,9 +162,9 @@ class identity_page(Screen):
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
-                Label(f"Identity List:\n{idList}", id="identity_page_title"),
+                Label(f"Identity List:\n\n{idList}", id="identity_page_title"),
                 Button("Create Identity Page", id="identity_page_create_identity_button"),
-                Input("Identity name to delete", id="identity_page_delete_input"),
+                Input(placeholder="Identity name to delete", id="identity_page_delete_input"),
                 Button("Delete Identity", id="identity_page_delete_identity_button"),
                 id="identity_page_content"
             ),
@@ -179,9 +182,9 @@ class identity_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "identity_page_create_identity_button":
-            self.app.switch_screen(create_identity_page())
+            self.app.push_screen(create_identity_page())
         elif event.button.id == "identity_page_delete_identity_button":
-            id_name = self.get_child_by_id("identity_page").get_child_by_id("identity_page_delete_input").value
+            id_name = self.get_child_by_id("identity_page").get_child_by_id("identity_page_content").get_child_by_id("identity_page_delete_input").value
             if not isinstance(id_name, str) or id_name == "":
                 popup_output = "ERROR - Please enter the name of the Identity to be deleted"
                 self.app.push_screen(popup_output_page())
