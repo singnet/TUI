@@ -77,7 +77,7 @@ class create_identity_page(Screen):
             network = self.get_child_by_id("create_identity").get_child_by_id("network_select").value
             wallet_info = self.get_child_by_id("create_identity").get_child_by_id("wallet_info_input").value
             mnemonic = self.get_child_by_id("create_identity").get_child_by_type(RadioButton).value
-            if not isinstance(id_name, str) or id_name == "":
+            if not isinstance(id_name, str) or len(id_name) == 0:
                 popup_output = "ERROR: Organization Identity cannot be blank."
                 self.app.push_screen(popup_output_page())
             elif not isinstance(wallet_info, str):
@@ -188,13 +188,13 @@ class identity_page(Screen):
             self.app.push_screen(create_identity_page())
         elif event.button.id == "identity_page_delete_identity_button":
             id_name = self.get_child_by_id("identity_page").get_child_by_id("identity_page_content").get_child_by_id("identity_page_delete_input").value
-            if not isinstance(id_name, str) or id_name == "":
+            if not isinstance(id_name, str) or len(id_name) == 0:
                 popup_output = "ERROR: Please enter the name of the Identity to be deleted"
                 self.app.push_screen(popup_output_page())
             else:
                 stdout, stderr, errcode = be.delete_identity_cli(id_name)
                 output = stderr
-                if output == "":
+                if len(output) == 0:
                     output = stdout
                 popup_output = output
                 self.app.switch_screen(identity_page())
