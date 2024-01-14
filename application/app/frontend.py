@@ -389,7 +389,7 @@ class metadata_page(Screen):
 # TODO Implement printing metadata page
 class print_metadata_page(Screen):
     def compose(self) -> ComposeResult:
-        output, errCode = be.print_metadata()
+        output, errCode = be.print_org_metadata()
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
@@ -427,7 +427,7 @@ class init_metadata_page(Screen):
                 Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="init_metadata_registry_input"),
                 Select(options=((line, line) for line in """Individual\nOrganization""".splitlines()), prompt="Select Organization Type", id="org_type_select"),
                 Button(label="Initialize", id="init_metadata_confirm_button"),
-                Button(label="Cancel", id="init_metadata_back_button"),
+                Button(label="Back", id="init_metadata_back_button"),
                 id="init_metadata_page_content"
             ),
             id="init_metadata_page"
@@ -452,7 +452,7 @@ class init_metadata_page(Screen):
         elif event.button.id == "init_metadata_back_button":
             self.app.pop_screen()
         elif event.button.id == "init_metadata_confirm_button":
-            output, errCode = be.init_metadata(org_name, org_id, org_type, reg_addr)
+            output, errCode = be.init_org_metadata(org_name, org_id, org_type, reg_addr)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -464,12 +464,25 @@ class add_desc_page(Screen):
             be.nav_sidebar_vert(),
             Grid(
                 Label("Add Metadata Description Page", id="add_desc_page_title"),
+                Input(placeholder="Description about organization", id="add_desc_long_input"),
+                Input(placeholder="Short description about organization", id="add_desc_short_input"),
+                Input(placeholder="URL for Organization", id="add_desc_url_input"),
+                Input("[OPTIONAL] Service metadata json file path (default $HOME/service_metadata.json)", id="add_desc_metadata_input"),
+                Button(label="Add Description", id="add_desc_confirm_button"),
+                Button(label="Back", id="add_desc_back_button"),
                 id="add_desc_page_content"
             ),
             id="add_desc_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        
+        long_desc = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("add_desc_long_input").value
+        short_desc = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("add_desc_short_input").value
+        url = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("add_desc_url_input").value
+        meta_path = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("add_desc_metadata_input").value
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -478,6 +491,12 @@ class add_desc_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "init_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "init_metadata_confirm_button":
+            output, errCode = be.add_org_metadata_desc(long_desc, short_desc, url, meta_path)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 # TODO Implement manage assets page
 class manage_assets_page(Screen):

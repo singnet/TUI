@@ -123,6 +123,11 @@ def delete_identity_cli(id_name):
     return output, errCode
 
 def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose):
+    # snet account deposit [-h] [--singularitynettoken-at SINGULARITYNETTOKEN_AT]
+    #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                  [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                  [--yes] [--quiet | --verbose]
+    #                  AMOUNT
     command = "snet account deposit"
     if not isinstance(agi_amount, str) and agi_amount <= 0:
         return "ERROR: Deposit amount must be greater than 0", 42
@@ -144,6 +149,10 @@ def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet
     return run_shell_command(command)
 
 def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
+    # snet account withdraw [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                   [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                   [--yes] [--quiet | --verbose]
+    #                   AMOUNT
     command = "snet account withdraw"
     if not isinstance(agi_amount, str) and agi_amount <= 0:
         return "Error: Withdraw amount must be greater than 0", 42
@@ -163,6 +172,10 @@ def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, ve
     return run_shell_command(command)
 
 def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
+    # snet account transfer [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                   [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                   [--yes] [--quiet | --verbose]
+    #                   RECEIVER AMOUNT
     command = "snet account transfer"
     if not isinstance(reciever_addr, str) and len(reciever_addr) > 0:
         return "ERROR: Please input the reciever address", 42
@@ -184,14 +197,17 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
 
     return run_shell_command(command)
 
-def print_metadata():
+def print_org_metadata():
     if os.path.exists(f"{os.environ['HOME']}/snet/organization_metadata.json"):
         output, errCode = run_shell_command(f"cat {os.environ['HOME']}/snet/organization_metadata.json")
         return output, errCode
     else:
         return f"ERROR: Organization metdata not found at '{os.environ['HOME']}/snet', please initialize metadata first", 42
 
-def init_metadata(org_name, org_id, org_type, reg_addr):
+def init_org_metadata(org_name, org_id, org_type, reg_addr):
+    # snet organization metadata-init [-h] [--registry-at REGISTRY_AT]
+    #                             [--metadata-file METADATA_FILE]
+    #                             ORG_NAME ORG_ID ORG_TYPE
     snet_dir = f"{os.environ['HOME']}/snet"
     if os.path.exists(f"{snet_dir}/organization_metadata.json"):
         return f"ERROR: Organization metdata already exists at {snet_dir}/organization_metadata.json'", 42
@@ -210,10 +226,87 @@ def init_metadata(org_name, org_id, org_type, reg_addr):
         command += f" {org_name}"
         command += f" {org_id}"
         command += f" {org_type}"
-        # Execute the command in the "$HOME/snet" directory
         output, errCode = run_shell_command(command, cwd=snet_dir)
         if len(output) == 0 and errCode == 0:
             output = f"Successfully initialized organization metadata at '{snet_dir}'"
         return output, errCode
     else:
         return f"ERROR: Cannot find work directory '{snet_dir}'", 1
+
+# TODO add_org_metadata_desc
+def add_org_metadata_desc(long_desc, short_desc, url, meta_path):
+    # snet organization metadata-add-description [-h] [--description DESCRIPTION]
+    #                                        [--short-description SHORT_DESCRIPTION]
+    #                                        [--url URL]
+    #                                        [--metadata-file METADATA_FILE]
+    command = "snet organization metadata-add-description"
+
+    if long_desc:
+        command += f" --description \"{long_desc}\""
+    if short_desc:
+        command += f" --short-description \"{short_desc}\""
+
+    # Adding the URL if provided
+    if url:
+        command += f" --url {url}"
+
+    if meta_path:
+        command += f" --metadata-file {meta_path}"
+
+    # Running the command and returning the output
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+# TODO add_org_metadata_assets
+def add_org_metadata_assets():
+    # snet organization metadata-add-assets [-h] [--metadata-file METADATA_FILE]
+    #                                   ASSET_FILE_PATH hero_image
+    pass
+
+# TODO remove_org_metadata_assets
+def remove_org_metadata_assets():
+    pass
+
+# TODO remove_all_org_metadata_assets
+def remove_all_org_metadata_assets():
+    pass
+
+# TODO metadata-add-contact
+def add_org_metadata_contact():
+    pass
+
+# TODO metadata-remove-contacts
+def remove_org_metadata_contacts():
+    pass
+
+# TODO info
+def print_organization_info():
+    pass
+
+# TODO create
+def create_organization():
+    pass
+
+# TODO update-metadata 
+def update_org_metadata():
+    pass
+
+# TODO change-owner
+def change_organization_owner():
+    pass
+
+# TODO add-members
+def add_org_metadata_members():
+    pass
+
+# TODO rem-members
+def remove_org_metadata_members():
+    pass
+
+# TODO delete
+def delete_organization():
+    pass
+
+# TODO custom command
+def custom_command(command):
+    pass
