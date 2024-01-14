@@ -236,7 +236,6 @@ def init_org_metadata(org_name, org_id, org_type, reg_addr):
     else:
         return f"ERROR: Cannot find work directory '{snet_dir}'", 1
 
-# TODO add_org_metadata_desc
 def add_org_metadata_desc(long_desc, short_desc, url, meta_path):
     # snet organization metadata-add-description [-h] [--description DESCRIPTION]
     #                                        [--short-description SHORT_DESCRIPTION]
@@ -259,7 +258,6 @@ def add_org_metadata_desc(long_desc, short_desc, url, meta_path):
         return "Description successfully added!", 0
     return output, errCode
 
-# TODO add_org_metadata_assets
 def add_org_metadata_assets(asset_file_path, metadata_file_name):
     # snet organization metadata-add-assets [-h] [--metadata-file METADATA_FILE]
     #                                   ASSET_FILE_PATH hero_image
@@ -277,7 +275,6 @@ def add_org_metadata_assets(asset_file_path, metadata_file_name):
     output, errCode = run_shell_command(command, cwd=snet_dir)
     return output, errCode
 
-# TODO remove_all_org_metadata_assets
 def remove_all_org_metadata_assets(metadata_file_name):
     # snet organization metadata-remove-all-assets [-h]
     #                                          [--metadata-file METADATA_FILE]
@@ -291,18 +288,37 @@ def remove_all_org_metadata_assets(metadata_file_name):
     return output, errCode
 
 # TODO metadata-add-contact
-def add_org_metadata_contact():
+def add_org_metadata_contact(contact_type, phone, email, metadata_file):
     # snet organization metadata-add-contact [-h] [--phone PHONE] [--email EMAIL]
     #                                    [--metadata-file METADATA_FILE]
     #                                    contact_type
-    pass
+    global snet_dir
+
+    if not contact_type:
+        return "ERROR: Contact type is required", 42
+    command = f"snet organization metadata-add-contact {contact_type}"
+    if phone:
+        command += f" --phone {phone}"
+    if email:
+        command += f" --email {email}"
+    if metadata_file:
+        command += f" --metadata-file {metadata_file}"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    return output, errCode
 
 # TODO metadata-remove-contacts
-def remove_org_metadata_contacts():
-    # snet organization metadata-remove-contacts [-h]
-    #                                        [--metadata-file METADATA_FILE]
-    #                                        CONTACT_TYPE
-    pass
+def remove_org_metadata_contacts(metadata_file):
+    # snet organization metadata-remove-all-contacts [-h]
+    #                                            [--metadata-file METADATA_FILE]
+    global snet_dir
+
+    command = "snet organization metadata-remove-all-contacts"
+    if metadata_file:
+        command += f" --metadata-file {metadata_file}"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    return output, errCode
 
 # TODO info
 def print_organization_info():

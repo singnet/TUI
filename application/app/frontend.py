@@ -387,6 +387,8 @@ class org_metadata_page(Screen):
             self.app.push_screen(init_org_metadata_page())
         elif event.button.id == "org_metadata_add_desc_button":
             self.app.push_screen(add_org_metadata_desc_page())
+        elif event.button.id == "org_metadata_add_desc_button":
+            self.app.push_screen(manage_org_contacts_page())
 
 # TODO Implement printing metadata page
 class print_org_metadata_page(Screen):
@@ -539,25 +541,39 @@ class manage_org_assets_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
         elif event.button.id == "manage_org_assets_remove_button":
-            output, errCode = be.add_org_metadata_assets(metadata_file_name)
+            output, errCode = be.remove_all_org_metadata_assets(metadata_file_name)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
 
 # TODO Implement manage contacts page
-class manage_contacts_page(Screen):
+class manage_org_contacts_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
-                Label("Manage Contacts Page", id="manage_contacts_page_title"),
-                id="manage_contacts_page_content"
+                Label("Manage Contacts Page", id="manage_org_contacts_page_title"),
+                Input(placeholder="Contact type of organization", id="manage_org_contacts_type_input"),
+                Input(placeholder="[Technically OPTIONAL] Phone number for contact with country code", id="manage_org_contacts_phone_input"),
+                Input(placeholder="[Technically OPTIONAL] Email ID for contact", id="manage_org_contacts_email_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="manage_org_contacts_meta_input"),
+                Button(label="Add contact", id="manage_org_contacts_confirm_button"),
+                Button(label="Remove all contacts", id="manage_org_contacts_remove_button"),
+                Button(label="Back", id="manage_org_contacts_back_button"),
+                id="manage_org_contacts_page_content"
             ),
-            id="manage_contacts_page"
+            id="manage_org_contacts_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        contact_type = self.get_child_by_id("manage_org_contacts_page").get_child_by_id("manage_org_contacts_page_content").get_child_by_id("manage_org_contacts_type_input").value
+        phone = self.get_child_by_id("manage_org_contacts_page").get_child_by_id("manage_org_contacts_page_content").get_child_by_id("manage_org_contacts_phone_input").value
+        email = self.get_child_by_id("manage_org_contacts_page").get_child_by_id("manage_org_contacts_page_content").get_child_by_id("manage_org_contacts_email_input").value
+        metadata_file = self.get_child_by_id("manage_org_contacts_page").get_child_by_id("manage_org_contacts_page_content").get_child_by_id("manage_org_contacts_meta_input").value
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page()) 
         elif event.button.id == "organization_page_nav":
@@ -566,6 +582,16 @@ class manage_contacts_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav": 
             self.app.push_screen(exit_page())
+        elif event.button.id == "manage_org_contacts_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "manage_org_contacts_confirm_button":
+            output, errCode = be.add_org_metadata_contact(contact_type, phone, email, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        elif event.button.id == "manage_org_contacts_remove_button":
+            output, errCode = be.remove_org_metadata_contacts(metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 
 # TODO Implement entire service CLI command
