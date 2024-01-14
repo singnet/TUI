@@ -9,6 +9,8 @@ import re
 error_exit_label: str
 popup_output: str
 
+# TODO Ensure all "command" screens are actually popups, and add back buttons.
+
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
@@ -129,7 +131,7 @@ class account_page(Screen):
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account_page_nav":
-            pass
+            self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
@@ -322,6 +324,10 @@ class organization_page(Screen):
             be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Page", id="organization_page_title"),
+                Button(label="Metadata", id="organization_page_metadata_button"),
+                Button(label="Groups", id="organization_page_groups_button"),
+                Button(label="Members", id="organization_page_members_button"),
+                Button(label="Manage", id="organization_page_create_delete_button"),
                 id="organization_page_content"
             ),
             id="organization_page"
@@ -331,11 +337,174 @@ class organization_page(Screen):
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            pass
+            self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "organization_page_metadata_button":
+            self.app.push_screen()
+        elif event.button.id == "organization_page_groups_button":
+            self.app.push_screen()
+        elif event.button.id == "organization_page_members_button":
+            self.app.push_screen()
+        elif event.button.id == "organization_page_create_delete_button":
+            self.app.push_screen()
+
+class metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Metadata Page", id="metadata_page_title"),
+                Button(label="My Metadata", id="metadata_page_print_button"),
+                Button(label="Initialize Metadata", id="metadata_page_init_button"),
+                Button(label="Add Description", id="metadata_add_desc_button"),
+                Button(label="Manage Assets", id="metadata_assets_button"),
+                Button(label="Manage Contacts", id="metadata_contacts_button"),
+                Button(label="Update Metadata", id="metadata_update_button"),
+                Button(label="Back", id="metadata_back_button"),
+                id="metadata_page_content"
+            ),
+            id="metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "metadata_back_button":
+            self.app.pop_screen()
+
+# TODO Implement printing metadata page
+class print_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        output, errCode = be.print_metadata()
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("My Metadata Page", id="print_metadata_page_title"),
+                Label(f"\n\n{output}\n\n", id="print_metadata_metadata_content"),
+                Button(label="Back", id="print_metadata_back_button"),
+                id="print_metadata_page_content"
+            ),
+            id="print_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "print_metadata_back_button":
+            self.app.pop_screen()
+
+# TODO Implement init metadata page
+class init_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Initialize Metadata Page", id="init_metadata_page_title"),
+                Input(placeholder="Input Organization name (The one you defined during the ETCD setup)", id="init_metadata_org_name_input"),
+                Input(placeholder="Define your unique organization ID (You must reuse this in your Daemon configuration)", id="init_metadata_org_id_input"),
+                Select(options=((line, line) for line in """Individual\nOrganization""".splitlines()), prompt="Select Org. Type", id="org_type_select"),
+                id="init_metadata_page_content"
+            ),
+            id="init_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+
+# TODO Implement add desc page
+class add_desc_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Add Metadata Description Page", id="add_desc_page_title"),
+                id="add_desc_page_content"
+            ),
+            id="add_desc_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+
+# TODO Implement manage assets page
+class manage_assets_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Manage Assets Page", id="manage_assets_page_title"),
+                id="manage_assets_page_content"
+            ),
+            id="manage_assets_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+
+# TODO Implement manage contacts page
+class manage_contacts_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Manage Contacts Page", id="manage_contacts_page_title"),
+                id="manage_contacts_page_content"
+            ),
+            id="manage_contacts_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page()) 
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav": 
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav": 
+            self.app.push_screen(exit_page())
+
 
 # TODO Implement entire service CLI command
 class services_page(Screen):
@@ -356,7 +525,7 @@ class services_page(Screen):
         elif event.button.id == "organization_page_nav":
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
-            pass
+            self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
 

@@ -6,8 +6,34 @@ from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import Screen
 from time import sleep
 import re
+import os
 # from web3 import Web3
 # from eth_account import Account
+
+work_dir = "$HOME/snet"
+
+# TODO
+class Identity():
+    def __init__(self, identity_name, network, wallet_priv_key=None, seed_phrase=None) -> None:
+        self.identity_name = identity_name
+        self.network = network
+        self.seed = seed_phrase
+        if wallet_priv_key == None:
+            self.mnemonic = True
+        else:
+            self.mnemonic = False
+# TODO
+class Organization():
+    def __init__(self, org_name, org_id, org_type, org_email, org_website, org_description, org_assets, org_owner, org_members) -> None:
+        self.org_name: str = org_name
+        self.org_id: str = org_id
+        self.org_type: str = org_type
+        self.org_email: str = org_email
+        self.org_website: str = org_website
+        self.org_description: str = org_description
+        self.org_assets: {str, str} = org_assets
+        self.org_owner: Identity = org_owner
+        self.org_members: [Identity] = org_members
 
 def run_shell_command(command):
     try:
@@ -155,4 +181,13 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
     command += f" {agi_amount}"
 
     return run_shell_command(command)
+
+# TODO
+def print_metadata():
+    global work_dir
+    if os.path.exists(f"{work_dir}/organization_metadata.json"):
+        output, errCode = run_shell_command(f"cat {work_dir}/organization_metadata.json")
+        return output, errCode
+    else:
+        return f"ERROR: Organization metdata not found at '{work_dir}', please initialize metadata first", 42
     
