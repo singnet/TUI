@@ -181,21 +181,21 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
     return run_shell_command(command)
 
 def print_metadata():
-    if os.path.exists(f"{os.environ('$HOME')}/snet/organization_metadata.json"):
-        output, errCode = run_shell_command(f"cat {os.environ('$HOME')}/snet/organization_metadata.json")
+    if os.path.exists(f"{os.environ['HOME']}/snet/organization_metadata.json"):
+        output, errCode = run_shell_command(f"cat {os.environ['HOME']}/snet/organization_metadata.json")
         return output, errCode
     else:
-        return f"ERROR: Organization metdata not found at '{os.environ('$HOME')}/snet', please initialize metadata first", 42
+        return f"ERROR: Organization metdata not found at '{os.environ['HOME']}/snet', please initialize metadata first", 42
 
 def init_metadata(org_name, org_id, org_type, reg_addr):
     # snet organization metadata-init [-h] [--registry-at REGISTRY_AT]
     #                             [--metadata-file METADATA_FILE]
     #                             ORG_NAME ORG_ID ORG_TYPE
 
-    if os.path.exists(f"{os.environ('$HOME')}/snet/organization_metadata.json"):
-        return f"ERROR: Organization metdata already exists at {os.environ('$HOME')}/snet/organization_metadata.json'", 42
-    elif os.path.exists(f"{os.environ('$HOME')}/snet"):
-        run_shell_command(f"cd {os.environ('$HOME')}/snet")
+    if os.path.exists(f"{os.environ['HOME']}/snet/organization_metadata.json"):
+        return f"ERROR: Organization metdata already exists at {os.environ['HOME']}/snet/organization_metadata.json'", 42
+    elif os.path.exists(f"{os.environ['HOME']}/snet"):
+        run_shell_command(f"cd {os.environ['HOME']}/snet")
         command = "snet organization metadata-init"
         if org_type == Select.BLANK or not isinstance(org_type, str):
             return "ERROR: Please select an organization type", 42
@@ -213,4 +213,4 @@ def init_metadata(org_name, org_id, org_type, reg_addr):
         output, errCode = run_shell_command(command)
         return output, errCode
     else:
-        return f"ERROR: Cannot find work directory '{os.environ('$HOME')}/snet'", 1
+        return f"ERROR: Cannot find work directory '{os.environ['HOME']}/snet'", 1
