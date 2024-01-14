@@ -36,7 +36,7 @@ class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
         yield Grid(
-            Label(f"ERROR - {error_exit_label}", id="error_exit_label"),
+            Label(f"{error_exit_label}", id="error_exit_label"),
             Button("Exit", id="error_exit_button"),
             id = "error_exit_screen"
         )
@@ -49,7 +49,7 @@ class popup_output_page(Screen):
     def compose(self) -> ComposeResult:
         global popup_output
         yield Grid(
-            Label(f"INFO - {popup_output}", id="popup_output_label"),
+            Label(f"{popup_output}", id="popup_output_label"),
             Button("OK", id="output_exit_button"),
             id = "popup_output_screen"
         )
@@ -84,7 +84,7 @@ class create_identity_page(Screen):
                 popup_output = "ERROR: Wallet private key / seed phrase must be entered"
                 self.app.push_screen(popup_output_page())
             else:
-                if not isinstance(network, str):
+                if network == Select.BLANK:
                     network = "goerli"
                 else:
                     network = network.lower()
@@ -424,14 +424,23 @@ class init_metadata_page(Screen):
                 Label("Initialize Metadata Page", id="init_metadata_page_title"),
                 Input(placeholder="Input Organization name (The one you defined during the ETCD setup)", id="init_metadata_org_name_input"),
                 Input(placeholder="Define your unique organization ID (You must reuse this in your Daemon configuration)", id="init_metadata_org_id_input"),
-                Select(options=((line, line) for line in """Individual\nOrganization""".splitlines()), prompt="Select Org. Type", id="org_type_select"),
-                Button(label="Back", id="init_metadata_back_button"),
+                Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="init_metadata_registry_input"),
+                Select(options=((line, line) for line in """Individual\nOrganization""".splitlines()), prompt="Select Organization Type", id="org_type_select"),
+                Button(label="Initialize", id="init_metadata_confirm_button"),
+                Button(label="Cancel", id="init_metadata_back_button"),
                 id="init_metadata_page_content"
             ),
             id="init_metadata_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        
+        org_name = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("init_metadata_org_name_input").value
+        org_id = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("init_metadata_org_id_input").value
+        reg_addr = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("init_metadata_registry_input").value
+        org_type = self.get_child_by_id("init_metadata_page").get_child_by_id("init_metadata_page_content").get_child_by_id("org_type_select").value
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -442,6 +451,10 @@ class init_metadata_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "init_metadata_back_button":
             self.app.pop_screen()
+        elif event.button.id == "init_metadata_confirm_button":
+            output, errCode = be.init_metadata(org_name, org_id, org_type, reg_addr)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 # TODO Implement add desc page
 class add_desc_page(Screen):

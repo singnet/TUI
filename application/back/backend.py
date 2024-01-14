@@ -182,7 +182,6 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
 
     return run_shell_command(command)
 
-# TODO
 def print_metadata():
     global work_dir
     if os.path.exists(f"{work_dir}/organization_metadata.json"):
@@ -190,4 +189,31 @@ def print_metadata():
         return output, errCode
     else:
         return f"ERROR: Organization metdata not found at '{work_dir}', please initialize metadata first", 42
-    
+
+def init_metadata(org_name, org_id, org_type, reg_addr):
+    # snet organization metadata-init [-h] [--registry-at REGISTRY_AT]
+    #                             [--metadata-file METADATA_FILE]
+    #                             ORG_NAME ORG_ID ORG_TYPE
+    global work_dir
+    if os.path.exists(f"{work_dir}/organization_metadata.json"):
+        return f"ERROR: Organization metdata already exists at '{work_dir}/organization_metadata.json'", 42
+    elif os.path.exists(f"{work_dir}"):
+        run_shell_command(f"cd {work_dir}")
+        command = "snet organization metadata-init"
+        if org_type == Select.BLANK or not isinstance(org_type, str):
+            return "ERROR: Please select an organization type", 42
+        else:
+            org_type = org_type.lower()
+        if org_name == None or len(org_name) == 0:
+            return "ERROR: Organization name is required", 42
+        if org_id == None or len(org_id) == 0:
+            return "ERROR: Organization identity is required", 42
+        if isinstance(reg_addr, str) and len(reg_addr) > 0:
+            command += f" --registry-at {reg_addr}"
+        command += f" {org_name}"
+        command += f" {org_id}"
+        command += f" {org_type}"
+        output, errCode = run_shell_command(command)
+        return output, errCode
+    else:
+        return f"ERROR: Cannot find work directory '{work_dir}", 1
