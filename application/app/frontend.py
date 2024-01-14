@@ -421,6 +421,7 @@ class init_metadata_page(Screen):
                 Input(placeholder="Input Organization name (The one you defined during the ETCD setup)", id="init_metadata_org_name_input"),
                 Input(placeholder="Define your unique organization ID (You must reuse this in your Daemon configuration)", id="init_metadata_org_id_input"),
                 Select(options=((line, line) for line in """Individual\nOrganization""".splitlines()), prompt="Select Org. Type", id="org_type_select"),
+                Button(label="Back", id="init_metadata_back_button"),
                 id="init_metadata_page_content"
             ),
             id="init_metadata_page"
@@ -435,6 +436,8 @@ class init_metadata_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "init_metadata_back_button":
+            self.app.pop_screen()
 
 # TODO Implement add desc page
 class add_desc_page(Screen):
