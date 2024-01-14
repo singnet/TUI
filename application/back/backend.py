@@ -285,6 +285,9 @@ def remove_all_org_metadata_assets(metadata_file_name):
         command += f" --metadata-file {metadata_file_name}"
 
     output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Successfully deleted all assets!"
+
     return output, errCode
 
 # TODO metadata-add-contact
@@ -305,6 +308,8 @@ def add_org_metadata_contact(contact_type, phone, email, metadata_file):
         command += f" --metadata-file {metadata_file}"
 
     output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Successfully added contact!"
     return output, errCode
 
 # TODO metadata-remove-contacts
@@ -318,6 +323,8 @@ def remove_org_metadata_contacts(metadata_file):
         command += f" --metadata-file {metadata_file}"
 
     output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Successfully deleted all contacts!"
     return output, errCode
 
 # TODO info
