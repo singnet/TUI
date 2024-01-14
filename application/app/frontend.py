@@ -343,13 +343,13 @@ class organization_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "organization_page_metadata_button":
-            self.app.push_screen()
-        elif event.button.id == "organization_page_groups_button":
-            self.app.push_screen()
-        elif event.button.id == "organization_page_members_button":
-            self.app.push_screen()
-        elif event.button.id == "organization_page_create_delete_button":
-            self.app.push_screen()
+            self.app.push_screen(metadata_page())
+        # elif event.button.id == "organization_page_groups_button":
+        #     self.app.push_screen()
+        # elif event.button.id == "organization_page_members_button":
+        #     self.app.push_screen()
+        # elif event.button.id == "organization_page_create_delete_button":
+        #     self.app.push_screen()
 
 class metadata_page(Screen):
     def compose(self) -> ComposeResult:
