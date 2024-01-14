@@ -33,9 +33,13 @@ class Organization():
         self.org_owner: Identity = org_owner
         self.org_members: [Identity] = org_members
 
-def run_shell_command(command):
+def run_shell_command(command, cwd=None):
     try:
-        result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if cwd != None:
+            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
+        else:
+            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         
         stdout, stderr, errCode = result.stdout, result.stderr, result.returncode
         
@@ -188,14 +192,10 @@ def print_metadata():
         return f"ERROR: Organization metdata not found at '{os.environ['HOME']}/snet', please initialize metadata first", 42
 
 def init_metadata(org_name, org_id, org_type, reg_addr):
-    # snet organization metadata-init [-h] [--registry-at REGISTRY_AT]
-    #                             [--metadata-file METADATA_FILE]
-    #                             ORG_NAME ORG_ID ORG_TYPE
-
-    if os.path.exists(f"{os.environ['HOME']}/snet/organization_metadata.json"):
-        return f"ERROR: Organization metdata already exists at {os.environ['HOME']}/snet/organization_metadata.json'", 42
-    elif os.path.exists(f"{os.environ['HOME']}/snet"):
-        run_shell_command(f"cd {os.environ['HOME']}/snet")
+    snet_dir = f"{os.environ['HOME']}/snet"
+    if os.path.exists(f"{snet_dir}/organization_metadata.json"):
+        return f"ERROR: Organization metdata already exists at {snet_dir}/organization_metadata.json'", 42
+    elif os.path.exists(snet_dir):
         command = "snet organization metadata-init"
         if org_type == Select.BLANK or not isinstance(org_type, str):
             return "ERROR: Please select an organization type", 42
@@ -210,7 +210,8 @@ def init_metadata(org_name, org_id, org_type, reg_addr):
         command += f" {org_name}"
         command += f" {org_id}"
         command += f" {org_type}"
-        output, errCode = run_shell_command(command)
+        # Execute the command in the "$HOME/snet" directory
+        output, errCode = run_shell_command(command, cwd=snet_dir)
         return output, errCode
     else:
-        return f"ERROR: Cannot find work directory '{os.environ['HOME']}/snet'", 1
+        return f"ERROR: Cannot find work directory '{snet_dir}'", 1
