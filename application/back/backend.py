@@ -255,28 +255,53 @@ def add_org_metadata_desc(long_desc, short_desc, url, meta_path):
         command += f" --metadata-file {meta_path}"
 
     output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        return "Description successfully added!", 0
     return output, errCode
 
 # TODO add_org_metadata_assets
-def add_org_metadata_assets():
+def add_org_metadata_assets(asset_file_path, metadata_file_name):
     # snet organization metadata-add-assets [-h] [--metadata-file METADATA_FILE]
     #                                   ASSET_FILE_PATH hero_image
-    pass
+    global snet_dir
 
-# TODO remove_org_metadata_assets
-def remove_org_metadata_assets():
-    pass
+    if not asset_file_path:
+        return "ERROR: Asset file path is required", 42
+
+    command = "snet organization metadata-add-assets"
+    command += f" {asset_file_path} hero_image"  # Assuming the asset type is always 'hero_image'
+
+    if metadata_file_name:
+        command += f" --metadata-file {metadata_file_name}"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    return output, errCode
 
 # TODO remove_all_org_metadata_assets
-def remove_all_org_metadata_assets():
-    pass
+def remove_all_org_metadata_assets(metadata_file_name):
+    # snet organization metadata-remove-all-assets [-h]
+    #                                          [--metadata-file METADATA_FILE]
+    global snet_dir
+
+    command = "snet organization metadata-remove-all-assets"
+    if metadata_file_name:
+        command += f" --metadata-file {metadata_file_name}"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    return output, errCode
 
 # TODO metadata-add-contact
 def add_org_metadata_contact():
+    # snet organization metadata-add-contact [-h] [--phone PHONE] [--email EMAIL]
+    #                                    [--metadata-file METADATA_FILE]
+    #                                    contact_type
     pass
 
 # TODO metadata-remove-contacts
 def remove_org_metadata_contacts():
+    # snet organization metadata-remove-contacts [-h]
+    #                                        [--metadata-file METADATA_FILE]
+    #                                        CONTACT_TYPE
     pass
 
 # TODO info

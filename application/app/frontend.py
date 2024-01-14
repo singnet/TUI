@@ -469,7 +469,7 @@ class add_org_metadata_desc_page(Screen):
                 Input(placeholder="Description about organization", id="add_org_metadata_desc_long_input"),
                 Input(placeholder="Short description about organization", id="add_org_metadata_desc_short_input"),
                 Input(placeholder="URL for Organization", id="add_org_metadata_desc_url_input"),
-                Input(placeholder="[OPTIONAL] Service metadata json file path (default $HOME/service_metadata.json)", id="add_org_metadata_desc_path_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file name (default service_metadata.json)", id="add_org_metadata_desc_path_input"),
                 Button(label="Add Description", id="add_org_metadata_desc_confirm_button"),
                 Button(label="Back", id="add_org_metadata_desc_back_button"),
                 id="add_org_metadata_desc_page_content"
@@ -501,19 +501,29 @@ class add_org_metadata_desc_page(Screen):
             self.app.push_screen(popup_output_page())
 
 # TODO Implement manage assets page
-class manage_assets_page(Screen):
+class manage_org_assets_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
-                Label("Manage Assets Page", id="manage_assets_page_title"),
-                id="manage_assets_page_content"
+                Label("Manage Assets Page", id="manage_org_assets_title"),
+                Input(placeholder="Hero_image Asset File Path", id="manage_org_assets_path_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="manage_org_assets_meta_input"),
+                Button(label="Add Asset", id="manage_org_assets_confirm_button"),
+                Button(label="Remove ALL Assets (No confirmation dialog, optionally add metadata file name)", id="manage_org_assets_remove_button"),
+                Button(label="Back", id="manage_org_assets_back_button"),
+                id="manage_org_assets_page_content"
             ),
-            id="manage_assets_page"
+            id="manage_org_assets_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        asset_file_path = self.get_child_by_id("manage_org_assets_page").get_child_by_id("manage_org_assets_page_content").get_child_by_id("manage_org_assets_path_input").value
+        metadata_file_name = self.get_child_by_id("manage_org_assets_page").get_child_by_id("manage_org_assets_page_content").get_child_by_id("manage_org_assets_meta_input").value
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -522,6 +532,17 @@ class manage_assets_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "manage_org_assets_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "manage_org_assets_confirm_button":
+            output, errCode = be.add_org_metadata_assets(asset_file_path, metadata_file_name)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        elif event.button.id == "manage_org_assets_remove_button":
+            output, errCode = be.add_org_metadata_assets(metadata_file_name)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
 
 # TODO Implement manage contacts page
 class manage_contacts_page(Screen):
