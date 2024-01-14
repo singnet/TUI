@@ -212,6 +212,8 @@ def init_metadata(org_name, org_id, org_type, reg_addr):
         command += f" {org_type}"
         # Execute the command in the "$HOME/snet" directory
         output, errCode = run_shell_command(command, cwd=snet_dir)
+        if len(output) == 0 and errCode == 0:
+            output = f"Successfully initialized organization metadata at '{snet_dir}'"
         return output, errCode
     else:
         return f"ERROR: Cannot find work directory '{snet_dir}'", 1
