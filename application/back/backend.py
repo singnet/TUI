@@ -10,6 +10,8 @@ import os
 # from web3 import Web3
 # from eth_account import Account
 
+snet_dir = f"{os.environ['HOME']}/snet"
+
 # TODO
 class Identity():
     def __init__(self, identity_name, network, wallet_priv_key=None, seed_phrase=None) -> None:
@@ -198,17 +200,18 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
     return run_shell_command(command)
 
 def print_org_metadata():
-    if os.path.exists(f"{os.environ['HOME']}/snet/organization_metadata.json"):
-        output, errCode = run_shell_command(f"cat {os.environ['HOME']}/snet/organization_metadata.json")
+    global snet_dir
+    if os.path.exists(f"{snet_dir}/organization_metadata.json"):
+        output, errCode = run_shell_command(f"cat {snet_dir}/organization_metadata.json")
         return output, errCode
     else:
-        return f"ERROR: Organization metdata not found at '{os.environ['HOME']}/snet', please initialize metadata first", 42
+        return f"ERROR: Organization metdata not found at '{snet_dir}', please initialize metadata first", 42
 
 def init_org_metadata(org_name, org_id, org_type, reg_addr):
     # snet organization metadata-init [-h] [--registry-at REGISTRY_AT]
     #                             [--metadata-file METADATA_FILE]
     #                             ORG_NAME ORG_ID ORG_TYPE
-    snet_dir = f"{os.environ['HOME']}/snet"
+    global snet_dir
     if os.path.exists(f"{snet_dir}/organization_metadata.json"):
         return f"ERROR: Organization metdata already exists at {snet_dir}/organization_metadata.json'", 42
     elif os.path.exists(snet_dir):
@@ -239,22 +242,19 @@ def add_org_metadata_desc(long_desc, short_desc, url, meta_path):
     #                                        [--short-description SHORT_DESCRIPTION]
     #                                        [--url URL]
     #                                        [--metadata-file METADATA_FILE]
-    command = "snet organization metadata-add-description"
+    global snet_dir
 
+    command = "snet organization metadata-add-description"
     if long_desc:
         command += f" --description \"{long_desc}\""
     if short_desc:
         command += f" --short-description \"{short_desc}\""
-
-    # Adding the URL if provided
     if url:
         command += f" --url {url}"
-
     if meta_path:
         command += f" --metadata-file {meta_path}"
 
-    # Running the command and returning the output
-    output, errCode = run_shell_command(command)
+    output, errCode = run_shell_command(command, cwd=snet_dir)
     return output, errCode
 
 # TODO add_org_metadata_assets

@@ -469,7 +469,7 @@ class add_org_metadata_desc_page(Screen):
                 Input(placeholder="Description about organization", id="add_org_metadata_desc_long_input"),
                 Input(placeholder="Short description about organization", id="add_org_metadata_desc_short_input"),
                 Input(placeholder="URL for Organization", id="add_org_metadata_desc_url_input"),
-                Input("[OPTIONAL] Service metadata json file path (default $HOME/service_metadata.json)", id="add_org_metadata_desc_path_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file path (default $HOME/service_metadata.json)", id="add_org_metadata_desc_path_input"),
                 Button(label="Add Description", id="add_org_metadata_desc_confirm_button"),
                 Button(label="Back", id="add_org_metadata_desc_back_button"),
                 id="add_org_metadata_desc_page_content"
