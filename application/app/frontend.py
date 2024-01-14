@@ -387,7 +387,9 @@ class org_metadata_page(Screen):
             self.app.push_screen(init_org_metadata_page())
         elif event.button.id == "org_metadata_add_desc_button":
             self.app.push_screen(add_org_metadata_desc_page())
-        elif event.button.id == "org_metadata_add_desc_button":
+        elif event.button.id == "org_metadata_assets_button":
+            self.app.push_screen(manage_org_assets_page())
+        elif event.button.id == "org_metadata_contacts_button":
             self.app.push_screen(manage_org_contacts_page())
 
 # TODO Implement printing metadata page
