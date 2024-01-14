@@ -381,6 +381,10 @@ class metadata_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "metadata_back_button":
             self.app.pop_screen()
+        elif event.button.id == "metadata_page_print_button":
+            self.app.push_screen(print_metadata_page())
+        elif event.button.id == "metadata_page_init_button":
+            self.app.push_screen(init_metadata_page())
 
 # TODO Implement printing metadata page
 class print_metadata_page(Screen):
