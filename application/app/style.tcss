@@ -51,6 +51,10 @@
     background: grey;
 }
 
+.content_page Input {
+    background: rgba(40, 40, 40, 0.5);
+}
+
 /* Wallet screen */
 # #account_page_content {
 #     color: white;
