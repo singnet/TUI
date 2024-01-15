@@ -1086,6 +1086,90 @@ class services_manage_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
 
+class publish_service_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Publishing Page", id="publish_service_page_title"),
+                Input(placeholder="Your Organization ID", id="publish_service_org_id_input"),
+                Input(placeholder="Your Service ID", id="publish_service_service_id_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="publish_service_file_input"),
+                Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="publish_service_reg_contract_input"),
+                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from 'networks'", id="publish_service_mpe_input"),
+                RadioButton(label="Update MPE Address in metadata before publishing service", id="publish_service_update_mpe_radio"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="publish_service_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="publish_service_index_input"),
+                RadioButton(label="Quiet transaction printing", id="publish_service_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="publish_service_verbose_radio"),
+                Button(label="Publish Service", id="publish_service_confirm_button"),
+                Button(label="Back", id="publish_service_back_button"),
+                id="publish_service_page_content"
+            ),
+            id="publish_service_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "add_desc_service_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "add_desc_service_metadata_confirm_button":
+            org_id = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_org_id_input").value
+            service_id = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_service_id_input").value
+            metadata_file = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_file_input").value
+            reg_addr = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_reg_contract_input").value
+            mpe_addr = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_mpe_input").value
+            update_mpe = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_update_mpe_radio").value
+            gas = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_gas_input").value
+            index = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_index_input").value
+            quiet = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_quiet_radio").value
+            verbose = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_verbose_radio").value
+            
+            output, errCode = be.publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class delete_service_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Delete a Service Page", id="delete_service_page_title"),
+                Input(placeholder="Your Organization ID", id="delete_service_org_id_input"),
+                Input(placeholder="Your Service ID", id="delete_service_service_id_input"),
+                Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="delete_service_reg_contract_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="delete_service_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="delete_service_index_input"),
+                RadioButton(label="Quiet transaction printing", id="delete_service_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="delete_service_verbose_radio"),
+                Button(label="Delete Service", id="delete_service_confirm_button"),
+                Button(label="Back", id="delete_service_back_button"),
+                id="delete_service_page_content"
+            ),
+            id="delete_service_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+
 # TODO Implement all other commands under "misc" nav page
 
 class exit_page(Screen):

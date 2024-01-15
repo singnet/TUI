@@ -11,7 +11,7 @@ import os
 # from eth_account import Account
 
 snet_dir = f"{os.environ['HOME']}/snet"
-service_path: str
+serv_path: str
 
 # TODO
 class Identity():
@@ -587,7 +587,6 @@ def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiratio
         output = "Group in organization metadata successfully updated!"
     return output, errCode
 
-# TODO
 def init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type):
     # snet service metadata-init [-h] [--metadata-file METADATA_FILE]
     #                        [--multipartyescrow-at MULTIPARTYESCROW_AT]
@@ -597,18 +596,60 @@ def init_service_metadata(service_path, proto_path, service_display, metadata_fi
     #                        [--encoding {proto,json}]
     #                        [--service-type {grpc,jsonrpc,process}]
     #                        PROTO_DIR DISPLAY_NAME
-    pass
+    global serv_path
+    serv_path = service_path
 
-# TODO
-def add_service_metadata_desc():
+    if not service_path or len(service_path) <= 0:
+        return "ERROR: Must enter service directory path", 42
+    if not proto_path or len(proto_path) <= 0:
+        return "ERROR: Must enter protobuf directory path", 42
+    if not service_display or len(service_display) <= 0:
+        return "ERROR: Must enter service display name", 42
+
+    command = f"snet service metadata-init {proto_path} \"{service_display}\""
+    if metadata_file and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if pay_group_name and len(pay_group_name) > 0:
+        command += f" --group-name {pay_group_name}"
+    if endpoints:
+        command += " --endpoints " + " ".join(endpoints)
+    if fixed_price:
+        command += f" --fixed-price {fixed_price}"
+    if enc_type:
+        command += f" --encoding {enc_type}"
+    if serv_type:
+        command += f" --service-type {serv_type}"
+
+    output, errCode = run_shell_command(command, cwd=service_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Service metadata successfully initialized!"
+    return output, errCode
+
+def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
     # snet service metadata-add-description [-h] [--json JSON] [--url URL]
     #                                   [--description DESCRIPTION]
     #                                   [--short-description SHORT_DESCRIPTION]
     #                                   [--metadata-file METADATA_FILE]
-    pass
+    global serv_path
 
-# TODO
-def publish_service():
+    command = "snet service metadata-add-description"
+    if long_desc and len(long_desc) > 0:
+        command += f" --description \"{long_desc}\""
+    if short_desc and len(short_desc) > 0:
+        command += f" --short-description \"{short_desc}\""
+    if url and len(url) > 0:
+        command += f" --url {url}"
+    if metadata_file and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
+
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Service description successfully added!"
+    return output, errCode
+
+def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose):
     # snet service publish [-h] [--metadata-file METADATA_FILE]
     #                  [--update-mpe-address]
     #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
@@ -616,15 +657,67 @@ def publish_service():
     #                  [--wallet-index WALLET_INDEX] [--yes]
     #                  [--quiet | --verbose]
     #                  ORG_ID SERVICE_ID
-    pass
+    global serv_path
+
+    if not org_id or len(org_id) <= 0:
+        return "ERROR: Must enter organization ID", 42
+    if not service_id or len(service_id) <= 0:
+        return "ERROR: Must enter service ID", 42
+
+    command = f"snet service publish {org_id} {service_id}"
+    if metadata_file and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
+    if reg_addr and len(reg_addr) > 0:
+        command += f" --registry-at {reg_addr}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if update_mpe:
+        command += " --update-mpe-address"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if index and len(index) > 0:
+        command += f" --wallet-index {index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Service successfully published!"
+    return output, errCode
 
 # TODO
-def delete_service():
+def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
     # snet service delete [-h] [--registry-at REGISTRY_AT] [--gas-price GAS_PRICE]
     #                 [--wallet-index WALLET_INDEX] [--yes]
     #                 [--quiet | --verbose]
     #                 ORG_ID SERVICE_ID
-    pass
+    global serv_path
+
+    if not org_id or len(org_id) <= 0:
+        return "ERROR: Must enter organization ID", 42
+    if not service_id or len(service_id) <= 0:
+        return "ERROR: Must enter service ID", 42
+
+    command = f"snet service delete {org_id} {service_id}"
+    if reg_addr and len(reg_addr) > 0:
+        command += f" --registry-at {reg_addr}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if index and len(index) > 0:
+        command += f" --wallet-index {index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Service successfully deleted!"
+    return output, errCode
 
 # TODO custom command
 def custom_command(command):
