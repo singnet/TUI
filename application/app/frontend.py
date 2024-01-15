@@ -319,11 +319,13 @@ class account_transfer_page(Screen):
 # TODO Implement entire organization CLI command
 class organization_page(Screen):
     def compose(self) -> ComposeResult:
+        output, errCode = be.print_organization_info()
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Page", id="organization_page_title"),
+                Label(f"My Organizations:\n{output}", id="org_metadata_info_label"),
                 Button(label="Metadata", id="organization_page_metadata_button"),
                 Button(label="Groups", id="organization_page_groups_button"),
                 Button(label="Members", id="organization_page_members_button"),
@@ -353,13 +355,11 @@ class organization_page(Screen):
 
 class org_metadata_page(Screen):
     def compose(self) -> ComposeResult:
-        output, errCode = be.print_organization_info()
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Metadata Page", id="org_metadata_page_title"),
-                Label(f"My Organizations:\n{output}", id="org_metadata_info_label"),
                 Button(label="My Metadata", id="org_metadata_page_print_button"),
                 Button(label="Initialize Metadata", id="org_metadata_page_init_button"),
                 Button(label="Add Description", id="org_metadata_add_desc_button"),
