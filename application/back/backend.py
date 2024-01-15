@@ -10,6 +10,8 @@ import os
 # from web3 import Web3
 # from eth_account import Account
 
+# Stable build v0.1
+
 snet_dir = f"{os.environ['HOME']}/snet"
 serv_path: str
 serv_path_set = False

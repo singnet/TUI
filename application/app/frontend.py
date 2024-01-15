@@ -5,6 +5,8 @@ from textual.widgets import Button, Header, Label, Input, Select, RadioButton, L
 import back.backend as be
 import re
 
+# Stable build v0.1
+
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
 popup_output: str
