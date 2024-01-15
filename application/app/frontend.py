@@ -961,6 +961,10 @@ class services_metadata_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "services_metadata_back_button":
             self.app.pop_screen()
+        elif event.button.id == "services_metadata_init_button":
+            self.app.push_screen(init_service_metadata_page())
+        elif event.button.id == "services_metadata_add_desc_button":
+            self.app.push_screen(add_desc_service_metadata_page())
 
 class init_service_metadata_page(Screen):
     def compose(self) -> ComposeResult:
@@ -1039,7 +1043,7 @@ class add_desc_service_metadata_page(Screen):
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
-        
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
