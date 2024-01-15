@@ -72,7 +72,7 @@
 /* Error Exit screen */
 #error_exit_label {
     align: center middle;
-    width: 70%;
+    width: 100%;
     margin-left: 5;
     margin-top: 5;
 }
@@ -89,9 +89,10 @@
 /* Popup screen */
 #popup_output_label {
     align: center middle;
-    width: 70%;
+    width: 100%;
     margin-left: 5;
     margin-top: 5;
+    border: solid white;
 }
 
 #output_exit_button {
