@@ -611,8 +611,6 @@ def init_service_metadata(service_path, proto_path, service_display, metadata_fi
     #                        PROTO_DIR DISPLAY_NAME
     global serv_path
     global serv_path_set
-    serv_path = service_path
-    serv_path_set = True
 
     if not service_path or len(service_path) <= 0:
         return "ERROR: Must enter service directory path", 42
@@ -638,6 +636,9 @@ def init_service_metadata(service_path, proto_path, service_display, metadata_fi
         command += f" --service-type {serv_type}"
 
     output, errCode = run_shell_command(command, cwd=service_path)
+    if errCode == 0:
+        serv_path = service_path
+        serv_path_set = True
     if len(output) == 0 and errCode == 0:
         output = "Service metadata successfully initialized!"
     return output, errCode
