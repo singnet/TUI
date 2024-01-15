@@ -1071,6 +1071,9 @@ class services_manage_page(Screen):
             be.nav_sidebar_vert(),
             Grid(
                 Label("Manage Services Page", id="services_manage_page_title"),
+                Button(label="Publish Service", id="services_manage_create_button"),
+                Button(label="Delete Service", id="services_manage_delete_button"),
+                Button("Back", id="services_manage_back_button"),
                 id="services_manage_page_content"
             ),
             id="services_manage_page"
@@ -1085,6 +1088,12 @@ class services_manage_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "services_manage_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "services_manage_create_button":
+            self.app.push_screen(publish_service_page())
+        elif event.button.id == "services_manage_delete_button":
+            self.app.push_screen(delete_service_page())
 
 class publish_service_page(Screen):
     def compose(self) -> ComposeResult:
@@ -1161,6 +1170,8 @@ class delete_service_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -1169,6 +1180,20 @@ class delete_service_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "delete_service_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "delete_service_confirm_button":
+            org_id = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_org_id_input").value
+            service_id = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_service_id_input").value
+            reg_addr = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_reg_contract_input").value
+            gas = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_gas_input").value
+            index = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_index_input").value
+            quiet = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_quiet_radio").value
+            verbose = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_verbose_radio").value
+            
+            output, errCode = be.delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 # TODO Implement all other commands under "misc" nav page
 
