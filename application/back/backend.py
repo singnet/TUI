@@ -633,6 +633,8 @@ def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
     #                                   [--short-description SHORT_DESCRIPTION]
     #                                   [--metadata-file METADATA_FILE]
     global serv_path
+    if not isinstance(serv_path, str):
+        return "ERROR: Please initialize service metadata before attempting to add description", 42
 
     command = "snet service metadata-add-description"
     if long_desc and len(long_desc) > 0:
@@ -658,6 +660,9 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
     #                  [--quiet | --verbose]
     #                  ORG_ID SERVICE_ID
     global serv_path
+
+    if not isinstance(serv_path, str):
+        return "ERROR: Please initialize service metadata before publishing", 42
 
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization ID", 42
