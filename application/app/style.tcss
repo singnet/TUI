@@ -74,7 +74,9 @@
     align: center middle;
     width: 100%;
     margin-left: 5;
+    margin-right: 5;
     margin-top: 5;
+    border: solid white;
 }
 
 #error_exit_button {
@@ -82,7 +84,7 @@
     width: 40%;
     border: solid white;
     background: rgba(40, 40, 40, 0.5);
-    margin-left: 50;
+    margin-left: 55;
     margin-top: 5;
 }
 
@@ -91,6 +93,7 @@
     align: center middle;
     width: 100%;
     margin-left: 5;
+    margin-right: 5;
     margin-top: 5;
     border: solid white;
 }
@@ -100,7 +103,7 @@
     width: 40%;
     border: solid white;
     background: rgba(40, 40, 40, 0.5);
-    margin-left: 50;
+    margin-left: 55;
     margin-top: 5;
 }
 
