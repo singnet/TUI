@@ -1,60 +1,4 @@
-themnemoniclineishatest1  TUI Test 1: Organization Name:  IshTUItestOrg1
-Organization ID: IshTUItestIdentity1
-Identity: IshTUItestOrgIdentity1
-Seed phrase: thisismyseedphraseletsgo
-
-1 - stdout
-2 - stderr
-42 - stdout
-
-- Organization page
-    - Show org info (list-my)
-    - Metadata page
-        - Show metadata
-        - Initialize metadata page
-        - Add description page
-        - Add assets page & Remove (all) assets [ Manage assets ]
-        - (Add/Remove) Contacts [ Manage contacts ] 
-        - Update page
-    - Groups page
-        - Add group
-        - Update group
-    - Members page
-        - Change owner
-        - Add member
-        - Remove member
-    - Create/Delete page
-- Services page
-
-
-
-
-
-
-class <page_id>(Screen):
-    def compose(self) -> ComposeResult:
-        yield Header()
-        yield Horizontal(
-            be.nav_sidebar_vert(),
-            Grid(
-                Label(“ Page", id="<page_id>_title"),
-                id="<page_id>_content"
-            ),
-            id="<page_id>"
-        )
-    
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-	global popup_output
-
-        if event.button.id == "account_page_nav":
-            self.app.switch_screen(account_page())
-        elif event.button.id == "organization_page_nav":
-            self.app.switch_screen(organization_page())
-        elif event.button.id == "services_page_nav":
-            self.app.switch_screen(services_page())
-        elif event.button.id == "exit_page_nav":
-            self.app.push_screen(exit_page())
-           /* Welcome screen */
+/* Welcome screen */
 #welcome_screen {
     align: center middle;
 }
@@ -168,4 +112,3 @@ exit_page {
 #exit_button, #cancel_exit_button {
     width: 100%;
 }
-
