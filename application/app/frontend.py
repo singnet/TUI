@@ -702,6 +702,8 @@ class add_org_group_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -752,6 +754,8 @@ class update_org_group_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -830,6 +834,8 @@ class org_manage_create_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -875,6 +881,8 @@ class org_manage_delete_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -906,9 +914,162 @@ class services_page(Screen):
             be.nav_sidebar_vert(),
             Grid(
                 Label("Services Page", id="services_page_title"),
+                Button(label="Metadata", id="services_metadata_button"),
+                Button(label="Manage", id="services_page_manage_button"),
                 id="services_page_content"
             ),
             id="services_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "services_metadata_button":
+            self.app.push_screen(services_metadata_page())
+        elif event.button.id == "services_page_manage_button":
+            self.app.push_screen(services_manage_page())
+
+class services_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Metadata Page", id="manage_services_metadata_page_title"),
+                Button(label="Initialize Service Metadata", id="services_metadata_init_button"),
+                Button(label="Add Service Description", id="services_metadata_add_desc_button"),
+                Button("Back", id="services_metadata_back_button"),
+                id="manage_services_metadata_page_content"
+            ),
+            id="manage_services_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "services_metadata_back_button":
+            self.app.pop_screen()
+
+class init_service_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Metadata Initialization Page", id="init_service_metadata_page_title"),
+                Input(placeholder="Service directory (Path to Service)", id="init_service_metadata_service_path_input"),
+                Input(placeholder="Directory which contains protobuf files", id="init_service_metadata_proto_dir_input"),
+                Input(placeholder="Service display name", id="init_service_metadata_display_name_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json). Default: “service_metadata.json”", id="init_service_metadata_file_name_input"),
+                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="init_service_metadata_mpe_addr_input"),
+                Input(placeholder="Name of the first payment group", id="init_service_metadata_pay_group_name_input"),
+                Input(placeholder="[OPTIONAL] Endpoints for the first group. Default: []", id="init_service_metadata_endpoints_input"),
+                Input(placeholder="Set fixed price in AGI token for all methods", id="init_service_metadata_price_input"),
+                Select(options=((line, line) for line in """proto\njson""".splitlines()), prompt="Select Encoding Type", id="init_service_metadata_enc_type_select"),
+                Select(options=((line, line) for line in """grpc\njsonrpc\nprocess""".splitlines()), prompt="Select Service Type", id="init_service_metadata_serv_type_select"),
+                Button(label="Initialize Service Metadata", id="init_service_metadata_confirm_button"),
+                Button(label="Back", id="init_service_metadata_back_button"),
+                id="init_service_metadata_page_content"
+            ),
+            id="init_service_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "init_service_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "init_service_metadata_confirm_button":
+            service_path = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_service_path_input").value
+            proto_path = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_proto_dir_input").value
+            service_display = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_display_name_input").value
+            metadata_file = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_file_name_input").value
+            mpe_addr = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_mpe_addr_input").value
+            pay_group_name = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_pay_group_name_input").value
+            endpoints = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_endpoints_input").value
+            fixed_price = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_price_input").value
+            enc_type = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_enc_type_select").value
+            serv_type = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_serv_type_select").value
+            if enc_type == Select.BLANK:
+                enc_type = "proto"
+            if serv_type == Select.BLANK:
+                serv_type = "grpc"
+            
+            output, errCode = be.init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+                    
+class add_desc_service_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Add Description Page", id="add_desc_service_metadata_page_title"),
+                Input(placeholder="Description of the service and what it does", id="add_desc_service_metadata_long_input"),
+                Input(placeholder="Short overview of the service", id="add_desc_service_metadata_short_input"),
+                Input(placeholder="URL to provide more details of the service", id="add_desc_service_metadata_url_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="add_desc_service_metadata_meta_file_input"),
+                Button(label="Add Service Description", id="add_desc_service_metadata_confirm_button"),
+                Button(label="Back", id="add_desc_service_metadata_back_button"),
+                id="add_desc_service_metadata_page_content"
+            ),
+            id="add_desc_service_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "add_desc_service_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "add_desc_service_metadata_confirm_button":
+            long_desc = self.get_child_by_id("add_desc_service_metadata_page").get_child_by_id("add_desc_service_metadata_page_content").get_child_by_id("add_desc_service_metadata_long_input").value
+            short_desc = self.get_child_by_id("add_desc_service_metadata_page").get_child_by_id("add_desc_service_metadata_page_content").get_child_by_id("add_desc_service_metadata_short_input").value
+            url = self.get_child_by_id("add_desc_service_metadata_page").get_child_by_id("add_desc_service_metadata_page_content").get_child_by_id("add_desc_service_metadata_url_input").value
+            metadata_file = self.get_child_by_id("add_desc_service_metadata_page").get_child_by_id("add_desc_service_metadata_page_content").get_child_by_id("add_desc_service_metadata_meta_file_input").value
+            
+            output, errCode = be.add_service_metadata_desc(long_desc, short_desc, url, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class services_manage_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Manage Services Page", id="services_manage_page_title"),
+                id="services_manage_page_content"
+            ),
+            id="services_manage_page"
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:

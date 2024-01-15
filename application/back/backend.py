@@ -11,6 +11,7 @@ import os
 # from eth_account import Account
 
 snet_dir = f"{os.environ['HOME']}/snet"
+service_path: str
 
 # TODO
 class Identity():
@@ -511,7 +512,7 @@ def print_organization_info(registry_address=None, wallet_index=None):
 
     output, errCode = run_shell_command(command)
     if len(output) == 0:
-        output = f"ERROR: Unable to find organizations, ensure you have created one\nCLI Output: {output}", 42
+        output = f"ERROR: Unable to find organizations, ensure you have created one\nCLI Output: {output}"
     return output, errCode
 
 # TODO
@@ -586,6 +587,44 @@ def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiratio
         output = "Group in organization metadata successfully updated!"
     return output, errCode
 
+# TODO
+def init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type):
+    # snet service metadata-init [-h] [--metadata-file METADATA_FILE]
+    #                        [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                        [--group-name GROUP_NAME]
+    #                        [--endpoints [ENDPOINTS [ENDPOINTS ...]]]
+    #                        [--fixed-price FIXED_PRICE]
+    #                        [--encoding {proto,json}]
+    #                        [--service-type {grpc,jsonrpc,process}]
+    #                        PROTO_DIR DISPLAY_NAME
+    pass
+
+# TODO
+def add_service_metadata_desc():
+    # snet service metadata-add-description [-h] [--json JSON] [--url URL]
+    #                                   [--description DESCRIPTION]
+    #                                   [--short-description SHORT_DESCRIPTION]
+    #                                   [--metadata-file METADATA_FILE]
+    pass
+
+# TODO
+def publish_service():
+    # snet service publish [-h] [--metadata-file METADATA_FILE]
+    #                  [--update-mpe-address]
+    #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                  [--registry-at REGISTRY_AT] [--gas-price GAS_PRICE]
+    #                  [--wallet-index WALLET_INDEX] [--yes]
+    #                  [--quiet | --verbose]
+    #                  ORG_ID SERVICE_ID
+    pass
+
+# TODO
+def delete_service():
+    # snet service delete [-h] [--registry-at REGISTRY_AT] [--gas-price GAS_PRICE]
+    #                 [--wallet-index WALLET_INDEX] [--yes]
+    #                 [--quiet | --verbose]
+    #                 ORG_ID SERVICE_ID
+    pass
 
 # TODO custom command
 def custom_command(command):
