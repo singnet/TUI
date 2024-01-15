@@ -1130,9 +1130,9 @@ class publish_service_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
-        elif event.button.id == "add_desc_service_metadata_back_button":
+        elif event.button.id == "publish_service_back_button":
             self.app.pop_screen()
-        elif event.button.id == "add_desc_service_metadata_confirm_button":
+        elif event.button.id == "publish_service_confirm_button":
             org_id = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_org_id_input").value
             service_id = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_service_id_input").value
             metadata_file = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_file_input").value
