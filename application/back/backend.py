@@ -12,6 +12,7 @@ import os
 
 snet_dir = f"{os.environ['HOME']}/snet"
 serv_path: str
+serv_path_set = False
 
 # TODO
 class Identity():
@@ -609,7 +610,9 @@ def init_service_metadata(service_path, proto_path, service_display, metadata_fi
     #                        [--service-type {grpc,jsonrpc,process}]
     #                        PROTO_DIR DISPLAY_NAME
     global serv_path
+    global serv_path_set
     serv_path = service_path
+    serv_path_set = True
 
     if not service_path or len(service_path) <= 0:
         return "ERROR: Must enter service directory path", 42
@@ -645,7 +648,8 @@ def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
     #                                   [--short-description SHORT_DESCRIPTION]
     #                                   [--metadata-file METADATA_FILE]
     global serv_path
-    if not isinstance(serv_path, str):
+    global serv_path_set
+    if not serv_path_set:
         return "ERROR: Please initialize service metadata before attempting to add description", 42
 
     command = "snet service metadata-add-description"
@@ -672,8 +676,9 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
     #                  [--quiet | --verbose]
     #                  ORG_ID SERVICE_ID
     global serv_path
+    global serv_path_set
 
-    if not isinstance(serv_path, str):
+    if not serv_path_set:
         return "ERROR: Please initialize service metadata before publishing", 42
 
     if not org_id or len(org_id) <= 0:
