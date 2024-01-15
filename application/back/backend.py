@@ -510,8 +510,8 @@ def print_organization_info(registry_address=None, wallet_index=None):
         command += f" --wallet-index {wallet_index}"
 
     output, errCode = run_shell_command(command)
-    if errCode != 0:
-        output = f"ERROR: Unable to find organization, ensure you have created one\nCLI Output: {output}", 42
+    if len(output) == 0:
+        output = f"ERROR: Unable to find organizations, ensure you have created one\nCLI Output: {output}", 42
     return output, errCode
 
 # TODO
