@@ -397,6 +397,8 @@ def change_organization_owner(org_id, owner_address, gas_price, wallet_index, qu
     #                            [--quiet | --verbose]
     #                            [--registry-at REGISTRY_ADDRESS]
     #                            ORG_ID OWNER_ADDRESS
+    global snet_dir
+
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
     if not owner_address or len(owner_address) <= 0:
@@ -414,7 +416,7 @@ def change_organization_owner(org_id, owner_address, gas_price, wallet_index, qu
         command += f" --registry-at {registry_address}"
     command += " --yes"
 
-    output, errCode = run_shell_command(command)
+    output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Organization owner successfully changed!"
     return output, errCode
@@ -425,6 +427,8 @@ def add_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
     #                           ORG_ID ORG_MEMBERS
+    global snet_dir
+    
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
     if not org_members or len(org_members) <= 0:
@@ -442,7 +446,7 @@ def add_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet
         command += f" --registry-at {registry_address}"
     command += " --yes"
 
-    output, errCode = run_shell_command(command)
+    output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Members successfully added to organization metadata!"
     return output, errCode
@@ -453,6 +457,8 @@ def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, qu
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
     #                           ORG_ID ORG_MEMBERS
+    global snet_dir
+    
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
     if not org_members or len(org_members) <= 0:
@@ -470,7 +476,7 @@ def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, qu
         command += f" --registry-at {registry_address}"
     command += " --yes"
 
-    output, errCode = run_shell_command(command)
+    output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Members successfully removed from organization metadata!"
     return output, errCode
@@ -481,6 +487,8 @@ def delete_organization(org_id, gas_price, wallet_index, quiet, verbose, registr
     #                      [--quiet | --verbose]
     #                      [--registry-at REGISTRY_ADDRESS]
     #                      ORG_ID
+    global snet_dir
+
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
     command = f"snet organization delete {org_id}"
@@ -510,7 +518,7 @@ def print_organization_info(registry_address=None, wallet_index=None):
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
 
-    output, errCode = run_shell_command(command)
+    output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0:
         output = f"ERROR: Unable to find organizations, ensure you have created one\nCLI Output: {output}"
     return output, errCode
@@ -526,6 +534,8 @@ def add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_t
     #                         [--registry-at REGISTRY_AT]
     #                         group_name payment_address
     #                         [endpoints [endpoints ...]]
+    global snet_dir
+    
     if not group_name or len(group_name) <= 0:
         return "ERROR: Must enter group name", 42
     if not pay_addr or len(pay_addr) <= 0:
@@ -546,7 +556,7 @@ def add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_t
     if reg_addr and len(reg_addr) > 0:
         command += f" --registry-at {reg_addr}"
 
-    output, errCode = run_shell_command(command)
+    output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Group successfully added to organization metadata!"
     return output, errCode
@@ -562,6 +572,8 @@ def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiratio
     #                            [--metadata-file METADATA_FILE]
     #                            [--registry-at REGISTRY_AT]
     #                            group_id
+    global snet_dir
+
     if not group_name or len(group_name) <= 0:
         return "ERROR: Must enter group name", 42
     command = f"snet organization update-group {group_name}"
@@ -582,7 +594,7 @@ def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiratio
     if reg_addr and len(reg_addr) > 0:
         command += f" --registry-at {reg_addr}"
 
-    output, errCode = run_shell_command(command)
+    output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Group in organization metadata successfully updated!"
     return output, errCode
