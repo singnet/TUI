@@ -86,6 +86,23 @@
     margin-top: 5;
 }
 
+/* Popup screen */
+#popup_output_label {
+    align: center middle;
+    width: 70%;
+    margin-left: 5;
+    margin-top: 5;
+}
+
+#output_exit_button {
+    align: center middle;
+    width: 40%;
+    border: solid white;
+    background: rgba(40, 40, 40, 0.5);
+    margin-left: 50;
+    margin-top: 5;
+}
+
 /* Exit screen */
 exit_page {
     align: center middle;
