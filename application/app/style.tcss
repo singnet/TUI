@@ -1,3 +1,9 @@
+/* Global Styles */
+* {
+    font-family: "Segoe UI", sans-serif;
+    color: white;
+}
+
 /* Welcome screen */
 #welcome_screen {
     align: center middle;
@@ -5,26 +11,36 @@
 
 #start_button {
     width: 40%;
-    border: solid white;
+    border: 2px solid grey;
+    border-radius: 10px;
+    background: black;
+    color: grey;
+}
+
+#start_button:hover {
+    background: grey;
+    color: black;
 }
 
 /* Create Identity screen */
 #create_identity_button {
     width: 40%;
-    border: solid white;
-    background: rgba(40, 40, 40, 0.5);
+    border: 2px solid grey;
+    background: black;
+    border-radius: 10px;
     align: center middle;
     margin-left: 50;
     margin-top: 5;
 }
 
 #create_identity_button:hover {
-    background: rgba(40, 40, 40, 0.9);
+    background: grey;
+    color: black;
 }
 
 /* Navigation sidebar */
 .nav_sidebar {
-    color: blue;
+    background: black;
     height: 100%;
     width: 20%;
     align: left middle;
@@ -33,82 +49,89 @@
 .nav_sidebar_button {
     width: 100%;
     height: 10%;
-    border: solid white;
-    background: rgba(40, 40, 40, 0.5);
+    border: none;
+    background: rgba(40, 40, 40, 0.8);
+    border-radius: 5px;
     margin: 5;
+    padding: 10px;
 }
 
 .nav_sidebar_button:hover {
-    background: rgba(40, 40, 40, 0.9);
+    background: rgba(60, 60, 60, 1);
 }
 
-/* Wallet screen */
-#account_page_content {
+/* Content area styles */
+#account_page_content, #organization_page_content, #services_page_content {
+    background: grey;
     color: white;
     height: 100%;
     width: 80%;
     align: right middle;
-    background: grey;
 }
 
-/* Organization screen */
-#organization_page_content {
-    color: white;
-    height: 100%;
-    width: 80%;
-    align: right middle;
-    background: grey;
-}
-
-/* Services screen */
-#services_page_content {
-    color: white;
-    height: 100%;
-    width: 80%;
-    align: right middle;
-    background: grey;
-}
-
-/* Error Exit screen */
-#error_exit_label {
+/* Error and Exit screens */
+#error_exit_label, #exit_question {
     align: center middle;
     width: 70%;
     margin-left: 5;
     margin-top: 5;
 }
 
-#error_exit_button {
-    align: center middle;
+#error_exit_button, #exit_button, #cancel_exit_button {
     width: 40%;
-    border: solid white;
-    background: rgba(40, 40, 40, 0.5);
+    border: 2px solid grey;
+    background: black;
+    border-radius: 10px;
+    align: center middle;
     margin-left: 50;
     margin-top: 5;
 }
 
-/* Exit screen */
-exit_page {
-    align: center middle;
+#error_exit_button:hover, #exit_button:hover, #cancel_exit_button:hover {
+    background: grey;
+    color: black;
 }
 
-#exit_page {
-    grid-size: 2;
-    grid-gutter: 1 2;
-    grid-rows: 1fr 3;
-    padding: 0 1;
-    width: 60;
-    height: 11;
-    border: thick $background 80%;
-    background: $surface;
+/* Input styles */
+input {
+    border: 1px solid grey;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
 }
 
-#exit_question {
-    column-span: 2;
-    height: 1fr;
-    width: 1fr;
-    content-align: center middle;
+input:focus {
+    border: 1px solid lightgrey;
+    background: rgba(255, 255, 255, 0.2);
 }
 
-#exit_button, #cancel_exit_button {
-    width: 100%;
+/* Label styles */
+label {
+    color: white;
+    margin: 5px;
+}
+
+/* Button styles */
+button {
+    border: 1px solid grey;
+    background: black;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+button:hover {
+    background: grey;
+    color: black;
+}
+
+/* General Layout and Grid styles */
+.grid {
+    padding: 10px;
+}
+
+.grid-item {
+    margin: 5px;
 }
