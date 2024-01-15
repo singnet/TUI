@@ -42,32 +42,41 @@
     background: rgba(40, 40, 40, 0.9);
 }
 
-/* Wallet screen */
-#account_page_content {
+/* All content pages */
+.content_page {
     color: white;
     height: 100%;
     width: 80%;
     align: right middle;
     background: grey;
 }
+
+/* Wallet screen */
+# #account_page_content {
+#     color: white;
+#     height: 100%;
+#     width: 80%;
+#     align: right middle;
+#     background: grey;
+# }
 
 /* Organization screen */
-#organization_page_content {
-    color: white;
-    height: 100%;
-    width: 80%;
-    align: right middle;
-    background: grey;
-}
+# #organization_page_content {
+#     color: white;
+#     height: 100%;
+#     width: 80%;
+#     align: right middle;
+#     background: grey;
+# }
 
 /* Services screen */
-#services_page_content {
-    color: white;
-    height: 100%;
-    width: 80%;
-    align: right middle;
-    background: grey;
-}
+# #services_page_content {
+#     color: white;
+#     height: 100%;
+#     width: 80%;
+#     align: right middle;
+#     background: grey;
+# }
 
 /* Error Exit screen */
 #error_exit_label {

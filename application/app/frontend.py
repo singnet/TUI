@@ -124,7 +124,8 @@ class account_page(Screen):
                 Button("Withdraw", id="account_page_withdraw_button"),
                 Button("Transfer", id="account_page_transfer_button"),
                 Button("Identity Settings", id="account_page_identity_settings_button"),
-                id="account_page_content"
+                id="account_page_content",
+                classes="content_page"
             ),
             id="account_page"
         )
@@ -158,7 +159,8 @@ class identity_page(Screen):
                 Button("Create Identity Page", id="identity_page_create_identity_button"),
                 Input(placeholder="Identity name to delete", id="identity_page_delete_input"),
                 Button("Delete Identity", id="identity_page_delete_identity_button"),
-                id="identity_page_content"
+                id="identity_page_content",
+                classes="content_page"
             ),
             id="identity_page"
         )
@@ -202,7 +204,8 @@ class account_deposit_page(Screen):
                 RadioButton(label="Quiet transaction printing", id="account_deposit_quiet_radio"),
                 RadioButton(label="Verbose transaction printing", id="account_deposit_verbose_radio"),
                 Button(label="Deposit", id="account_deposit_confirm_button"),
-                id="account_deposit_page_content"
+                id="account_deposit_page_content",
+                classes="content_page"
             ),
             id="account_deposit_page"
         )
@@ -244,7 +247,8 @@ class account_withdraw_page(Screen):
                 RadioButton(label="Quiet transaction printing", id="account_withdraw_quiet_radio"),
                 RadioButton(label="Verbose transaction printing", id="account_withdraw_verbose_radio"),
                 Button(label="Withdraw", id="account_withdraw_confirm_button"),
-                id="account_withdraw_page_content"
+                id="account_withdraw_page_content",
+                classes="content_page"
             ),
             id="account_withdraw_page"
         )
@@ -286,7 +290,8 @@ class account_transfer_page(Screen):
                 RadioButton(label="Quiet transaction printing", id="account_transfer_quiet_radio"),
                 RadioButton(label="Verbose transaction printing", id="account_transfer_verbose_radio"),
                 Button(label="Transfer", id="account_transfer_confirm_button"),
-                id="account_transfer_page_content"
+                id="account_transfer_page_content",
+                classes="content_page"
             ),
             id="account_transfer_page"
         )
@@ -330,7 +335,8 @@ class organization_page(Screen):
                 Button(label="Groups", id="organization_page_groups_button"),
                 Button(label="Members", id="organization_page_members_button"),
                 Button(label="Manage", id="organization_page_create_delete_button"),
-                id="organization_page_content"
+                id="organization_page_content",
+                classes="content_page"
             ),
             id="organization_page"
         )
@@ -367,7 +373,8 @@ class org_metadata_page(Screen):
                 Button(label="Manage Contacts", id="org_metadata_contacts_button"),
                 Button(label="Update Metadata", id="org_metadata_update_button"),
                 Button(label="Back", id="org_metadata_back_button"),
-                id="org_metadata_page_content"
+                id="org_metadata_page_content",
+                classes="content_page"
             ),
             id="org_metadata_page"
         )
@@ -407,7 +414,8 @@ class print_org_metadata_page(Screen):
                 Label("My Metadata Page", id="print_org_metadata_page_title"),
                 Label(f"\n\n{output}\n\n", id="print_org_metadata_metadata_content"),
                 Button(label="Back", id="print_org_metadata_back_button"),
-                id="print_org_metadata_page_content"
+                id="print_org_metadata_page_content",
+                classes="content_page"
             ),
             id="print_org_metadata_page"
         )
@@ -438,7 +446,8 @@ class init_org_metadata_page(Screen):
                 Select(options=((line, line) for line in """Individual\nOrganization""".splitlines()), prompt="Select Organization Type", id="init_org_metadata_type_select"),
                 Button(label="Initialize", id="init_org_metadata_confirm_button"),
                 Button(label="Back", id="init_org_metadata_back_button"),
-                id="init_org_metadata_page_content"
+                id="init_org_metadata_page_content",
+                classes="content_page"
             ),
             id="init_org_metadata_page"
         )
@@ -480,7 +489,8 @@ class add_org_metadata_desc_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file name (default service_metadata.json)", id="add_org_metadata_desc_path_input"),
                 Button(label="Add Description", id="add_org_metadata_desc_confirm_button"),
                 Button(label="Back", id="add_org_metadata_desc_back_button"),
-                id="add_org_metadata_desc_page_content"
+                id="add_org_metadata_desc_page_content",
+                classes="content_page"
             ),
             id="add_org_metadata_desc_page"
         )
@@ -521,7 +531,8 @@ class manage_org_assets_page(Screen):
                 Button(label="Add Asset", id="manage_org_assets_confirm_button"),
                 Button(label="Remove ALL Assets (No confirmation dialog, optionally add metadata file name)", id="manage_org_assets_remove_button"),
                 Button(label="Back", id="manage_org_assets_back_button"),
-                id="manage_org_assets_page_content"
+                id="manage_org_assets_page_content",
+                classes="content_page"
             ),
             id="manage_org_assets_page"
         )
@@ -567,7 +578,8 @@ class manage_org_contacts_page(Screen):
                 Button(label="Add contact", id="manage_org_contacts_confirm_button"),
                 Button(label="Remove all contacts", id="manage_org_contacts_remove_button"),
                 Button(label="Back", id="manage_org_contacts_back_button"),
-                id="manage_org_contacts_page_content"
+                id="manage_org_contacts_page_content",
+                classes="content_page"
             ),
             id="manage_org_contacts_page"
         )
@@ -616,7 +628,8 @@ class update_org_metadata_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="update_org_metadata_verbose_radio"),
                 Button(label="Update Metadata on Blockchain", id="update_org_metadata_confirm_button"),
                 Button(label="Back", id="update_org_metadata_back_button"),
-                id="update_org_metadata_page_content"
+                id="update_org_metadata_page_content",
+                classes="content_page"
             ),
             id="update_org_metadata_page"
         )
@@ -657,7 +670,8 @@ class org_groups_page(Screen):
                 Button(label="Add a Group", id="org_groups_add_button"),
                 Button(label="Update Group", id="org_groups_update_button"),
                 Button(label="Back", id="org_groups_back_button"),
-                id="org_groups_page_content"
+                id="org_groups_page_content",
+                classes="content_page"
             ),
             id="org_groups_page"
         )
@@ -696,7 +710,8 @@ class add_org_group_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="add_org_group_metadata_file_input"),
                 Button(label="Add Group", id="add_org_group_confirm_button"),
                 Button(label="Back", id="add_org_group_back_button"),
-                id="add_org_group_content"
+                id="add_org_group_content",
+                classes="content_page"
             ),
             id="add_org_group_page"
         )
@@ -748,7 +763,8 @@ class update_org_group_page(Screen):
                 Input(placeholder="Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="update_org_group_metadata_file_input"),
                 Button(label="Update Group", id="update_org_group_confirm_button"),
                 Button(label="Back", id="update_org_group_back_button"),
-                id="update_org_group_content"
+                id="update_org_group_content",
+                classes="content_page"
             ),
             id="update_org_group_page"
         )
@@ -791,7 +807,8 @@ class org_manage_page(Screen):
                 Button(label="Create Organization", id="org_manage_add_button"),
                 Button(label="Delete Organization", id="org_manage_delete_button"),
                 Button(label="Back", id="org_manage_back_button"),
-                id="org_manage_page_content"
+                id="org_manage_page_content",
+                classes="content_page"
             ),
             id="org_manage_page"
         )
@@ -828,7 +845,8 @@ class org_manage_create_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="org_manage_create_verbose_radio"),
                 Button(label="Create Organization", id="org_manage_create_confirm_button"),
                 Button(label="Back", id="org_manage_create_back_button"),
-                id="org_manage_create_page_content"
+                id="org_manage_create_page_content",
+                classes="content_page"
             ),
             id="org_manage_create_page"
         )
@@ -875,7 +893,8 @@ class org_manage_delete_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="org_manage_delete_verbose_radio"),
                 Button(label="Create Organization", id="org_manage_delete_confirm_button"),
                 Button(label="Back", id="org_manage_delete_back_button"),
-                id="org_manage_delete_page_content"
+                id="org_manage_delete_page_content",
+                classes="content_page"
             ),
             id="org_manage_delete_page"
         )
@@ -916,7 +935,8 @@ class services_page(Screen):
                 Label("Services Page", id="services_page_title"),
                 Button(label="Metadata", id="services_metadata_button"),
                 Button(label="Manage", id="services_page_manage_button"),
-                id="services_page_content"
+                id="services_page_content",
+                classes="content_page"
             ),
             id="services_page"
         )
@@ -945,7 +965,8 @@ class services_metadata_page(Screen):
                 Button(label="Initialize Service Metadata", id="services_metadata_init_button"),
                 Button(label="Add Service Description", id="services_metadata_add_desc_button"),
                 Button("Back", id="services_metadata_back_button"),
-                id="manage_services_metadata_page_content"
+                id="manage_services_metadata_page_content",
+                classes="content_page"
             ),
             id="manage_services_metadata_page"
         )
@@ -985,7 +1006,8 @@ class init_service_metadata_page(Screen):
                 Select(options=((line, line) for line in """grpc\njsonrpc\nprocess""".splitlines()), prompt="Select Service Type", id="init_service_metadata_serv_type_select"),
                 Button(label="Initialize Service Metadata", id="init_service_metadata_confirm_button"),
                 Button(label="Back", id="init_service_metadata_back_button"),
-                id="init_service_metadata_page_content"
+                id="init_service_metadata_page_content",
+                classes="content_page"
             ),
             id="init_service_metadata_page"
         )
@@ -1036,7 +1058,8 @@ class add_desc_service_metadata_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="add_desc_service_metadata_meta_file_input"),
                 Button(label="Add Service Description", id="add_desc_service_metadata_confirm_button"),
                 Button(label="Back", id="add_desc_service_metadata_back_button"),
-                id="add_desc_service_metadata_page_content"
+                id="add_desc_service_metadata_page_content",
+                classes="content_page"
             ),
             id="add_desc_service_metadata_page"
         )
@@ -1074,7 +1097,8 @@ class services_manage_page(Screen):
                 Button(label="Publish Service", id="services_manage_create_button"),
                 Button(label="Delete Service", id="services_manage_delete_button"),
                 Button("Back", id="services_manage_back_button"),
-                id="services_manage_page_content"
+                id="services_manage_page_content",
+                classes="content_page"
             ),
             id="services_manage_page"
         )
@@ -1114,7 +1138,8 @@ class publish_service_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="publish_service_verbose_radio"),
                 Button(label="Publish Service", id="publish_service_confirm_button"),
                 Button(label="Back", id="publish_service_back_button"),
-                id="publish_service_page_content"
+                id="publish_service_page_content",
+                classes="content_page"
             ),
             id="publish_service_page"
         )
@@ -1164,7 +1189,8 @@ class delete_service_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="delete_service_verbose_radio"),
                 Button(label="Delete Service", id="delete_service_confirm_button"),
                 Button(label="Back", id="delete_service_back_button"),
-                id="delete_service_page_content"
+                id="delete_service_page_content",
+                classes="content_page"
             ),
             id="delete_service_page"
         )
