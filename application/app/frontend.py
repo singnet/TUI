@@ -344,20 +344,22 @@ class organization_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "organization_page_metadata_button":
             self.app.push_screen(org_metadata_page())
-        # elif event.button.id == "organization_page_groups_button":
-        #     self.app.push_screen()
+        elif event.button.id == "organization_page_groups_button":
+            self.app.push_screen(org_groups_page())
         # elif event.button.id == "organization_page_members_button":
         #     self.app.push_screen()
-        # elif event.button.id == "organization_page_create_delete_button":
-        #     self.app.push_screen()
+        elif event.button.id == "organization_page_create_delete_button":
+            self.app.push_screen(org_manage_page())
 
 class org_metadata_page(Screen):
     def compose(self) -> ComposeResult:
+        output, errCode = be.print_organization_info()
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Metadata Page", id="org_metadata_page_title"),
+                Label(f"My Organizations:\n{output}", id="org_metadata_info_label"),
                 Button(label="My Metadata", id="org_metadata_page_print_button"),
                 Button(label="Initialize Metadata", id="org_metadata_page_init_button"),
                 Button(label="Add Description", id="org_metadata_add_desc_button"),
@@ -380,7 +382,7 @@ class org_metadata_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_metadata_back_button":
-            self.app.pop_screen()
+            self.app.switch_screen(organization_page())
         elif event.button.id == "org_metadata_page_print_button":
             self.app.push_screen(print_org_metadata_page())
         elif event.button.id == "org_metadata_page_init_button":
@@ -391,6 +393,8 @@ class org_metadata_page(Screen):
             self.app.push_screen(manage_org_assets_page())
         elif event.button.id == "org_metadata_contacts_button":
             self.app.push_screen(manage_org_contacts_page())
+        elif event.button.id == "org_metadata_update_button":
+            self.app.push_screen(update_org_metadata_page())
 
 # TODO Implement printing metadata page
 class print_org_metadata_page(Screen):
@@ -595,6 +599,304 @@ class manage_org_contacts_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
+# TODO update metadata org
+class update_org_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Update Metadata Page", id="update_org_metadata_page_title"),
+                Input(placeholder="Your Organization ID", id="update_org_metadata_id_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="update_org_metadata_file_input"),
+                Input(placeholder="[OPTIONAL] List of members to be added to the organization", id="update_org_metadata_mems_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="update_org_metadata_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="update_org_metadata_index_input"),
+                RadioButton(label="Quiet transaction printing", id="update_org_metadata_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="update_org_metadata_verbose_radio"),
+                Button(label="Update Metadata on Blockchain", id="update_org_metadata_confirm_button"),
+                Button(label="Back", id="update_org_metadata_back_button"),
+                id="update_org_metadata_page_content"
+            ),
+            id="update_org_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "update_org_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "update_org_metadata_confirm_button":
+            org_id = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_id_input").value
+            file_name = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_file_input").value
+            mem_list = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_mems_input").value
+            gas = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_gas_input").value
+            index = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_index_input").value
+            quiet = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_quiet_radio").value
+            verbose = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_verbose_radio").value
+
+            output, errCode = be.update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class org_groups_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Organization Groups Page", id="org_groups_page_title"),
+                Button(label="Add a Group", id="org_groups_add_button"),
+                Button(label="Update Group", id="org_groups_update_button"),
+                Button(label="Back", id="org_groups_back_button"),
+                id="org_groups_page_content"
+            ),
+            id="org_groups_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "org_groups_back_button":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "org_groups_add_button":
+            self.app.switch_screen(add_org_group_page())
+        elif event.button.id == "org_groups_update_button":
+            self.app.switch_screen(update_org_group_page())
+
+class add_org_group_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Add Organization Group Page", id="add_org_group_title"),
+                Input(placeholder="Group Name", id="add_org_group_name_input"),
+                Input(placeholder="Payment Address", id="add_org_group_pay_addr_input"),
+                Input(placeholder="Endpoints (space seperated if multiple, DO NOT add brackets '[]')", id="add_org_group_endpoint_input"),
+                Input(placeholder="[OPTIONAL] Payment Expiration threshold. Default: 100", id="add_org_group_pay_expr_threshold_input"),
+                Input(placeholder="[OPTIONAL] Storage channel for payment. Default: 'etcd'", id="add_org_group_pay_chann_storage_input"),
+                Input(placeholder="[OPTIONAL] Payment channel connection timeout. Default: '100s'", id="add_org_group_pay_chann_conn_to_input"),
+                Input(placeholder="[OPTIONAL] Payment channel request timeout. Default: '5s'", id="add_org_group_pay_chann_req_to_input"),
+                Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="add_org_group_registry_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="add_org_group_metadata_file_input"),
+                Button(label="Add Group", id="add_org_group_confirm_button"),
+                Button(label="Back", id="add_org_group_back_button"),
+                id="add_org_group_content"
+            ),
+            id="add_org_group_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "add_org_group_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "add_org_group_confirm_button":
+            group_name = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_name_input").value
+            pay_addr = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_pay_addr_input").value
+            endpoints = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_endpoint_input").value
+            payment_expiration_threshold = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_pay_expr_threshold_input").value
+            pay_chann_storage_type = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_pay_chann_storage_input").value
+            pay_chann_conn_to = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_pay_chann_conn_to_input").value
+            pay_chann_req_to = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_pay_chann_req_to_input").value
+            reg_addr = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_registry_input").value
+            metadata_file = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_metadata_file_input").value
+
+            output, errCode = be.add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        
+
+class update_org_group_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Update Organization Group Page", id="update_org_group_title"),
+                Input(placeholder="Group Name", id="update_org_group_name_input"),
+                Input(placeholder="Payment Address", id="update_org_group_pay_addr_input"),
+                Input(placeholder="Endpoints (space seperated if multiple, DO NOT add brackets '[]')", id="update_org_group_endpoint_input"),
+                Input(placeholder="Payment Expiration threshold. Default: 100", id="update_org_group_pay_expr_threshold_input"),
+                Input(placeholder="Storage channel for payment. Default: 'etcd'", id="update_org_group_pay_chann_storage_input"),
+                Input(placeholder="Payment channel connection timeout. Default: '100s'", id="update_org_group_pay_chann_conn_to_input"),
+                Input(placeholder="Payment channel request timeout. Default: '5s'", id="update_org_group_pay_chann_req_to_input"),
+                Input(placeholder="Address of Registry contract, if not specified we read address from 'networks'", id="update_org_group_registry_input"),
+                Input(placeholder="Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="update_org_group_metadata_file_input"),
+                Button(label="Update Group", id="update_org_group_confirm_button"),
+                Button(label="Back", id="update_org_group_back_button"),
+                id="update_org_group_content"
+            ),
+            id="update_org_group_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "update_org_group_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "update_org_group_confirm_button":
+            group_name = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_name_input").value
+            pay_addr = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_pay_addr_input").value
+            endpoints = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_endpoint_input").value
+            payment_expiration_threshold = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_pay_expr_threshold_input").value
+            pay_chann_storage_type = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_pay_chann_storage_input").value
+            pay_chann_conn_to = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_pay_chann_conn_to_input").value
+            pay_chann_req_to = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_pay_chann_req_to_input").value
+            reg_addr = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_registry_input").value
+            metadata_file = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_metadata_file_input").value
+
+            output, errCode = be.update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class org_manage_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Organization Management Page", id="org_manage_page_title"),
+                Button(label="Create Organization", id="org_manage_add_button"),
+                Button(label="Delete Organization", id="org_manage_delete_button"),
+                Button(label="Back", id="org_manage_back_button"),
+                id="org_manage_page_content"
+            ),
+            id="org_manage_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "org_manage_back_button":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "org_manage_add_button":
+            self.app.switch_screen(org_manage_create_page())
+        elif event.button.id == "org_manage_delete_button":
+            self.app.switch_screen(org_manage_delete_page())
+
+class org_manage_create_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Create Organization Page", id="org_manage_create_page_title"),
+                Input(placeholder="Your Organization ID", id="org_manage_create_id_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="org_manage_create_file_input"),
+                Input(placeholder="[OPTIONAL] List of members to be added to the organization", id="org_manage_create_mems_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="org_manage_create_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="org_manage_create_index_input"),
+                RadioButton(label="Quiet transaction printing", id="org_manage_create_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="org_manage_create_verbose_radio"),
+                Button(label="Create Organization", id="org_manage_create_confirm_button"),
+                Button(label="Back", id="org_manage_create_back_button"),
+                id="org_manage_create_page_content"
+            ),
+            id="org_manage_create_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "org_manage_create_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "org_manage_create_confirm_button":
+            org_id = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_id_input").value
+            file_name = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_file_input").value
+            mem_list = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_mems_input").value
+            gas = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_gas_input").value
+            index = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_index_input").value
+            quiet = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_quiet_radio").value
+            verbose = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_verbose_radio").value
+
+            output, errCode = be.create_organization(org_id, file_name, mem_list, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class org_manage_delete_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Delete Organization Page", id="org_manage_delete_page_title"),
+                Input(placeholder="Your Organization ID", id="org_manage_delete_id_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="org_manage_delete_file_input"),
+                Input(placeholder="[OPTIONAL] List of members to be added to the organization", id="org_manage_delete_mems_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="org_manage_delete_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="org_manage_delete_index_input"),
+                RadioButton(label="Quiet transaction printing", id="org_manage_delete_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="org_manage_delete_verbose_radio"),
+                Button(label="Create Organization", id="org_manage_delete_confirm_button"),
+                Button(label="Back", id="org_manage_delete_back_button"),
+                id="org_manage_delete_page_content"
+            ),
+            id="org_manage_delete_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "org_manage_delete_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "org_manage_delete_confirm_button":
+            org_id = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_id_input").value
+            file_name = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_file_input").value
+            mem_list = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_mems_input").value
+            gas = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_gas_input").value
+            index = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_index_input").value
+            quiet = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_quiet_radio").value
+            verbose = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_verbose_radio").value
+
+            output, errCode = be.delete_organization(org_id, file_name, mem_list, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 # TODO Implement entire service CLI command
 class services_page(Screen):
