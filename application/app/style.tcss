@@ -1,28 +1,86 @@
-/* Welcome screen */
+themnemoniclineishatest1  TUI Test 1: Organization Name:  IshTUItestOrg1
+Organization ID: IshTUItestIdentity1
+Identity: IshTUItestOrgIdentity1
+Seed phrase: thisismyseedphraseletsgo
+
+1 - stdout
+2 - stderr
+42 - stdout
+
+- Organization page
+    - Show org info (list-my)
+    - Metadata page
+        - Show metadata
+        - Initialize metadata page
+        - Add description page
+        - Add assets page & Remove (all) assets [ Manage assets ]
+        - (Add/Remove) Contacts [ Manage contacts ] 
+        - Update page
+    - Groups page
+        - Add group
+        - Update group
+    - Members page
+        - Change owner
+        - Add member
+        - Remove member
+    - Create/Delete page
+- Services page
+
+
+
+
+
+
+class <page_id>(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label(“ Page", id="<page_id>_title"),
+                id="<page_id>_content"
+            ),
+            id="<page_id>"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+	global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+           /* Welcome screen */
 #welcome_screen {
     align: center middle;
 }
 
 #start_button {
     width: 40%;
-    border: solid;
-    background: black;
-    color: grey;
+    border: solid white;
 }
 
 /* Create Identity screen */
 #create_identity_button {
     width: 40%;
-    border: solid;
-    background: black;
+    border: solid white;
+    background: rgba(40, 40, 40, 0.5);
     align: center middle;
     margin-left: 50;
     margin-top: 5;
 }
 
+#create_identity_button:hover {
+    background: rgba(40, 40, 40, 0.9);
+}
+
 /* Navigation sidebar */
 .nav_sidebar {
-    background: black;
+    color: blue;
     height: 100%;
     width: 20%;
     align: left middle;
@@ -31,65 +89,83 @@
 .nav_sidebar_button {
     width: 100%;
     height: 10%;
-    background: grey;
+    border: solid white;
+    background: rgba(40, 40, 40, 0.5);
     margin: 5;
-    padding: 10 10;
 }
 
-/* Content area styles */
-#account_page_content, #organization_page_content, #services_page_content {
-    background: grey;
+.nav_sidebar_button:hover {
+    background: rgba(40, 40, 40, 0.9);
+}
+
+/* Wallet screen */
+#account_page_content {
     color: white;
     height: 100%;
     width: 80%;
     align: right middle;
+    background: grey;
 }
 
-/* Error and Exit screens */
-#error_exit_label, #exit_question {
+/* Organization screen */
+#organization_page_content {
+    color: white;
+    height: 100%;
+    width: 80%;
+    align: right middle;
+    background: grey;
+}
+
+/* Services screen */
+#services_page_content {
+    color: white;
+    height: 100%;
+    width: 80%;
+    align: right middle;
+    background: grey;
+}
+
+/* Error Exit screen */
+#error_exit_label {
     align: center middle;
     width: 70%;
     margin-left: 5;
     margin-top: 5;
 }
 
-#error_exit_button, #exit_button, #cancel_exit_button {
-    width: 40%;
-    border: solid;
-    background: black;
+#error_exit_button {
     align: center middle;
+    width: 40%;
+    border: solid white;
+    background: rgba(40, 40, 40, 0.5);
     margin-left: 50;
     margin-top: 5;
 }
 
-/* Input styles */
-input {
-    border: solid;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 5 5;
+/* Exit screen */
+exit_page {
+    align: center middle;
 }
 
-/* Label styles */
-label {
-    color: white;
-    margin: 5 5;
+#exit_page {
+    grid-size: 2;
+    grid-gutter: 1 2;
+    grid-rows: 1fr 3;
+    padding: 0 1;
+    width: 60;
+    height: 11;
+    border: thick $background 80%;
+    background: $surface;
 }
 
-/* Button styles */
-button {
-    border: solid;
-    background: black;
-    color: white;
-    padding: 10 15;
-    text-align: center;
+#exit_question {
+    column-span: 2;
+    height: 1fr;
+    width: 1fr;
+    content-align: center middle;
 }
 
-/* General Layout and Grid styles */
-.grid {
-    padding: 10 10;
+#exit_button, #cancel_exit_button {
+    width: 100%;
 }
 
-.grid-item {
-    margin: 5 5;
-}
