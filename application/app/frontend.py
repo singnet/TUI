@@ -799,6 +799,138 @@ class update_org_group_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
+class members_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Organization Members Page", id="members_page_title"),
+                Button(label="Manage Members", id="members_manage_button"),
+                Button(label="Change Organization Owner", id="members_change_owner_button"),
+                Button(label="Back", id="members_back_button"),
+                id="members_page_content"
+            ),
+            id="members_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "members_back_button":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "members_manage_button":
+            self.app.push_screen(manage_members_page())
+        elif event.button.id == "members_change_owner_button":
+            self.app.push_screen(change_org_owner_page())
+
+
+class manage_members_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Manage Members Page", id="manage_members_page_title"),
+                Input(placeholder="Id of the Organization", id="manage_members_id_input"),
+                Input(placeholder="List of members to be added to/removed from the organization", id="manage_members_mem_list_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="manage_members_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="manage_members_index_input"),
+                RadioButton(label="Quiet transaction printing", id="manage_members_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="manage_members_verbose_radio"),
+                Button(label="Add Member(s)", id="manage_members_add_button"),
+                Button(label="Remove Member(s)", id="manage_members_remove_button"),
+                Button(label="Back", id="manage_members_back_button"),
+                id="manage_members_page_content"
+            ),
+            id="manage_members_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        org_id = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_id_input").value
+        mem_list = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_mem_list_input").value
+        gas = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_gas_input").value
+        index = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_index_input").value
+        quiet = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_quiet_radio").value
+        verbose = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_verbose_radio").value
+            
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "manage_members_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "manage_members_add_button":
+            output, errCode = be.add_org_members(org_id, mem_list, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        elif event.button.id == "manage_members_add_button":
+            output, errCode = be.remove_org_members(org_id, mem_list, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+
+
+class change_org_owner_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Organization Owner Page", id="change_org_owner_page_title"),
+                Input(placeholder="Id of the Organization", id="change_org_owner_id_input"),
+                Input(placeholder="Address of the new Organization's owner", id="change_org_owner_new_addr_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="change_org_owner_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="change_org_owner_index_input"),
+                RadioButton(label="Quiet transaction printing", id="change_org_owner_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="change_org_owner_verbose_radio"),
+                Button(label="Change Owner", id="change_org_owner_confirm_button"),
+                Button(label="Back", id="change_org_owner_back_button"),
+                id="change_org_owner_page_content"
+            ),
+            id="change_org_owner_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "change_org_owner_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "change_org_owner_confirm_button":
+            org_id = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_id_input").value
+            new_addr = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_new_addr_input").value
+            gas = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_gas_input").value
+            index = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_index_input").value
+            quiet = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_quiet_radio").value
+            verbose = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_verbose_radio").value
+
+            output, errCode = be.change_org_owner(org_id, new_addr, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        
+
 class org_manage_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()

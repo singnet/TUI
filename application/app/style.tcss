@@ -49,6 +49,7 @@
     width: 80%;
     align: right middle;
     background: grey;
+    content-align: left middle;
 }
 
 .content_page Input {

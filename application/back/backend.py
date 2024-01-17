@@ -744,6 +744,98 @@ def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
         output = "Service successfully deleted!"
     return output, errCode
 
+# TODO
+def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
+    # snet organization add-members [-h] [--gas-price GAS_PRICE]
+    #                           [--wallet-index WALLET_INDEX] [--yes]
+    #                           [--quiet | --verbose]
+    #                           [--registry-at REGISTRY_ADDRESS]
+    #                           ORG_ID ORG_MEMBERS
+    global snet_dir
+
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not mem_list or len(mem_list) == 0:
+        return "ERROR: Members list is required", 42
+    command = f"snet organization add-members {org_id} {','.join(mem_list)}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if index and len(index) > 0:
+        command += f" --wallet-index {index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Members successfully added to the organization!"
+    return output, errCode
+
+# TODO
+def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
+    # snet organization rem-members [-h] [--gas-price GAS_PRICE]
+    #                           [--wallet-index WALLET_INDEX] [--yes]
+    #                           [--quiet | --verbose]
+    #                           [--registry-at REGISTRY_ADDRESS]
+    #                           ORG_ID ORG_MEMBERS
+    global snet_dir
+    
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not mem_list or len(mem_list) == 0:
+        return "ERROR: Members list is required", 42
+    command = f"snet organization rem-members {org_id} {','.join(mem_list)}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if index and len(index) > 0:
+        command += f" --wallet-index {index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Members successfully removed from the organization!"
+    return output, errCode
+
+# TODO
+def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
+    # snet organization change-owner [-h] [--gas-price GAS_PRICE]
+    #                            [--wallet-index WALLET_INDEX] [--yes]
+    #                            [--quiet | --verbose]
+    #                            [--registry-at REGISTRY_ADDRESS]
+    #                            ORG_ID OWNER_ADDRESS
+    global snet_dir
+
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not new_addr or len(new_addr) == 0:
+        return "ERROR: New owner address is required", 42
+
+    # Construct the command
+    command = f"snet organization change-owner {org_id} {new_addr}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if index and len(index) > 0:
+        command += f" --wallet-index {index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Organization owner successfully changed!"
+    return output, errCode
+
 # TODO custom command
 def custom_command(command):
     pass
