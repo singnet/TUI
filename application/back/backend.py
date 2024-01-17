@@ -7,6 +7,7 @@ from textual.screen import Screen
 from time import sleep
 import re
 import os
+import json
 # from web3 import Web3
 # from eth_account import Account
 
@@ -15,6 +16,8 @@ import os
 snet_dir = f"{os.environ['HOME']}/snet"
 serv_path: str
 serv_path_set = False
+daemon_end: str
+daemon_end_set = False
 
 # TODO
 class Identity():
@@ -85,18 +88,6 @@ def check_account_balance():
     if "    account:" in output:
         return True, output, errCode
     return False, output, errCode
-
-def dict_create(output: str):
-    res = {}
-    lines = output.split('\n')
-    for line in lines:
-        if ':' in line:
-            key, value = line.split(':', 1)
-            key = key.strip()
-            value = value.strip()
-            res[key] = value
-
-    return res
 
 def nav_sidebar_vert() -> Vertical:
     ret_vert = Vertical(
@@ -768,7 +759,6 @@ def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    # Execute the command
     output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Members successfully added to the organization!"
@@ -798,7 +788,6 @@ def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    # Execute the command
     output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Members successfully removed from the organization!"
@@ -818,7 +807,6 @@ def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
     if not new_addr or len(new_addr) == 0:
         return "ERROR: New owner address is required", 42
 
-    # Construct the command
     command = f"snet organization change-owner {org_id} {new_addr}"
     if gas and len(gas) > 0:
         command += f" --gas-price {gas}"
@@ -830,11 +818,35 @@ def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    # Execute the command
     output, errCode = run_shell_command(command, cwd=snet_dir)
     if len(output) == 0 and errCode == 0:
         output = "Organization owner successfully changed!"
     return output, errCode
+
+def print_unclaimed_payments():
+    # snet treasurer print-unclaimed [-h] --endpoint ENDPOINT
+    #                            [--wallet-index WALLET_INDEX]
+    global snet_dir
+    global daemon_end
+    global daemon_end_set
+
+    if not daemon_end_set:
+        with open('file.json', 'r') as f:
+            daemon_config = json.load(f)
+        endpoint = daemon_config["daemon_end_point"]
+        if endpoint == "0.0.0.0:<DAEMON_PORT>":
+            return f"ERROR: Please correctly configure the daemon ({snet_dir}/snetd.config.json) and ensure it is running before attempting to view payments", 42
+        else:
+            daemon_end = endpoint
+            daemon_end_set = True
+    
+    command = f"snet treasurer print-unclaimed --endpoint {endpoint}"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    return output, errCode
+
+    
+
 
 # TODO custom command
 def custom_command(command):

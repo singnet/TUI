@@ -126,6 +126,7 @@ class account_page(Screen):
                 Button("Withdraw", id="account_page_withdraw_button"),
                 Button("Transfer", id="account_page_transfer_button"),
                 Button("Identity Settings", id="account_page_identity_settings_button"),
+                Button("Treasurer", id="account_treasurer_button"),
                 id="account_page_content",
                 classes="content_page"
             ),
@@ -149,6 +150,40 @@ class account_page(Screen):
             self.app.switch_screen(account_withdraw_page())
         elif event.button.id == "account_page_transfer_button":
             self.app.switch_screen(account_transfer_page())
+
+
+class treasurer_page(Screen):
+    def compose(self) -> ComposeResult:
+        global popup_output
+        unclaimed_payments, errCode = be.print_unclaimed_payments()
+        if errCode != 0:
+            popup_output = unclaimed_payments
+            self.app.switch_screen(popup_output_page())
+        else:
+            yield Header()
+            yield Horizontal(
+                be.nav_sidebar_vert(),
+                Grid(
+                    Label("Treasurer Page", id="treasurer_page_title"),
+                    Label(f"Unclaimed payments:\n\n{unclaimed_payments}", id="treasurer_unclaimed_label"),
+                    id="treasurer_page_content"
+                ),
+                id="treasurer_page"
+            )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+
+
 
 class identity_page(Screen):
     def compose(self) -> ComposeResult:
