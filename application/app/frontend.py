@@ -160,7 +160,8 @@ class treasurer_page(Screen):
         unclaimed_payments, errCode = be.print_unclaimed_payments()
         if errCode != 0:
             popup_output = unclaimed_payments
-            self.app.switch_screen(popup_output_page())
+            self.app.switch_screen(account_page())
+            self.app.push_screen(popup_output_page())
         else:
             yield Header()
             yield Horizontal(
