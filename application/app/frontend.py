@@ -356,8 +356,8 @@ class organization_page(Screen):
             self.app.push_screen(org_metadata_page())
         elif event.button.id == "organization_page_groups_button":
             self.app.push_screen(org_groups_page())
-        # elif event.button.id == "organization_page_members_button":
-        #     self.app.push_screen()
+        elif event.button.id == "organization_page_members_button":
+            self.app.push_screen(members_page())
         elif event.button.id == "organization_page_create_delete_button":
             self.app.push_screen(org_manage_page())
 
