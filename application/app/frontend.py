@@ -150,6 +150,8 @@ class account_page(Screen):
             self.app.switch_screen(account_withdraw_page())
         elif event.button.id == "account_page_transfer_button":
             self.app.switch_screen(account_transfer_page())
+        elif event.button.id == "account_treasurer_button":
+            self.app.switch_screen(treasurer_page())
 
 
 class treasurer_page(Screen):
