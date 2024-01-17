@@ -831,7 +831,7 @@ def print_unclaimed_payments():
     global daemon_end_set
 
     if not daemon_end_set:
-        with open('file.json', 'r') as f:
+        with open(f'{snet_dir}/snetd.config.json', 'r') as f:
             daemon_config = json.load(f)
         endpoint = daemon_config["daemon_end_point"]
         if endpoint == "0.0.0.0:<DAEMON_PORT>":
