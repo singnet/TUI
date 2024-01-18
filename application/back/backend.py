@@ -79,7 +79,7 @@ def run_shell_command_with_input(command, input_text):
 
 def check_cli():
     output, errCode = run_shell_command('snet')
-    if "error: the following arguments are required: COMMAND" in output:
+    if "ERROR: the following arguments are required: COMMAND" in output:
         return True, output, errCode
     return False, output, errCode
 
@@ -713,7 +713,7 @@ def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
     global serv_path
     global serv_path_set
     if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to add description", 42
+        return "ERROR: Please initialize service metadata before attempting to delete service", 42
 
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization ID", 42
