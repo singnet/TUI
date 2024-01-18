@@ -1001,11 +1001,11 @@ def print_service_status(org_id, service_id, pay_group, reg_addr):
     #                               ORG_ID SERVICE_ID
     return "ERROR: Please implement backend method", 42
 
-def print_service_api_metadata():
+def print_service_api_metadata(proto_dir, metadata_file):
     # snet service get-api-metadata [-h] [--metadata-file METADATA_FILE] PROTO_DIR
     return "ERROR: Please implement backend method", 42
 
-def print_service_api_registry():
+def print_service_api_registry(org_id, service_id, reg_addr, proto_dir):
     # snet service get-api-registry [-h] [--registry-at REGISTRY_AT]
     #                           ORG_ID SERVICE_ID PROTO_DIR
     return "ERROR: Please implement backend method", 42

@@ -171,7 +171,8 @@ class treasurer_page(Screen):
                     Button("Claim Expired", id="treasurer_claim_exp_button"),
                     Button("Claim All", id="treasurer_claim_all_button"),
                     Button("Back", id="treasurer_back_button"),
-                    id="treasurer_page_content"
+                    id="treasurer_page_content",
+                    classes="content_page"
                 ),
                 id="treasurer_page"
             )
@@ -211,7 +212,8 @@ class treasurer_claim_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="treasurer_claim_verbose_radio"),
                 Button("Claim", id="treasurer_claim_confirm_button"),
                 Button("Back", id="treasurer_claim_back_button"),
-                id="treasurer_claim_page_content"
+                id="treasurer_claim_page_content",
+                classes="content_page"
             ),
             id="treasurer_claim_page"
         )
@@ -257,7 +259,8 @@ class treasurer_claim_all_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="treasurer_claim_all_verbose_radio"),
                 Button("Claim", id="treasurer_claim_all_confirm_button"),
                 Button("Back", id="treasurer_claim_all_back_button"),
-                id="treasurer_claim_all_page_content"
+                id="treasurer_claim_all_page_content",
+                classes="content_page"
             ),
             id="treasurer_claim_all_page"
         )
@@ -301,7 +304,8 @@ class treasurer_claim_expr_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="treasurer_claim_expr_verbose_radio"),
                 Button("Claim", id="treasurer_claim_expr_confirm_button"),
                 Button("Back", id="treasurer_claim_expr_back_button"),
-                id="treasurer_claim_expr_page_content"
+                id="treasurer_claim_expr_page_content",
+                classes="content_page"
             ),
             id="treasurer_claim_expr_page"
         )
@@ -985,7 +989,8 @@ class members_page(Screen):
                 Button(label="Manage Members", id="members_manage_button"),
                 Button(label="Change Organization Owner", id="members_change_owner_button"),
                 Button(label="Back", id="members_back_button"),
-                id="members_page_content"
+                id="members_page_content",
+                classes="content_page"
             ),
             id="members_page"
         )
@@ -1025,7 +1030,8 @@ class manage_members_page(Screen):
                 Button(label="Add Member(s)", id="manage_members_add_button"),
                 Button(label="Remove Member(s)", id="manage_members_remove_button"),
                 Button(label="Back", id="manage_members_back_button"),
-                id="manage_members_page_content"
+                id="manage_members_page_content",
+                classes="content_page"
             ),
             id="manage_members_page"
         )
@@ -1076,7 +1082,8 @@ class change_org_owner_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="change_org_owner_verbose_radio"),
                 Button(label="Change Owner", id="change_org_owner_confirm_button"),
                 Button(label="Back", id="change_org_owner_back_button"),
-                id="change_org_owner_page_content"
+                id="change_org_owner_page_content",
+                classes="content_page"
             ),
             id="change_org_owner_page"
         )
@@ -1376,7 +1383,8 @@ class service_metadata_set_page(Screen):
                 Button("Set free calls", id="service_metadata_set_free_calls_button"),
                 Button("Set freecall signer address", id="service_metadata_set_freecall_signer_button"),
                 Button("Back", id="service_metadata_set_back_button"),
-                id="service_metadata_set_page_content"
+                id="service_metadata_set_page_content",
+                classes="content_page"
             ),
             id="service_metadata_set_page"
         )
@@ -1416,7 +1424,8 @@ class service_metadata_set_model_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_model_file_input"),
                 Button("Set Model", id="service_metadata_set_model_confirm_button"),
                 Button("Back", id="service_metadata_set_model_back_button"),
-                id="service_metadata_set_model_page_content"
+                id="service_metadata_set_model_page_content",
+                classes="content_page"
             ),
             id="service_metadata_set_model_page"
         )
@@ -1454,7 +1463,8 @@ class service_metadata_set_fixed_price_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_fixed_price_file_input"),
                 Button("Set Fixed Price", id="service_metadata_set_fixed_price_confirm_button"),
                 Button("Back", id="service_metadata_set_fixed_price_back_button"),
-                id="service_metadata_set_fixed_price_page_content"
+                id="service_metadata_set_fixed_price_page_content",
+                classes="content_page"
             ),
             id="service_metadata_set_fixed_price_page"
         )
@@ -1496,7 +1506,8 @@ class service_metadata_set_method_price_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_method_price_file_input"),
                 Button("Set Method Price", id="service_metadata_set_method_price_confirm_button"),
                 Button("Back", id="service_metadata_set_method_price_back_button"),
-                id="service_metadata_set_method_price_page_content"
+                id="service_metadata_set_method_price_page_content",
+                classes="content_page"
             ),
             id="service_metadata_set_method_price_page"
         )
@@ -1538,7 +1549,8 @@ class service_metadata_set_free_calls_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_free_calls_file_input"),
                 Button("Set Free Calls", id="service_metadata_set_free_calls_confirm_button"),
                 Button("Back", id="service_metadata_set_free_calls_back_button"),
-                id="service_metadata_set_free_calls_page_content"
+                id="service_metadata_set_free_calls_page_content",
+                classes="content_page"
             ),
             id="service_metadata_set_free_calls_page"
         )
@@ -1577,7 +1589,8 @@ class service_metadata_set_freecall_signer_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_freecall_signer_file_input"),
                 Button("Set Signer Address", id="service_metadata_set_freecall_signer_confirm_button"),
                 Button("Back", id="service_metadata_set_freecall_signer_back_button"),
-                id="service_metadata_set_freecall_signer_page_content"
+                id="service_metadata_set_freecall_signer_page_content",
+                classes="content_page"
             ),
             id="service_metadata_set_freecall_signer_page"
         )
@@ -1620,7 +1633,8 @@ class service_metadata_add_remove_page(Screen):
                 Button("Add/Remove Service Metadata Contributors", id="services_metadata_add_remove_contributors_button"),
                 Button("Add/Remove Service Metadata Tags", id="services_metadata_add_remove_groups_button"),
                 Button("Back", id="serivce_metadata_add_remove_back_button"),
-                id="service_metadata_add_remove_page_content"
+                id="service_metadata_add_remove_page_content",
+                classes="content_page"
             ),
             id="service_metadata_add_remove_page"
         )
@@ -1693,7 +1707,8 @@ class service_metadata_add_remove_group_page(Screen):
                 Button("Add Group", id="service_metadata_add_remove_group_add_button"),
                 Button("Remove Group", id="service_metadata_add_remove_group_remove_button"),
                 Button("Back", id="service_metadata_add_remove_group_back_button"),
-                id="service_metadata_add_remove_group_page_content"
+                id="service_metadata_add_remove_group_page_content",
+                classes="content_page"
             ),
             id="service_metadata_add_remove_group_page"
         )
@@ -1736,7 +1751,8 @@ class service_metadata_add_remove_daemon_addr_page(Screen):
                 Button("Add Daemon Address", id="service_metadata_add_remove_daemon_addr_add_button"),
                 Button("Remove ALL Daemon Addresses", id="service_metadata_add_remove_daemon_addr_remove_button"),
                 Button("Back", id="service_metadata_add_remove_daemon_addr_back_button"),
-                id="service_metadata_add_remove_daemon_addr_page_content"
+                id="service_metadata_add_remove_daemon_addr_page_content",
+                classes="content_page"
             ),
             id="service_metadata_add_remove_daemon_addr_page"
         )
@@ -1780,7 +1796,8 @@ class service_metadata_add_remove_assets_page(Screen):
                 Button("Add Asset", id="service_metadata_add_remove_assets_add_button"),
                 Button("Remove ALL Assets of type", id="service_metadata_add_remove_assets_remove_button"),
                 Button("Back", id="service_metadata_add_remove_assets_back_button"),
-                id="service_metadata_add_remove_assets_page_content"
+                id="service_metadata_add_remove_assets_page_content",
+                classes="content_page"
             ),
             id="service_metadata_add_remove_assets_page"
         )
@@ -1824,7 +1841,8 @@ class service_metadata_add_remove_media_page(Screen):
                 Button("Add Media", id="service_metadata_add_remove_media_add_button"),
                 Button("Remove ALL Media", id="service_metadata_add_remove_media_remove_button"),
                 Button("Back", id="service_metadata_add_remove_media_back_button"),
-                id="service_metadata_add_remove_media_page_content"
+                id="service_metadata_add_remove_media_page_content",
+                classes="content_page"
             ),
             id="service_metadata_add_remove_media_page"
         )
@@ -1866,7 +1884,8 @@ class service_metadata_update_page(Screen):
                 Button("Validate Metadata", id="service_metadata_update_validate_button"),
                 Button("Update Metadata", id="service_metadata_update_metadata_button"),
                 Button("Back", id="serivce_metadata_update_back_button"),
-                id="service_metadata_update_page_content"
+                id="service_metadata_update_page_content",
+                classes="content_page"
             ),
             id="service_metadata_update_page"
         )
@@ -1901,7 +1920,8 @@ class service_metadata_update_daemon_addr_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_update_daemon_addr_file_input"),
                 Button("Update Daemon Address", id="service_metadata_update_daemon_addr_update_button"),
                 Button("Back", id="service_metadata_update_daemon_addr_back_button"),
-                id="service_metadata_update_daemon_addr_page_content"
+                id="service_metadata_update_daemon_addr_page_content",
+                classes="content_page"
             ),
             id="service_metadata_update_daemon_addr_page"
         )
@@ -1938,7 +1958,8 @@ class service_metadata_update_validate_metadata_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_update_validate_metadata_file_input"),
                 Button("Validate Metadata", id="service_metadata_update_validate_metadata_validate_button"),
                 Button("Back", id="service_metadata_update_validate_metadata_back_button"),
-                id="service_metadata_update_validate_metadata_page_content"
+                id="service_metadata_update_validate_metadata_page_content",
+                classes="content_page"
             ),
             id="service_metadata_update_validate_metadata_page"
         )
@@ -1981,7 +2002,8 @@ class service_metadata_update_metadata_page(Screen):
                 RadioButton(label="Verbose transaction printing", id="service_metadata_update_metadata_verbose_radio"),
                 Button(label="Update Metadata", id="service_metadata_update_metadata_confirm_button"),
                 Button(label="Back", id="service_metadata_update_metadata_back_button"),
-                id="service_metadata_update_metadata_page_content"
+                id="service_metadata_update_metadata_page_content",
+                classes="content_page"
             ),
             id="service_metadata_update_metadata_page"
         )
@@ -2026,7 +2048,8 @@ class service_metadata_get_page(Screen):
                 Button("API Metadata", id="service_metadata_get_metadata_button"),
                 Button("API Registry", id="service_metadata_get_registry_button"),
                 Button("Back", id="service_metadata_get_back_button"),
-                id="service_metadata_get_page_content"
+                id="service_metadata_get_page_content",
+                classes="content_page"
             ),
             id="service_metadata_get_page"
         )
@@ -2062,7 +2085,8 @@ class service_metadata_get_service_status_page(Screen):
                 Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="service_metadata_get_service_status_reg_contract_input"),
                 Button(label="Get Service Status", id="service_metadata_get_service_status_confirm_button"),
                 Button(label="Back", id="service_metadata_get_service_status_back_button"),
-                id="service_metadata_get_service_status_page_content"
+                id="service_metadata_get_service_status_page_content",
+                classes="content_page"
             ),
             id="service_metadata_get_service_status_page"
         )
@@ -2102,7 +2126,8 @@ class service_metadata_get_api_metadata_page(Screen):
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_get_api_metadata_file_input"),
                 Button("Set Model", id="service_metadata_get_api_metadata_confirm_button"),
                 Button("Back", id="service_metadata_get_api_metadata_back_button"),
-                id="service_metadata_get_api_metadata_page_content"
+                id="service_metadata_get_api_metadata_page_content",
+                classes="content_page"
             ),
             id="service_metadata_get_api_metadata_page"
         )
@@ -2141,7 +2166,8 @@ class service_metadata_get_api_registry_page(Screen):
                 Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="service_metadata_get_api_registry_reg_contract_input"),
                 Button(label="Get Service Status", id="service_metadata_get_api_registry_confirm_button"),
                 Button(label="Back", id="service_metadata_get_api_registry_back_button"),
-                id="service_metadata_get_api_registry_page_content"
+                id="service_metadata_get_api_registry_page_content",
+                classes="content_page"
             ),
             id="service_metadata_get_api_registry_page"
         )
