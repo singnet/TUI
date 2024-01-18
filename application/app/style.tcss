@@ -35,7 +35,7 @@
     height: 10%;
     border: solid white;
     background: rgba(40, 40, 40, 0.5);
-    margin: 5;
+    margin: 3;
 }
 
 .nav_sidebar_button:hover {
