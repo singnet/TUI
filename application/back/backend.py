@@ -711,6 +711,9 @@ def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
     #                 [--quiet | --verbose]
     #                 ORG_ID SERVICE_ID
     global serv_path
+    global serv_path_set
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to add description", 42
 
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization ID", 42
