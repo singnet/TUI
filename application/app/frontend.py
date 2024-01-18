@@ -1695,9 +1695,6 @@ class service_metadata_add_remove_page(Screen):
                 Button("Add/Remove Service Metadata Daemon Address", id="services_metadata_add_remove_daemon_button"),
                 Button("Add/Remove Service Metadata Assets", id="services_metadata_add_remove_assets_button"),
                 Button("Add/Remove Service Metadata Media", id="services_metadata_add_remove_media_button"),
-                Button("Change/Swap Service Metadata Media Order", id="services_metadata_add_remove_media_order_button"),
-                Button("Add/Remove Service Metadata Contributors", id="services_metadata_add_remove_contributors_button"),
-                Button("Add/Remove Service Metadata Tags", id="services_metadata_add_remove_groups_button"),
                 Button("Back", id="serivce_metadata_add_remove_back_button"),
                 id="service_metadata_add_remove_page_content",
                 classes="content_page"
@@ -1720,6 +1717,14 @@ class service_metadata_add_remove_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "services_metadata_add_desc_button":
             self.app.push_screen(add_desc_service_metadata_page())
+        elif event.button.id == "services_metadata_add_remove_groups_button":
+            self.app.push_screen(service_metadata_add_remove_group_page())
+        elif event.button.id == "services_metadata_add_remove_daemon_button":
+            self.app.push_screen(service_metadata_add_remove_daemon_addr_page())
+        elif event.button.id == "services_metadata_add_remove_assets_button":
+            self.app.push_screen(service_metadata_add_remove_assets_page())
+        elif event.button.id == "services_metadata_add_remove_media_button":
+            self.app.push_screen(service_metadata_add_remove_media_page())
 
 class add_desc_service_metadata_page(Screen):
     def compose(self) -> ComposeResult:
