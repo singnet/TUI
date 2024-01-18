@@ -845,10 +845,172 @@ def print_unclaimed_payments():
     output, errCode = run_shell_command(command, cwd=snet_dir)
     return output, errCode
 
-    
+def treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose):
+    # snet treasurer claim [-h] --endpoint ENDPOINT [--gas-price GAS_PRICE]
+    #                  [--wallet-index WALLET_INDEX] [--yes]
+    #                  [--quiet | --verbose]
+    #                  CHANNELS [CHANNELS ...]
+    if not channels or len(channels) == 0:
+        return "ERROR: Channels list is required", 42
+    if not endpoint or len(endpoint) == 0:
+        return "ERROR: Endpoint is required", 42
 
+    command = f"snet treasurer claim --endpoint {endpoint}"
+    for channel_id in channels:
+        command += f" {channel_id}"
+    if gas_price and len(gas_price) > 0:
+        command += f" --gas-price {gas_price}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Payments successfully claimed from channels!"
+    return output, errCode
+
+def treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose):
+    # snet treasurer claim-all [-h] --endpoint ENDPOINT [--gas-price GAS_PRICE]
+    #                      [--wallet-index WALLET_INDEX] [--yes]
+    #                      [--quiet | --verbose]
+    if not endpoint or len(endpoint) == 0:
+        return "ERROR: Endpoint is required", 42
+
+    command = f"snet treasurer claim-all --endpoint {endpoint}"
+    if gas_price and len(gas_price) > 0:
+        command += f" --gas-price {gas_price}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "All available payments successfully claimed!"
+    return output, errCode
+
+def treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, verbose):
+    # snet treasurer claim-expired [-h]
+    #                          [--expiration-threshold EXPIRATION_THRESHOLD]
+    #                          --endpoint ENDPOINT [--gas-price GAS_PRICE]
+    #                          [--wallet-index WALLET_INDEX] [--yes]
+    #                          [--quiet | --verbose]
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_set_model(proto_dir, metadata_file):
+    # snet service metadata-set-model [-h] [--metadata-file METADATA_FILE] PROTO_DIR
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_set_fixed_price(group_name, price, metadata_file):
+    # snet service metadata-set-fixed-price [-h] [--metadata-file METADATA_FILE]
+    #                                   group_name PRICE
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_set_method_price(group_name, package_name, service_name, method, price, metadata_file):
+    # snet service metadata-set-method-price [-h] [--metadata-file METADATA_FILE]
+    #                                    group_name package_name service_name
+    #                                    method PRICE
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_set_free_calls(group_name, free_calls, metadata_file):
+    # snet service metadata-set-free-calls [-h] [--metadata-file METADATA_FILE]
+    #                                  GROUP_NAME free_calls
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_set_freecall_signer_addr(group_name, signer_addr, metadata_file):
+    # snet service metadata-set-freecall-signer-address [-h]
+    #                                               [--metadata-file METADATA_FILE]
+    #                                               GROUP_NAME signer_address
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_add_group(group_name, metadata_file):
+    # snet service metadata-add-group [-h] [--metadata-file METADATA_FILE]
+    #                             GROUP_NAME
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_remove_group(group_name, metadata_file):
+    # snet service metadata-remove-group [-h] [--metadata-file METADATA_FILE]
+    #                                GROUP_NAME
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_add_daemon_addr(group_name, daemon_addr, metadata_file):
+    # snet service metadata-add-daemon-addresses [-h]
+    #                                        [--metadata-file METADATA_FILE]
+    #                                        group_name DAEMON ADDRESSES
+    #                                        [DAEMON ADDRESSES ...]
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_remove_daemon_addr(group_name, daemon_addr, metadata_file):
+    # snet service metadata-remove-all-daemon-addresses [-h]
+    #                                               [--metadata-file METADATA_FILE]
+    #                                               group_name
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_add_assets(asset_path, asset_type, metadata_file):
+    # snet service metadata-add-assets [-h] [--metadata-file METADATA_FILE]
+    #                              asset_file_path asset_type
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_remove_assets(asset_type, metadata_file):
+    # snet service metadata-remove-assets [-h] [--metadata-file METADATA_FILE]
+    #                                 asset_type
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_add_media(url, hero_image, metadata_file):
+    # snet service metadata-add-media [-h] [--hero_image]
+    #                             [--metadata-file METADATA_FILE]
+    #                             MEDIA_URL
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_remove_media(metadata_file):
+    # snet service metadata-remove-all-media [-h] [--metadata-file METADATA_FILE]
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_update_daemon_addr(group_name, daemon_addr, metadata_file):
+    # snet service metadata-update-daemon-addresses [-h]
+    #                                           [--metadata-file METADATA_FILE]
+    #                                           group_name DAEMON ADDRESSES
+    #                                           [DAEMON ADDRESSES ...]
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_update_validate_metadata(metadata_file):
+    # snet service validate-metadata [-h] [--metadata-file METADATA_FILE]
+    return "ERROR: Please implement backend method", 42
+
+def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose):
+    # snet service update-metadata [-h] [--metadata-file METADATA_FILE]
+    #                          [--update-mpe-address]
+    #                          [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                          [--registry-at REGISTRY_AT]
+    #                          [--gas-price GAS_PRICE]
+    #                          [--wallet-index WALLET_INDEX] [--yes]
+    #                          [--quiet | --verbose]
+    #                          ORG_ID SERVICE_ID
+    return "ERROR: Please implement backend method", 42
+
+def print_service_status(org_id, service_id, pay_group, reg_addr):
+    # snet service print-service-status [-h] [--registry-at REGISTRY_AT]
+    #                               [--group-name GROUP_NAME]
+    #                               ORG_ID SERVICE_ID
+    return "ERROR: Please implement backend method", 42
+
+def print_service_api_metadata():
+    # snet service get-api-metadata [-h] [--metadata-file METADATA_FILE] PROTO_DIR
+    return "ERROR: Please implement backend method", 42
+
+def print_service_api_registry():
+    # snet service get-api-registry [-h] [--registry-at REGISTRY_AT]
+    #                           ORG_ID SERVICE_ID PROTO_DIR
+    return "ERROR: Please implement backend method", 42
 
 # TODO custom command
 def custom_command(command):
-    pass
+    return "ERROR: Please implement backend method", 42
 

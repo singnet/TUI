@@ -11,8 +11,6 @@ import re
 error_exit_label: str
 popup_output: str
 
-# TODO Ensure all "command" screens are actually popups, and add back buttons.
-
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
@@ -169,6 +167,10 @@ class treasurer_page(Screen):
                 Grid(
                     Label("Treasurer Page", id="treasurer_page_title"),
                     Label(f"Unclaimed payments:\n\n{unclaimed_payments}", id="treasurer_unclaimed_label"),
+                    Button("Claim", id="treasurer_claim_button"),
+                    Button("Claim Expired", id="treasurer_claim_exp_button"),
+                    Button("Claim All", id="treasurer_claim_all_button"),
+                    Button("Back", id="treasurer_back_button"),
                     id="treasurer_page_content"
                 ),
                 id="treasurer_page"
@@ -185,7 +187,150 @@ class treasurer_page(Screen):
             self.app.switch_screen(services_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "treasurer_back_button":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "treasurer_claim_button":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "treasurer_claim_exp_button":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "treasurer_claim_all_button":
+            self.app.push_screen(exit_page())
 
+class treasurer_claim_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Payment Claim Page", id="treasurer_claim_page_title"),
+                Input(placeholder="Channels to claim", id="treasurer_claim_channels_input"),
+                Input(placeholder="Daemon Endpoint", id="treasurer_claim_endpoint_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="treasurer_claim_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="treasurer_claim_index_input"),
+                RadioButton(label="Quiet transaction printing", id="treasurer_claim_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="treasurer_claim_verbose_radio"),
+                Button("Claim", id="treasurer_claim_confirm_button"),
+                Button("Back", id="treasurer_claim_back_button"),
+                id="treasurer_claim_page_content"
+            ),
+            id="treasurer_claim_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "treasurer_claim_back_button":
+            self.app.switch_screen(treasurer_page())
+        elif event.button.id == "treasurer_claim_confirm_button":
+            channels = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_channels_input").value
+            endpoint = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_endpoint_input").value
+            gas_price = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_gas_input").value
+            wallet_index = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_index_input").value
+            quiet = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_quiet_radio").value
+            verbose = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_verbose_radio").value
+
+            output, errCode = be.treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+            
+
+class treasurer_claim_all_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Claim All Payments Page", id="treasurer_claim_all_page_title"),
+                Input(placeholder="Daemon Endpoint", id="treasurer_claim_all_endpoint_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="treasurer_claim_all_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="treasurer_claim_all_index_input"),
+                RadioButton(label="Quiet transaction printing", id="treasurer_claim_all_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="treasurer_claim_all_verbose_radio"),
+                Button("Claim", id="treasurer_claim_all_confirm_button"),
+                Button("Back", id="treasurer_claim_all_back_button"),
+                id="treasurer_claim_all_page_content"
+            ),
+            id="treasurer_claim_all_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "treasurer_claim_all_back_button":
+            self.app.switch_screen(treasurer_page())
+        elif event.button.id == "treasurer_claim_all_confirm_button":
+            endpoint = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_endpoint_input").value
+            gas_price = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_gas_input").value
+            wallet_index = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_index_input").value
+            quiet = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_quiet_radio").value
+            verbose = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_verbose_radio").value
+
+            output, errCode = be.treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class treasurer_claim_expr_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Claim expired payments Page", id="treasurer_claim_expr_page_title"),
+                Input(placeholder="[OPTIONAL] Service expiration threshold in blocks (default is 34560 ~ 6 days with 15s/block)", id="treasurer_claim_expr_threshold_input"),
+                Input(placeholder="Daemon Endpoint", id="treasurer_claim_expr_endpoint_input"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="treasurer_claim_expr_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="treasurer_claim_expr_index_input"),
+                RadioButton(label="Quiet transaction printing", id="treasurer_claim_expr_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="treasurer_claim_expr_verbose_radio"),
+                Button("Claim", id="treasurer_claim_expr_confirm_button"),
+                Button("Back", id="treasurer_claim_expr_back_button"),
+                id="treasurer_claim_expr_page_content"
+            ),
+            id="treasurer_claim_expr_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "treasurer_claim_expr_back_button":
+            self.app.switch_screen(treasurer_page())
+        elif event.button.id == "treasurer_claim_expr_confirm_button":
+            threshold = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_threshold_input").value
+            endpoint = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_endpoint_input").value
+            gas_price = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_gas_input").value
+            wallet_index = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_index_input").value
+            quiet = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_quiet_radio").value
+            verbose = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_verbose_radio").value
+
+            output, errCode = be.treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        
 
 
 class identity_page(Screen):
@@ -361,7 +506,6 @@ class account_transfer_page(Screen):
             self.app.push_screen(popup_output_page())
 
 
-# TODO Implement entire organization CLI command
 class organization_page(Screen):
     def compose(self) -> ComposeResult:
         output, errCode = be.print_organization_info()
@@ -443,7 +587,6 @@ class org_metadata_page(Screen):
         elif event.button.id == "org_metadata_update_button":
             self.app.push_screen(update_org_metadata_page())
 
-# TODO Implement printing metadata page
 class print_org_metadata_page(Screen):
     def compose(self) -> ComposeResult:
         output, errCode = be.print_org_metadata()
@@ -472,7 +615,6 @@ class print_org_metadata_page(Screen):
         elif event.button.id == "print_org_metadata_back_button":
             self.app.pop_screen()
 
-# TODO Implement init metadata page
 class init_org_metadata_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -515,7 +657,6 @@ class init_org_metadata_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
-# TODO Implement add desc page
 class add_org_metadata_desc_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -558,7 +699,6 @@ class add_org_metadata_desc_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
-# TODO Implement manage assets page
 class manage_org_assets_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -603,7 +743,6 @@ class manage_org_assets_page(Screen):
             self.app.push_screen(popup_output_page())
 
 
-# TODO Implement manage contacts page
 class manage_org_contacts_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -651,7 +790,6 @@ class manage_org_contacts_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
-# TODO update metadata org
 class update_org_metadata_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -1097,7 +1235,6 @@ class org_manage_delete_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
-# TODO Implement entire service CLI command
 class services_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -1135,7 +1272,10 @@ class services_metadata_page(Screen):
             Grid(
                 Label("Service Metadata Page", id="manage_services_metadata_page_title"),
                 Button(label="Initialize Service Metadata", id="services_metadata_init_button"),
-                Button(label="Add Service Description", id="services_metadata_add_desc_button"),
+                Button(label="Set", id="services_set_button"),
+                Button(label="Add/Remove", id="services_add_remove_button"),
+                Button(label="Update", id="services_update_button"),
+                Button(label="Get", id="services_get_button"),
                 Button("Back", id="services_metadata_back_button"),
                 id="manage_services_metadata_page_content",
                 classes="content_page"
@@ -1156,8 +1296,14 @@ class services_metadata_page(Screen):
             self.app.pop_screen()
         elif event.button.id == "services_metadata_init_button":
             self.app.push_screen(init_service_metadata_page())
-        elif event.button.id == "services_metadata_add_desc_button":
-            self.app.push_screen(add_desc_service_metadata_page())
+        elif event.button.id == "services_set_button":
+            self.app.push_screen(service_metadata_set_page())
+        elif event.button.id == "services_add_remove_button":
+            self.app.push_screen(service_metadata_add_remove_page())
+        elif event.button.id == "services_update_button":
+            self.app.push_screen(service_metadata_update_page())
+        elif event.button.id == "services_get_button":
+            self.app.push_screen(service_metadata_get_page())
 
 class init_service_metadata_page(Screen):
     def compose(self) -> ComposeResult:
@@ -1216,7 +1362,283 @@ class init_service_metadata_page(Screen):
             output, errCode = be.init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type)
             popup_output = output
             self.app.push_screen(popup_output_page())
-                    
+
+class service_metadata_set_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Metadata Set Page", id="service_metadata_set_page_title"),
+                Button("Set model", id="service_metadata_set_model_button"),
+                Button("Set fixed price", id="service_metadata_set_fixed_price_button"),
+                Button("Set method price", id="service_metadata_set_method_price_button"),
+                Button("Set free calls", id="service_metadata_set_free_calls_button"),
+                Button("Set freecall signer address", id="service_metadata_set_freecall_signer_button"),
+                Button("Back", id="service_metadata_set_back_button"),
+                id="service_metadata_set_page_content"
+            ),
+            id="service_metadata_set_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_set_model_button":
+            self.app.push_screen(service_metadata_set_model_page())
+        elif event.button.id == "service_metadata_set_fixed_price_button":
+            self.app.push_screen(service_metadata_set_fixed_price_page())
+        elif event.button.id == "service_metadata_set_method_price_button":
+            self.app.push_screen(service_metadata_set_method_price_page())
+        elif event.button.id == "service_metadata_set_free_calls_button":
+            self.app.push_screen(service_metadata_set_free_calls_page())
+        elif event.button.id == "service_metadata_set_freecall_signer_button":
+            self.app.push_screen(service_metadata_set_freecall_signer_page())
+        elif event.button.id == "service_metadata_set_back_button":
+            self.app.pop_screen()
+
+class service_metadata_set_model_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Set Service Model Page", id="service_metadata_set_model_page_title"),
+                Input(placeholder="Directory which contains protobuf files", id="service_metadata_set_model_proto_dir_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_model_file_input"),
+                Button("Set Model", id="service_metadata_set_model_confirm_button"),
+                Button("Back", id="service_metadata_set_model_back_button"),
+                id="service_metadata_set_model_page_content"
+            ),
+            id="service_metadata_set_model_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_set_model_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_set_model_confirm_button":
+            proto_dir = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_proto_dir_input").value
+            metadata_file = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_file_input").value
+            
+            output, errCode = be.service_metadata_set_model(proto_dir, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_set_fixed_price_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Set Service Fixed Price Page", id="service_metadata_set_fixed_price_page_title"),
+                Input(placeholder="Group name for fixed price method", id="service_metadata_set_fixed_price_group_input"),
+                Input(placeholder="Fixed price in AGI token for all methods", id="service_metadata_set_fixed_price_amount_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_fixed_price_file_input"),
+                Button("Set Fixed Price", id="service_metadata_set_fixed_price_confirm_button"),
+                Button("Back", id="service_metadata_set_fixed_price_back_button"),
+                id="service_metadata_set_fixed_price_page_content"
+            ),
+            id="service_metadata_set_fixed_price_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_set_fixed_price_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_set_fixed_price_confirm_button":
+            group_name = self.get_child_by_id("service_metadata_set_fixed_price_page").get_child_by_id("service_metadata_set_fixed_price_page_content").get_child_by_id("service_metadata_set_fixed_price_group_input").value
+            price = self.get_child_by_id("service_metadata_set_fixed_price_page").get_child_by_id("service_metadata_set_fixed_price_page_content").get_child_by_id("service_metadata_set_fixed_price_amount_input").value
+            metadata_file = self.get_child_by_id("service_metadata_set_fixed_price_page").get_child_by_id("service_metadata_set_fixed_price_page_content").get_child_by_id("service_metadata_set_fixed_price_file_input").value
+            
+            output, errCode = be.service_metadata_set_fixed_price(group_name, price, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_set_method_price_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Set Service Method Price Page", id="service_metadata_set_method_price_page_title"),
+                Input(placeholder="Group Name", id="service_metadata_set_method_price_group_input"),
+                Input(placeholder="Package Name", id="service_metadata_set_method_price_package_input"),
+                Input(placeholder="Service Name", id="service_metadata_set_method_price_service_input"),
+                Input(placeholder="Method Name", id="service_metadata_set_method_price_method_input"),
+                Input(placeholder="Set fixed price in AGI token for all methods", id="service_metadata_set_method_price_amount_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_method_price_file_input"),
+                Button("Set Method Price", id="service_metadata_set_method_price_confirm_button"),
+                Button("Back", id="service_metadata_set_method_price_back_button"),
+                id="service_metadata_set_method_price_page_content"
+            ),
+            id="service_metadata_set_method_price_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_set_method_price_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_set_method_price_confirm_button":
+            group_name = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_group_input").value
+            package_name = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_package_input").value
+            service_name = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_service_input").value
+            method_name = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_method_input").value
+            price = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_amount_input").value
+            metadata_file = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_file_input").value
+            
+            output, errCode = be.service_metadata_set_method_price(group_name, package_name, service_name, method_name, price, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_set_free_calls_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Set Free Calls Page", id="service_metadata_set_free_calls_page_title"),
+                Input(placeholder="Group Name", id="service_metadata_set_free_calls_group_input"),
+                Input(placeholder="Number of free calls", id="service_metadata_set_free_calls_num_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_free_calls_file_input"),
+                Button("Set Free Calls", id="service_metadata_set_free_calls_confirm_button"),
+                Button("Back", id="service_metadata_set_free_calls_back_button"),
+                id="service_metadata_set_free_calls_page_content"
+            ),
+            id="service_metadata_set_free_calls_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_set_free_calls_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_set_free_calls_confirm_button":
+            group_name = self.get_child_by_id("service_metadata_set_free_calls_page").get_child_by_id("service_metadata_set_free_calls_page_content").get_child_by_id("service_metadata_set_free_calls_group_input").value
+            free_calls = self.get_child_by_id("service_metadata_set_free_calls_page").get_child_by_id("service_metadata_set_free_calls_page_content").get_child_by_id("service_metadata_set_free_calls_num_input").value
+            metadata_file = self.get_child_by_id("service_metadata_set_free_calls_page").get_child_by_id("service_metadata_set_free_calls_page_content").get_child_by_id("service_metadata_set_free_calls_file_input").value
+            
+            output, errCode = be.service_metadata_set_method_price(group_name, free_calls, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_set_freecall_signer_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Freecall Signer Page", id="service_metadata_set_freecall_signer_page_title"),
+                Input(placeholder="Name of the payment group to which we want to set freecalls", id="service_metadata_set_freecall_signer_group_input"),
+                Input(placeholder="Signer Address - This is used to define the public key address used for validating signatures requested specially for free call. To be obtained as part of curation process", id="service_metadata_set_freecall_signer_addr_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_freecall_signer_file_input"),
+                Button("Set Signer Address", id="service_metadata_set_freecall_signer_confirm_button"),
+                Button("Back", id="service_metadata_set_freecall_signer_back_button"),
+                id="service_metadata_set_freecall_signer_page_content"
+            ),
+            id="service_metadata_set_freecall_signer_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_set_freecall_signer_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_set_freecall_signer_confirm_button":
+            group_name = self.get_child_by_id("service_metadata_set_freecall_signer_page").get_child_by_id("service_metadata_set_freecall_signer_page_content").get_child_by_id("service_metadata_set_freecall_signer_group_input").value
+            signer_addr = self.get_child_by_id("service_metadata_set_freecall_signer_page").get_child_by_id("service_metadata_set_freecall_signer_page_content").get_child_by_id("service_metadata_set_freecall_signer_addr_input").value
+            metadata_file = self.get_child_by_id("service_metadata_set_freecall_signer_page").get_child_by_id("service_metadata_set_freecall_signer_page_content").get_child_by_id("service_metadata_set_freecall_signer_file_input").value
+            
+            output, errCode = be.service_metadata_set_freecall_signer_addr(group_name, signer_addr, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_add_remove_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Metadata Add/Remove Page", id="service_metadata_add_remove_page_title"),
+                Button(label="Add Service Description", id="services_metadata_add_desc_button"),
+                Button("Add/Remove Service Metadata Groups", id="services_metadata_add_remove_groups_button"),
+                Button("Add/Remove Service Metadata Daemon Address", id="services_metadata_add_remove_daemon_button"),
+                Button("Add/Remove Service Metadata Assets", id="services_metadata_add_remove_assets_button"),
+                Button("Add/Remove Service Metadata Media", id="services_metadata_add_remove_media_button"),
+                Button("Change/Swap Service Metadata Media Order", id="services_metadata_add_remove_media_order_button"),
+                Button("Add/Remove Service Metadata Contributors", id="services_metadata_add_remove_contributors_button"),
+                Button("Add/Remove Service Metadata Tags", id="services_metadata_add_remove_groups_button"),
+                Button("Back", id="serivce_metadata_add_remove_back_button"),
+                id="service_metadata_add_remove_page_content"
+            ),
+            id="service_metadata_add_remove_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "services_metadata_add_desc_button":
+            self.app.push_screen(add_desc_service_metadata_page())
+
 class add_desc_service_metadata_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -1256,6 +1678,494 @@ class add_desc_service_metadata_page(Screen):
             metadata_file = self.get_child_by_id("add_desc_service_metadata_page").get_child_by_id("add_desc_service_metadata_page_content").get_child_by_id("add_desc_service_metadata_meta_file_input").value
             
             output, errCode = be.add_service_metadata_desc(long_desc, short_desc, url, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_add_remove_group_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Manage Service Group Page", id="service_metadata_add_remove_group_page_title"),
+                Input(placeholder="Name of the payment group to be added/removed", id="service_metadata_add_remove_group_group_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_add_remove_group_file_input"),
+                Button("Add Group", id="service_metadata_add_remove_group_add_button"),
+                Button("Remove Group", id="service_metadata_add_remove_group_remove_button"),
+                Button("Back", id="service_metadata_add_remove_group_back_button"),
+                id="service_metadata_add_remove_group_page_content"
+            ),
+            id="service_metadata_add_remove_group_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        group_name = self.get_child_by_id("service_metadata_add_remove_group_page").get_child_by_id("service_metadata_add_remove_group_page_content").get_child_by_id("service_metadata_add_remove_group_group_input").value
+        metadata_file = self.get_child_by_id("service_metadata_add_remove_group_page").get_child_by_id("service_metadata_add_remove_group_page_content").get_child_by_id("service_metadata_add_remove_group_file_input").value
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_add_remove_group_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_add_remove_group_add_button":
+            output, errCode = be.service_metadata_add_group(group_name, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        elif event.button.id == "service_metadata_add_remove_group_remove_button":
+            output, errCode = be.service_metadata_remove_group(group_name, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_add_remove_daemon_addr_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Daemon Address Page", id="service_metadata_add_remove_daemon_addr_page_title"),
+                Input(placeholder="Name of the payment group to be added/removed", id="service_metadata_add_remove_daemon_addr_group_input"),
+                Input(placeholder="[NOT REQUIRED FOR DELETE] Ethereum public addresses of daemon", id="service_metadata_add_remove_daemon_addr_endpoint_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_add_remove_daemon_addr_file_input"),
+                Button("Add Daemon Address", id="service_metadata_add_remove_daemon_addr_add_button"),
+                Button("Remove ALL Daemon Addresses", id="service_metadata_add_remove_daemon_addr_remove_button"),
+                Button("Back", id="service_metadata_add_remove_daemon_addr_back_button"),
+                id="service_metadata_add_remove_daemon_addr_page_content"
+            ),
+            id="service_metadata_add_remove_daemon_addr_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        group_name = self.get_child_by_id("service_metadata_add_remove_daemon_addr_page").get_child_by_id("service_metadata_add_remove_daemon_addr_page_content").get_child_by_id("service_metadata_add_remove_daemon_addr_group_input").value
+        daemon_addr = self.get_child_by_id("service_metadata_add_remove_daemon_addr_page").get_child_by_id("service_metadata_add_remove_daemon_addr_page_content").get_child_by_id("service_metadata_add_remove_daemon_addr_endpoint_input").value
+        metadata_file = self.get_child_by_id("service_metadata_add_remove_daemon_addr_page").get_child_by_id("service_metadata_add_remove_daemon_addr_page_content").get_child_by_id("service_metadata_add_remove_daemon_addr_file_input").value
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_add_remove_daemon_addr_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_add_remove_daemon_addr_add_button":
+            output, errCode = be.service_metadata_add_daemon_addr(group_name, daemon_addr, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        elif event.button.id == "service_metadata_add_remove_daemon_addr_remove_button":
+            output, errCode = be.service_metadata_remove_daemon_addr(group_name, daemon_addr, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_add_remove_assets_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Manage Service Assets Page", id="service_metadata_add_remove_assets_page_title"),
+                Input(placeholder="[NOT REQUIRED FOR DELETE ALL] Asset file path", id="service_metadata_add_remove_assets_path_input"),
+                Select(options=((line, line) for line in """hero_image\nimages""".splitlines()), prompt="Select Organization Type", id="service_metadata_add_remove_assets_type_select"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_add_remove_assets_file_input"),
+                Button("Add Asset", id="service_metadata_add_remove_assets_add_button"),
+                Button("Remove ALL Assets of type", id="service_metadata_add_remove_assets_remove_button"),
+                Button("Back", id="service_metadata_add_remove_assets_back_button"),
+                id="service_metadata_add_remove_assets_page_content"
+            ),
+            id="service_metadata_add_remove_assets_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        asset_type = self.get_child_by_id("service_metadata_add_remove_assets_page").get_child_by_id("service_metadata_add_remove_assets_page_content").get_child_by_id("service_metadata_add_remove_assets_type_select").value
+        metadata_file = self.get_child_by_id("service_metadata_add_remove_assets_page").get_child_by_id("service_metadata_add_remove_assets_page_content").get_child_by_id("service_metadata_add_remove_assets_file_input").value
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_add_remove_assets_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_add_remove_assets_add_button":
+            asset_path = self.get_child_by_id("service_metadata_add_remove_assets_page").get_child_by_id("service_metadata_add_remove_assets_page_content").get_child_by_id("service_metadata_add_remove_assets_path_input").value
+            output, errCode = be.service_metadata_add_assets(asset_path, asset_type, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        elif event.button.id == "service_metadata_add_remove_assets_remove_button":
+            output, errCode = be.service_metadata_remove_assets(asset_type, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_add_remove_media_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Add/Remove Service Media Page", id="service_metadata_add_remove_media_page_title"),
+                Input(placeholder="Media url endpoint", id="service_metadata_add_media_url_input"),
+                Input(placeholder="Service metadata json file (default service_metadata.json)", id="service_metadata_add_media_file_input"),
+                RadioButton(label="Media is hero-image", id="service_metadata_add_media_hero_radio"),
+                Button("Add Media", id="service_metadata_add_remove_media_add_button"),
+                Button("Remove ALL Media", id="service_metadata_add_remove_media_remove_button"),
+                Button("Back", id="service_metadata_add_remove_media_back_button"),
+                id="service_metadata_add_remove_media_page_content"
+            ),
+            id="service_metadata_add_remove_media_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        metadata_file = self.get_child_by_id("service_metadata_add_remove_media_page").get_child_by_id("service_metadata_add_remove_media_page_content").get_child_by_id("service_metadata_add_media_file_input").value
+        
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_add_remove_media_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_add_remove_media_remove_button":
+            output, errCode = be.service_metadata_remove_media(metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+        elif event.button.id == "service_metadata_add_remove_media_add_button":
+            url = self.get_child_by_id("service_metadata_add_remove_media_page").get_child_by_id("service_metadata_add_remove_media_page_content").get_child_by_id("service_metadata_add_media_url_input").value
+            hero_image = self.get_child_by_id("service_metadata_add_remove_media_page").get_child_by_id("service_metadata_add_remove_media_page_content").get_child_by_id("service_metadata_add_media_hero_radio").value
+            output, errCode = be.service_metadata_add_media(url, hero_image, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_update_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Metadata Blockchain Update Page", id="service_metadata_update_page_title"),
+                Button("Update Service Daemon Address", id="service_metadata_update_daemon_button"),
+                Button("Validate Metadata", id="service_metadata_update_validate_button"),
+                Button("Update Metadata", id="service_metadata_update_metadata_button"),
+                Button("Back", id="serivce_metadata_update_back_button"),
+                id="service_metadata_update_page_content"
+            ),
+            id="service_metadata_update_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_update_daemon_button":
+            self.app.push_screen(service_metadata_update_daemon_addr_page())
+        elif event.button.id == "service_metadata_update_validate_button":
+            self.app.push_screen(service_metadata_update_validate_metadata_page())
+        elif event.button.id == "service_metadata_update_metadata_button":
+            self.app.push_screen(service_metadata_update_metadata_page())
+
+class service_metadata_update_daemon_addr_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Update Service Daemon Address Page", id="service_metadata_update_daemon_addr_page_title"),
+                Input(placeholder="Name of the payment group to which we want to update daemon addresses for", id="service_metadata_update_daemon_addr_group_input"),
+                Input(placeholder="Daemon addresses", id="service_metadata_update_daemon_addr_endpoint_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_update_daemon_addr_file_input"),
+                Button("Update Daemon Address", id="service_metadata_update_daemon_addr_update_button"),
+                Button("Back", id="service_metadata_update_daemon_addr_back_button"),
+                id="service_metadata_update_daemon_addr_page_content"
+            ),
+            id="service_metadata_update_daemon_addr_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_add_remove_media_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_add_remove_media_remove_button":
+            group_name = self.get_child_by_id("service_metadata_update_daemon_addr_page").get_child_by_id("service_metadata_update_daemon_addr_page_content").get_child_by_id("service_metadata_update_daemon_addr_group_input").value
+            daemon_addr = self.get_child_by_id("service_metadata_update_daemon_addr_page").get_child_by_id("service_metadata_update_daemon_addr_page_content").get_child_by_id("service_metadata_update_daemon_addr_endpoint_input").value
+            metadata_file = self.get_child_by_id("service_metadata_update_daemon_addr_page").get_child_by_id("service_metadata_update_daemon_addr_page_content").get_child_by_id("service_metadata_update_daemon_addr_file_input").value
+
+            output, errCode = be.service_metadata_update_daemon_addr(group_name, daemon_addr, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_update_validate_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Validate Service Metadata Page", id="service_metadata_update_validate_metadata_page_title"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_update_validate_metadata_file_input"),
+                Button("Validate Metadata", id="service_metadata_update_validate_metadata_validate_button"),
+                Button("Back", id="service_metadata_update_validate_metadata_back_button"),
+                id="service_metadata_update_validate_metadata_page_content"
+            ),
+            id="service_metadata_update_validate_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_update_validate_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_update_validate_metadata_validate_button":
+            metadata_file = self.get_child_by_id("service_metadata_update_daemon_addr_page").get_child_by_id("service_metadata_update_daemon_addr_page_content").get_child_by_id("service_metadata_update_validate_metadata_file_input").value
+            output, errCode = be.service_metadata_update_validate_metadata(metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_update_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Update Service Metadata Page", id="service_metadata_update_metadata_pagetitle"),
+                Input(placeholder="Your Organization ID", id="service_metadata_update_metadata_org_id_input"),
+                Input(placeholder="Your Service ID", id="service_metadata_update_metadata_service_id_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="service_metadata_update_metadata_file_input"),
+                Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="service_metadata_update_metadata_reg_contract_input"),
+                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from 'networks'", id="service_metadata_update_metadata_mpe_input"),
+                RadioButton(label="Update MPE Address in metadata before publishing service", id="service_metadata_update_metadata_update_mpe_radio"),
+                Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="service_metadata_update_metadata_gas_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="service_metadata_update_metadata_index_input"),
+                RadioButton(label="Quiet transaction printing", id="service_metadata_update_metadata_quiet_radio"),
+                RadioButton(label="Verbose transaction printing", id="service_metadata_update_metadata_verbose_radio"),
+                Button(label="Update Metadata", id="service_metadata_update_metadata_confirm_button"),
+                Button(label="Back", id="service_metadata_update_metadata_back_button"),
+                id="service_metadata_update_metadata_page_content"
+            ),
+            id="service_metadata_update_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_update_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_update_metadata_confirm_button":
+            org_id = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_org_id_input").value
+            service_id = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_service_id_input").value
+            metadata_file = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_file_input").value
+            reg_addr = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_reg_contract_input").value
+            mpe_addr = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_mpe_input").value
+            update_mpe = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_update_mpe_radio").value
+            gas = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_gas_input").value
+            index = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_index_input").value
+            quiet = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_quiet_radio").value
+            verbose = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_verbose_radio").value
+            
+            output, errCode = be.service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_get_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Metadata Get Page", id="service_metadata_get_page_title"),
+                Button("Service Status", id="service_metadata_get_status_button"),
+                Button("API Metadata", id="service_metadata_get_metadata_button"),
+                Button("API Registry", id="service_metadata_get_registry_button"),
+                Button("Back", id="service_metadata_get_back_button"),
+                id="service_metadata_get_page_content"
+            ),
+            id="service_metadata_get_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_get_status_button":
+            self.app.push_screen(service_metadata_get_service_status_page())
+        elif event.button.id == "service_metadata_get_metadata_button":
+            self.app.push_screen(service_metadata_get_api_metadata_page())
+        elif event.button.id == "service_metadata_get_registry_button":
+            self.app.push_screen(service_metadata_get_api_registry_page())
+
+class service_metadata_get_service_status_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service Status Page", id="service_metadata_get_service_status_page_title"),
+                Input(placeholder="Your Organization ID", id="service_metadata_get_service_status_org_id_input"),
+                Input(placeholder="Your Service ID", id="service_metadata_get_service_status_service_id_input"),
+                Input(placeholder="[OPTIONAL] Name of the payment group. Parameter should be specified only for services with several payment groups", id="service_metadata_get_service_status_group_input"),
+                Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="service_metadata_get_service_status_reg_contract_input"),
+                Button(label="Get Service Status", id="service_metadata_get_service_status_confirm_button"),
+                Button(label="Back", id="service_metadata_get_service_status_back_button"),
+                id="service_metadata_get_service_status_page_content"
+            ),
+            id="service_metadata_get_service_status_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_get_service_status_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_get_service_status_confirm_button":
+            org_id = self.get_child_by_id("service_metadata_get_service_status_page").get_child_by_id("service_metadata_get_service_status_page_content").get_child_by_id("service_metadata_get_service_status_org_id_input").value
+            service_id = self.get_child_by_id("service_metadata_get_service_status_page").get_child_by_id("service_metadata_get_service_status_page_content").get_child_by_id("service_metadata_get_service_status_service_id_input").value
+            reg_addr = self.get_child_by_id("service_metadata_get_service_status_page").get_child_by_id("service_metadata_get_service_status_page_content").get_child_by_id("service_metadata_get_service_status_reg_contract_input").value
+            pay_group = self.get_child_by_id("service_metadata_get_service_status_page").get_child_by_id("service_metadata_get_service_status_page_content").get_child_by_id("service_metadata_get_service_status_group_input").value
+            
+            
+            output, errCode = be.print_service_status(org_id, service_id, pay_group, reg_addr)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_get_api_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service API Metadata Page", id="service_metadata_get_api_metadata_page_title"),
+                Input(placeholder="Directory to which extract api (model)", id="service_metadata_get_api_metadata_proto_dir_input"),
+                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_get_api_metadata_file_input"),
+                Button("Set Model", id="service_metadata_get_api_metadata_confirm_button"),
+                Button("Back", id="service_metadata_get_api_metadata_back_button"),
+                id="service_metadata_get_api_metadata_page_content"
+            ),
+            id="service_metadata_get_api_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_get_api_metadata_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_get_api_metadata_confirm_button":
+            proto_dir = self.get_child_by_id("service_metadata_get_api_metadata_page").get_child_by_id("service_metadata_get_api_metadata_page_content").get_child_by_id("service_metadata_get_api_metadata_proto_dir_input").value
+            metadata_file = self.get_child_by_id("service_metadata_get_api_metadata_page").get_child_by_id("service_metadata_get_api_metadata_page_content").get_child_by_id("service_metadata_get_api_metadata_file_input").value
+            
+            output, errCode = be.print_service_api_metadata(proto_dir, metadata_file)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+class service_metadata_get_api_registry_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Service API Registry Page", id="service_metadata_get_api_registry_page_title"),
+                Input(placeholder="Your Organization ID", id="service_metadata_get_api_registry_org_id_input"),
+                Input(placeholder="Your Service ID", id="service_metadata_get_api_registry_service_id_input"),
+                Input(placeholder="Directory to which extract api (model)", id="service_metadata_get_api_registry_proto_dir_input"),
+                Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="service_metadata_get_api_registry_reg_contract_input"),
+                Button(label="Get Service Status", id="service_metadata_get_api_registry_confirm_button"),
+                Button(label="Back", id="service_metadata_get_api_registry_back_button"),
+                id="service_metadata_get_api_registry_page_content"
+            ),
+            id="service_metadata_get_api_registry_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_get_api_registry_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "service_metadata_get_api_registry_confirm_button":
+            org_id = self.get_child_by_id("service_metadata_get_api_registry_page").get_child_by_id("service_metadata_get_api_registry_page_content").get_child_by_id("service_metadata_get_api_registry_org_id_input").value
+            service_id = self.get_child_by_id("service_metadata_get_api_registry_page").get_child_by_id("service_metadata_get_api_registry_page_content").get_child_by_id("service_metadata_get_api_registry_service_id_input").value
+            proto_dir = self.get_child_by_id("service_metadata_get_api_registry_page").get_child_by_id("service_metadata_get_api_registry_page_content").get_child_by_id("service_metadata_get_api_registry_proto_dir_input").value
+            reg_addr = self.get_child_by_id("service_metadata_get_api_registry_page").get_child_by_id("service_metadata_get_api_registry_page_content").get_child_by_id("service_metadata_get_api_registry_reg_contract_input").value
+            
+            output, errCode = be.print_service_api_registry(org_id, service_id, reg_addr, proto_dir)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -1393,7 +2303,7 @@ class delete_service_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
-# TODO Implement all other commands under "misc" nav page
+# TODO Implement custom command nav bar page
 
 class exit_page(Screen):
     def compose(self) -> ComposeResult:
