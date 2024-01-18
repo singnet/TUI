@@ -2467,6 +2467,7 @@ class custom_command_page(Screen):
             
             output, errCode = be.custom_command(command)
             popup_output = output
+            self.app.push_screen(popup_output_page())
 
 
 
