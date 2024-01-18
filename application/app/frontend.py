@@ -138,6 +138,8 @@ class account_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_page_identity_settings_button":
@@ -186,6 +188,8 @@ class treasurer_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "treasurer_back_button":
@@ -227,6 +231,8 @@ class treasurer_claim_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "treasurer_claim_back_button":
@@ -241,9 +247,7 @@ class treasurer_claim_page(Screen):
 
             output, errCode = be.treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose)
             popup_output = output
-            self.app.push_screen(popup_output_page())
-
-            
+            self.app.push_screen(popup_output_page())   
 
 class treasurer_claim_all_page(Screen):
     def compose(self) -> ComposeResult:
@@ -274,6 +278,8 @@ class treasurer_claim_all_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "treasurer_claim_all_back_button":
@@ -319,6 +325,8 @@ class treasurer_claim_expr_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "treasurer_claim_expr_back_button":
@@ -362,6 +370,8 @@ class identity_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "identity_page_create_identity_button":
@@ -416,6 +426,8 @@ class account_deposit_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_deposit_confirm_button":
@@ -458,6 +470,8 @@ class account_withdraw_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_withdraw_confirm_button":
@@ -502,6 +516,8 @@ class account_transfer_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_transfer_confirm_button":
@@ -536,6 +552,8 @@ class organization_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "organization_page_metadata_button":
@@ -574,6 +592,8 @@ class org_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_metadata_back_button":
@@ -614,6 +634,8 @@ class print_org_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "print_org_metadata_back_button":
@@ -652,6 +674,8 @@ class init_org_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "init_org_metadata_back_button":
@@ -694,6 +718,8 @@ class add_org_metadata_desc_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "add_org_metadata_desc_back_button":
@@ -733,6 +759,8 @@ class manage_org_assets_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "manage_org_assets_back_button":
@@ -825,6 +853,8 @@ class update_org_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "update_org_metadata_back_button":
@@ -865,6 +895,8 @@ class org_groups_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_groups_back_button":
@@ -907,6 +939,8 @@ class add_org_group_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "add_org_group_back_button":
@@ -960,6 +994,8 @@ class update_org_group_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "update_org_group_back_button":
@@ -1004,6 +1040,8 @@ class members_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "members_back_button":
@@ -1052,6 +1090,8 @@ class manage_members_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "manage_members_back_button":
@@ -1097,6 +1137,8 @@ class change_org_owner_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "change_org_owner_back_button":
@@ -1137,6 +1179,8 @@ class org_manage_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_manage_back_button":
@@ -1177,6 +1221,8 @@ class org_manage_create_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_manage_create_back_button":
@@ -1225,6 +1271,8 @@ class org_manage_delete_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_manage_delete_back_button":
@@ -1264,6 +1312,8 @@ class services_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "services_metadata_button":
@@ -1297,6 +1347,8 @@ class services_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "services_metadata_back_button":
@@ -1346,6 +1398,8 @@ class init_service_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "init_service_metadata_back_button":
@@ -1398,6 +1452,8 @@ class service_metadata_set_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_set_model_button":
@@ -1439,6 +1495,8 @@ class service_metadata_set_model_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_set_model_back_button":
@@ -1478,6 +1536,8 @@ class service_metadata_set_fixed_price_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_set_fixed_price_back_button":
@@ -1521,6 +1581,8 @@ class service_metadata_set_method_price_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_set_method_price_back_button":
@@ -1564,6 +1626,8 @@ class service_metadata_set_free_calls_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_set_free_calls_back_button":
@@ -1604,6 +1668,8 @@ class service_metadata_set_freecall_signer_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_set_freecall_signer_back_button":
@@ -1648,6 +1714,8 @@ class service_metadata_add_remove_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "services_metadata_add_desc_button":
@@ -1681,6 +1749,8 @@ class add_desc_service_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "add_desc_service_metadata_back_button":
@@ -1725,6 +1795,8 @@ class service_metadata_add_remove_group_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_add_remove_group_back_button":
@@ -1770,6 +1842,8 @@ class service_metadata_add_remove_daemon_addr_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_add_remove_daemon_addr_back_button":
@@ -1814,6 +1888,8 @@ class service_metadata_add_remove_assets_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_add_remove_assets_back_button":
@@ -1858,6 +1934,8 @@ class service_metadata_add_remove_media_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_add_remove_media_back_button":
@@ -1899,6 +1977,8 @@ class service_metadata_update_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_update_daemon_button":
@@ -1935,6 +2015,8 @@ class service_metadata_update_daemon_addr_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_add_remove_media_back_button":
@@ -1973,6 +2055,8 @@ class service_metadata_update_validate_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_update_validate_metadata_back_button":
@@ -2017,6 +2101,8 @@ class service_metadata_update_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_update_metadata_back_button":
@@ -2063,6 +2149,8 @@ class service_metadata_get_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_get_status_button":
@@ -2100,6 +2188,8 @@ class service_metadata_get_service_status_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_get_service_status_back_button":
@@ -2141,6 +2231,8 @@ class service_metadata_get_api_metadata_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_get_api_metadata_back_button":
@@ -2181,6 +2273,8 @@ class service_metadata_get_api_registry_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "service_metadata_get_api_registry_back_button":
@@ -2218,6 +2312,8 @@ class services_manage_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "services_manage_back_button":
@@ -2261,6 +2357,8 @@ class publish_service_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "publish_service_back_button":
@@ -2312,6 +2410,8 @@ class delete_service_page(Screen):
             self.app.switch_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "delete_service_back_button":
@@ -2329,7 +2429,41 @@ class delete_service_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
-# TODO Implement custom command nav bar page
+class custom_command_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(),
+            Grid(
+                Label("Custom CLI Command Page", id="custom_command_page_title"),
+                Input(placeholder="Input your custom command here. NOTE: omit the 'snet' prefix, this will be added automatically", id="custom_command_input"),
+                Button("Run Custom Command", id="custom_command_confirm_button"),
+                id="custom_command_page_content",
+                classes="content_page"
+            ),
+            id="custom_command_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "custom_command_confirm_button":
+            command = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_command_input").value
+            
+            output, errCode = be.custom_command(command)
+            popup_output = output
+
+
 
 class exit_page(Screen):
     def compose(self) -> ComposeResult:
