@@ -79,7 +79,7 @@ def run_shell_command_with_input(command, input_text):
 
 def check_cli():
     output, errCode = run_shell_command('snet')
-    if "ERROR: the following arguments are required: COMMAND" in output:
+    if "error: the following arguments are required: COMMAND" in output:
         return True, output, errCode
     return False, output, errCode
 
