@@ -1695,7 +1695,7 @@ class service_metadata_add_remove_page(Screen):
                 Button("Add/Remove Service Metadata Daemon Address", id="services_metadata_add_remove_daemon_button"),
                 Button("Add/Remove Service Metadata Assets", id="services_metadata_add_remove_assets_button"),
                 Button("Add/Remove Service Metadata Media", id="services_metadata_add_remove_media_button"),
-                Button("Back", id="serivce_metadata_add_remove_back_button"),
+                Button("Back", id="service_metadata_add_remove_back_button"),
                 id="service_metadata_add_remove_page_content",
                 classes="content_page"
             ),
@@ -1715,6 +1715,8 @@ class service_metadata_add_remove_page(Screen):
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_add_remove_back_button":
+            self.app.pop_screen()
         elif event.button.id == "services_metadata_add_desc_button":
             self.app.push_screen(add_desc_service_metadata_page())
         elif event.button.id == "services_metadata_add_remove_groups_button":
@@ -2442,6 +2444,7 @@ class custom_command_page(Screen):
             Grid(
                 Label("Custom CLI Command Page", id="custom_command_page_title"),
                 Input(placeholder="Input your custom command here. NOTE: omit the 'snet' prefix, this will be added automatically", id="custom_command_input"),
+                Input(placeholder="[OPTIONAL] Input the working directory you would like the command to run from (default: $HOME/snet)", id="custom_cwd_input"),
                 Button("Run Custom Command", id="custom_command_confirm_button"),
                 id="custom_command_page_content",
                 classes="content_page"
@@ -2464,8 +2467,9 @@ class custom_command_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "custom_command_confirm_button":
             command = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_command_input").value
-            
-            output, errCode = be.custom_command(command)
+            cwd = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_cwd_input").value
+
+            output, errCode = be.custom_command(command, cwd)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
