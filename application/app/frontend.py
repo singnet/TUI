@@ -62,7 +62,7 @@ class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         yield Grid(
             Input(placeholder="Identity Name", id="org_identity_input"),
-            Input(placeholder="Wallet Private Key / Seed phrase (Mnemonic)", id="wallet_info_input"),
+            Input(placeholder="Wallet Private Key / Seed phrase (Mnemonic)", id="wallet_info_input", password=True),
             Select(options=(("Goerli", "Goerli") for line in """Goerli""".splitlines()), prompt="Select Network", id="network_select"),
             RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
             Button("Create Identity", id="create_identity_button"),
