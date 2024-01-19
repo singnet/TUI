@@ -7,13 +7,13 @@ sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev libreadline
 # 3. Create ENV using PyEnv and Venv
 export WORK_DIR="$HOME/snet"
 mkdir -p $WORK_DIR
-ENV_NAME="venv-snet-3.7.17"
-if ! pyenv versions | grep -q "3.7.17"; then
-    pyenv install -v 3.7.17
+ENV_NAME="venv-snet-3.11.6"
+if ! pyenv versions | grep -q "3.11.6"; then
+    pyenv install -v 3.11.6
 fi
 
 cd $WORK_DIR
-pyenv local 3.7.17
+pyenv local 3.11.6
 
 if [ ! -d "$WORK_DIR/$ENV_NAME" ]; then
     python -m venv $ENV_NAME
@@ -83,7 +83,7 @@ if [ ! -d "$WORK_DIR/snet-cli" ]; then
 fi
 
 # Patch for deprecated RIPEMD160 (if necessary)
-echo "from Crypto.Hash.RIPEMD160 import RIPEMD160Hash, new" > $HOME/snet/$ENV_NAME/lib/python3.7/site-packages/Crypto/Hash/RIPEMD.py
+# echo "from Crypto.Hash.RIPEMD160 import RIPEMD160Hash, new" > $HOME/snet/$ENV_NAME/lib/python3.7/site-packages/Crypto/Hash/RIPEMD.py
 
 
 # Check if CLI is able to run properly, it doesnt need to be an output check but you need to check something. 
