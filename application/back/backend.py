@@ -1057,8 +1057,17 @@ def print_service_api_registry(org_id, service_id, reg_addr, proto_dir):
     #                           ORG_ID SERVICE_ID PROTO_DIR
     return "ERROR: Please implement backend method", 42
 
-# TODO custom command
-def custom_command(command):
+def custom_command(command, cwd):
     # snet [-h] COMMAND
-    return "ERROR: Please implement backend method", 42
+    global snet_dir
+
+    if not command or len(command) <= 0:
+        return "ERROR: Please input a command to run", 42
+    cmd = f"snet {command}"
+    if cwd and len(cwd) > 0:
+        output, errCode = run_shell_command(cmd, cwd=cwd)
+    else:
+        output, errCode = run_shell_command(cmd, cwd=snet_dir)
+
+    return output, errCode
 
