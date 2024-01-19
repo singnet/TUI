@@ -103,7 +103,7 @@ class create_identity_page(Screen):
             popup_output = output
             if len(popup_output) == 0:
                 popup_output = f"Identity '{id_name} created!'"
-            self.app.switch_screen(identity_page())
+            self.app.switch_screen(account_page())
             self.app.push_screen(popup_output_page())
         else:
             error_exit_label = output

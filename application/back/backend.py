@@ -905,11 +905,55 @@ def treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, ve
     #                          --endpoint ENDPOINT [--gas-price GAS_PRICE]
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
-    return "ERROR: Please implement backend method", 42
+    if threshold is None or threshold <= 0:
+        return "ERROR: Invalid expiration threshold", 42
+    if not endpoint:
+        return "ERROR: Endpoint is required", 42
+
+    command = f"snet treasurer claim-expired --expiration-threshold {threshold} --endpoint {endpoint}"
+    if gas_price and len(gas_price) > 0:
+        command += f" --gas-price {gas_price}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if errCode == 0:
+        return output.strip(), errCode
+    else:
+        return "ERROR: Failed to claim expired payments", errCode
 
 def service_metadata_set_model(proto_dir, metadata_file):
     # snet service metadata-set-model [-h] [--metadata-file METADATA_FILE] PROTO_DIR
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before setting the model", 42
+
+    # Check for required parameters
+    if not proto_dir or len(proto_dir) == 0:
+        return "ERROR: Protobuf directory path is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-set-model {proto_dir}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Model successfully set in service metadata!"
+    else:
+        output = f"ERROR: Failed to set model in service metadata. Error Code: {errCode}"
+
+    return output, errCode
 
 def service_metadata_set_fixed_price(group_name, price, metadata_file):
     # snet service metadata-set-fixed-price [-h] [--metadata-file METADATA_FILE]
