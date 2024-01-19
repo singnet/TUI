@@ -118,7 +118,7 @@ class account_page(Screen):
             Grid(
                 Label(f"Account: {wallet_dict['account']}", id="account_page_account"),
                 Label(f"ETH: {wallet_dict['ETH']}", id="account_page_eth"),
-                Label(f"AGIX: {wallet_dict['AGI']}", id="account_page_agi"),
+                Label(f"AGIX: {wallet_dict['AGIX']}", id="account_page_agi"),
                 Label(f"MPE: {wallet_dict['MPE']}", id="account_page_mpe"),
                 Button("Deposit", id="account_page_deposit_button"),
                 Button("Withdraw", id="account_page_withdraw_button"),
