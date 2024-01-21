@@ -44,11 +44,12 @@ class Organization():
 
 def run_shell_command(command, cwd=None):
     try:
+        global snet_dir
 
         if cwd != None:
             result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
         else:
-            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=snet_dir)
         
         stdout, stderr, errCode = result.stdout, result.stderr, result.returncode
         
@@ -745,8 +746,6 @@ def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
     #                           ORG_ID ORG_MEMBERS
-    global snet_dir
-
     if not org_id or len(org_id) == 0:
         return "ERROR: Organization ID is required", 42
     if not mem_list or len(mem_list) == 0:
@@ -762,7 +761,7 @@ def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Members successfully added to the organization!"
     return output, errCode
@@ -774,8 +773,6 @@ def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
     #                           ORG_ID ORG_MEMBERS
-    global snet_dir
-    
     if not org_id or len(org_id) == 0:
         return "ERROR: Organization ID is required", 42
     if not mem_list or len(mem_list) == 0:
@@ -791,7 +788,7 @@ def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Members successfully removed from the organization!"
     return output, errCode
@@ -821,7 +818,7 @@ def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Organization owner successfully changed!"
     return output, errCode
@@ -845,7 +842,7 @@ def print_unclaimed_payments():
     
     command = f"snet treasurer print-unclaimed --endpoint {endpoint}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     return output, errCode
 
 def treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose):
@@ -871,7 +868,7 @@ def treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose)
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Payments successfully claimed from channels!"
     return output, errCode
@@ -894,7 +891,7 @@ def treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "All available payments successfully claimed!"
     return output, errCode
@@ -905,6 +902,7 @@ def treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, ve
     #                          --endpoint ENDPOINT [--gas-price GAS_PRICE]
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
+
     if threshold is None or threshold <= 0:
         return "ERROR: Invalid expiration threshold", 42
     if not endpoint:
@@ -921,10 +919,10 @@ def treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, ve
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if errCode == 0:
         return output.strip(), errCode
-    else:
+    elif len(output) == 0:
         return "ERROR: Failed to claim expired payments", errCode
 
 def service_metadata_set_model(proto_dir, metadata_file):
@@ -950,86 +948,408 @@ def service_metadata_set_model(proto_dir, metadata_file):
     output, errCode = run_shell_command(command, cwd=serv_path)
     if len(output) == 0 and errCode == 0:
         output = "Model successfully set in service metadata!"
-    else:
-        output = f"ERROR: Failed to set model in service metadata. Error Code: {errCode}"
 
     return output, errCode
 
 def service_metadata_set_fixed_price(group_name, price, metadata_file):
     # snet service metadata-set-fixed-price [-h] [--metadata-file METADATA_FILE]
     #                                   group_name PRICE
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before setting the model", 42
+
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if price is None or price <= 0:
+        return "ERROR: Price must be greater than 0", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    command = f"snet service metadata-set-fixed-price {group_name} {price}"
+    command += f" --metadata-file {metadata_file}"
+
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Fixed price successfully set in service metadata!"
+
+    return output, errCode
 
 def service_metadata_set_method_price(group_name, package_name, service_name, method, price, metadata_file):
     # snet service metadata-set-method-price [-h] [--metadata-file METADATA_FILE]
     #                                    group_name package_name service_name
     #                                    method PRICE
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before setting the model", 42
+    
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if not package_name or len(package_name) == 0:
+        return "ERROR: Package name is required", 42
+    if not service_name or len(service_name) == 0:
+        return "ERROR: Service name is required", 42
+    if not method or len(method) == 0:
+        return "ERROR: Method is required", 42
+    if price is None or price <= 0:
+        return "ERROR: Price must be greater than 0", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-set-method-price {group_name} {package_name} {service_name} {method} {price}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Method price successfully set in service metadata!"
+
+    return output, errCode
 
 def service_metadata_set_free_calls(group_name, free_calls, metadata_file):
     # snet service metadata-set-free-calls [-h] [--metadata-file METADATA_FILE]
     #                                  GROUP_NAME free_calls
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before setting free calls", 42
+
+    # Validate input parameters
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if free_calls is None or free_calls < 0:
+        return "ERROR: Free calls must be a non-negative integer", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-set-free-calls {group_name} {free_calls}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Free calls successfully set in service metadata!"
+
+    return output, errCode
 
 def service_metadata_set_freecall_signer_addr(group_name, signer_addr, metadata_file):
     # snet service metadata-set-freecall-signer-address [-h]
     #                                               [--metadata-file METADATA_FILE]
     #                                               GROUP_NAME signer_address
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before setting the freecall signer address", 42
+
+    # Validate input parameters
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if not signer_addr or len(signer_addr) == 0:
+        return "ERROR: Signer address is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-set-freecall-signer-address {group_name} {signer_addr}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Freecall signer address successfully set in service metadata!"
+
+    return output, errCode
 
 def service_metadata_add_group(group_name, metadata_file):
     # snet service metadata-add-group [-h] [--metadata-file METADATA_FILE]
     #                             GROUP_NAME
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to add a group", 42
+
+    # Check for required parameters
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-add-group {group_name}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Group successfully added to service metadata!"
+
+    return output, errCode
 
 def service_metadata_remove_group(group_name, metadata_file):
     # snet service metadata-remove-group [-h] [--metadata-file METADATA_FILE]
     #                                GROUP_NAME
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to remove a group", 42
+
+    # Check for required parameters
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-remove-group {group_name}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Group successfully removed from service metadata!"
+
+    return output, errCode
 
 def service_metadata_add_daemon_addr(group_name, daemon_addr, metadata_file):
     # snet service metadata-add-daemon-addresses [-h]
     #                                        [--metadata-file METADATA_FILE]
     #                                        group_name DAEMON ADDRESSES
     #                                        [DAEMON ADDRESSES ...]
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to add daemon address", 42
+
+    # Check for required parameters
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if not daemon_addr or len(daemon_addr) == 0:
+        return "ERROR: Daemon address is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-add-daemon-addresses {group_name} {daemon_addr}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Daemon address successfully added to service metadata!"
+
+    return output, errCode
 
 def service_metadata_remove_daemon_addr(group_name, daemon_addr, metadata_file):
     # snet service metadata-remove-all-daemon-addresses [-h]
     #                                               [--metadata-file METADATA_FILE]
     #                                               group_name
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to remove daemon address", 42
+
+    # Check for required parameters
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if not daemon_addr or len(daemon_addr) == 0:
+        return "ERROR: Daemon address is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-remove-daemon-addresses {group_name} {daemon_addr}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Daemon address successfully removed from service metadata!"
+
+    return output, errCode
 
 def service_metadata_add_assets(asset_path, asset_type, metadata_file):
     # snet service metadata-add-assets [-h] [--metadata-file METADATA_FILE]
     #                              asset_file_path asset_type
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to add assets", 42
+
+    # Check for required parameters
+    if not asset_path or len(asset_path) == 0:
+        return "ERROR: Asset path is required", 42
+    if not asset_type or len(asset_type) == 0:
+        return "ERROR: Asset type is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-add-assets {asset_path} {asset_type}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Asset successfully added to service metadata!"
+
+    return output, errCode
 
 def service_metadata_remove_assets(asset_type, metadata_file):
     # snet service metadata-remove-assets [-h] [--metadata-file METADATA_FILE]
     #                                 asset_type
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to remove assets", 42
+
+    # Check for required parameters
+    if not asset_type or len(asset_type) == 0:
+        return "ERROR: Asset type is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-remove-assets {asset_type}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Asset successfully removed from service metadata!"
+
+    return output, errCode
 
 def service_metadata_add_media(url, hero_image, metadata_file):
     # snet service metadata-add-media [-h] [--hero_image]
     #                             [--metadata-file METADATA_FILE]
     #                             MEDIA_URL
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to add media", 42
+
+    # Check for required parameters
+    if not url or len(url) == 0:
+        return "ERROR: Media URL is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = "snet service metadata-add-media"
+    command += f" {url}"
+    if hero_image:
+        command += " --hero-image"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Media successfully added to service metadata!"
+
+    return output, errCode
 
 def service_metadata_remove_media(metadata_file):
     # snet service metadata-remove-all-media [-h] [--metadata-file METADATA_FILE]
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to remove media", 42
+
+    # Check for required parameters
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = "snet service metadata-remove-all-media"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "All media successfully removed from service metadata!"
+
+    return output, errCode
 
 def service_metadata_update_daemon_addr(group_name, daemon_addr, metadata_file):
     # snet service metadata-update-daemon-addresses [-h]
     #                                           [--metadata-file METADATA_FILE]
     #                                           group_name DAEMON ADDRESSES
     #                                           [DAEMON ADDRESSES ...]
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to update daemon addresses", 42
+
+    # Check for required parameters
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    if not daemon_addr or len(daemon_addr) == 0:
+        return "ERROR: New daemon address is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service metadata-update-daemon-addresses {group_name} {daemon_addr}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Daemon address successfully updated in service metadata!"
+
+    return output, errCode
 
 def service_metadata_update_validate_metadata(metadata_file):
     # snet service validate-metadata [-h] [--metadata-file METADATA_FILE]
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before attempting to validate it", 42
+
+    # Check for required parameters
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service validate-metadata --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Service metadata validation successful!"
+
+    return output, errCode
 
 def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose):
     # snet service update-metadata [-h] [--metadata-file METADATA_FILE]
@@ -1040,22 +1360,132 @@ def service_metadata_update_update_metadata(org_id, service_id, metadata_file, r
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
     #                          ORG_ID SERVICE_ID
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service metadata is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize service metadata before updating", 42
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not service_id or len(service_id) == 0:
+        return "ERROR: Service ID is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service update-metadata {org_id} {service_id}"
+    command += f" --metadata-file {metadata_file}"
+    if reg_addr and len(reg_addr) > 0:
+        command += f" --registry-at {reg_addr}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if update_mpe:
+        command += " --update-mpe-address"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if index and len(index) > 0:
+        command += f" --wallet-index {index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+    command += " --yes"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "Service metadata successfully updated!"
+    else:
+        output = f"ERROR in updating service metadata: {output}"
+
+    return output, errCode
 
 def print_service_status(org_id, service_id, pay_group, reg_addr):
     # snet service print-service-status [-h] [--registry-at REGISTRY_AT]
     #                               [--group-name GROUP_NAME]
     #                               ORG_ID SERVICE_ID
-    return "ERROR: Please implement backend method", 42
+    global snet_dir
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not service_id or len(service_id) == 0:
+        return "ERROR: Service ID is required", 42
+
+    # Construct the command
+    command = f"snet service print-service-status {org_id} {service_id}"
+    if pay_group and len(pay_group) > 0:
+        command += f" --group-name {pay_group}"
+    if reg_addr and len(reg_addr) > 0:
+        command += f" --registry-at {reg_addr}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Service status:\n" + output
+    else:
+        output = f"ERROR in printing service status: {output}"
+
+    return output, errCode
 
 def print_service_api_metadata(proto_dir, metadata_file):
     # snet service get-api-metadata [-h] [--metadata-file METADATA_FILE] PROTO_DIR
-    return "ERROR: Please implement backend method", 42
+    global serv_path
+    global serv_path_set
+
+    # Validate if service path is initialized
+    if not serv_path_set:
+        return "ERROR: Please initialize the service path before attempting to print API metadata", 42
+
+    # Check for required parameters
+    if not proto_dir or len(proto_dir) == 0:
+        return "ERROR: Protobuf directory path is required", 42
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+
+    # Construct the command
+    command = f"snet service get-api-metadata {proto_dir}"
+    command += f" --metadata-file {metadata_file}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=serv_path)
+    if len(output) == 0 and errCode == 0:
+        output = "API Metadata:\n" + output
+    else:
+        output = f"ERROR in printing service API metadata: {output}"
+
+    return output, errCode
+
 
 def print_service_api_registry(org_id, service_id, reg_addr, proto_dir):
     # snet service get-api-registry [-h] [--registry-at REGISTRY_AT]
     #                           ORG_ID SERVICE_ID PROTO_DIR
-    return "ERROR: Please implement backend method", 42
+    global snet_dir
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not service_id or len(service_id) == 0:
+        return "ERROR: Service ID is required", 42
+    if not proto_dir or len(proto_dir) == 0:
+        return "ERROR: Protobuf directory path is required", 42
+
+    # Construct the command
+    command = f"snet service get-api-registry {org_id} {service_id} {proto_dir}"
+    if reg_addr and len(reg_addr) > 0:
+        command += f" --registry-at {reg_addr}"
+
+    # Execute the command
+    output, errCode = run_shell_command(command, cwd=snet_dir)
+    if len(output) == 0 and errCode == 0:
+        output = "Service API Registry:\n" + output
+    else:
+        output = f"ERROR in printing service API registry: {output}"
+
+    return output, errCode
 
 def custom_command(command, cwd):
     # snet [-h] COMMAND
