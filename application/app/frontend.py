@@ -1988,6 +1988,8 @@ class service_metadata_update_page(Screen):
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "serivce_metadata_update_back_button":
+            self.app.pop_screen()
         elif event.button.id == "service_metadata_update_daemon_button":
             self.app.push_screen(service_metadata_update_daemon_addr_page())
         elif event.button.id == "service_metadata_update_validate_button":
@@ -2160,6 +2162,8 @@ class service_metadata_get_page(Screen):
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "service_metadata_get_back_button":
+            self.app.pop_screen()
         elif event.button.id == "service_metadata_get_status_button":
             self.app.push_screen(service_metadata_get_service_status_page())
         elif event.button.id == "service_metadata_get_metadata_button":
