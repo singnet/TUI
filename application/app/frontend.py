@@ -22,8 +22,10 @@ class WelcomeScreen(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global error_exit_label
         if event.button.id == "start_button":
+            self.mount(LoadingIndicator(id="welcome_screen_load"))
             cli_installed, output, errCode1 = be.check_cli()
             identity_added, output2, errCode2 = be.check_account_balance()
+            self.get_child_by_id("welcome_screen_load").display = False
             if (cli_installed and identity_added):
                 self.app.switch_screen(account_page())
             elif (not cli_installed):
