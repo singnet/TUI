@@ -1500,4 +1500,3 @@ def custom_command(command, cwd):
         output, errCode = run_shell_command(cmd, cwd=snet_dir)
 
     return output, errCode
-
