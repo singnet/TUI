@@ -1,7 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import Screen
-from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
+from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator, RichLog
 import back.backend as be
 import re
 
@@ -528,13 +528,14 @@ class account_transfer_page(Screen):
 
 class organization_page(Screen):
     def compose(self) -> ComposeResult:
-        output, errCode = be.print_organization_info()
         yield Header()
+        yield LoadingIndicator(id="organization_page_load")
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Page", id="organization_page_title"),
-                Label(f"My Organizations:\n{output}", id="org_metadata_info_label"),
+                RichLog(id="organization_page_info_log"),
+                # Label(f"My Organizations:\n{output}", id="org_metadata_info_label"),
                 Button(label="Metadata", id="organization_page_metadata_button"),
                 Button(label="Groups", id="organization_page_groups_button"),
                 Button(label="Members", id="organization_page_members_button"),
@@ -544,6 +545,15 @@ class organization_page(Screen):
             ),
             id="organization_page"
         )
+
+    def on_mount(self) -> None:
+        self.get_child_by_id("organization_page").get_child_by_id("organization_page_content").display = False
+        self.get_child_by_id("organization_page_load").display = True
+        output, errCode = be.print_organization_info()
+        self.get_child_by_id("organization_page").get_child_by_id("organization_page_content").get_child_by_type(RichLog).write(output)
+        self.get_child_by_id("organization_page").get_child_by_id("organization_page_content").display = True
+        self.get_child_by_id("organization_page_load").display = False
+        pass
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account_page_nav":
