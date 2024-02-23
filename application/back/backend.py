@@ -40,7 +40,7 @@ class Organization():
         self.org_description: str = org_description
         self.org_assets: {str, str} = org_assets
         self.org_owner: Identity = org_owner
-        self.org_members: [Identity] = org_members
+        self.org_members: list[Identity] = org_members
 
 def run_shell_command(command, cwd=None):
     try:

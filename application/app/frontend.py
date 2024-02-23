@@ -1198,6 +1198,7 @@ class org_manage_create_page(Screen):
             Grid(
                 Label("Create Organization Page", id="org_manage_create_page_title"),
                 Input(placeholder="Your Organization ID", id="org_manage_create_id_input"),
+                Input(placeholder="[OPTIONAL] Registery contract address", id="org_reg_addr_input"),
                 Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="org_manage_create_file_input"),
                 Input(placeholder="[OPTIONAL] List of members to be added to the organization", id="org_manage_create_mems_input"),
                 Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="org_manage_create_gas_input"),
@@ -1229,6 +1230,7 @@ class org_manage_create_page(Screen):
             self.app.pop_screen()
         elif event.button.id == "org_manage_create_confirm_button":
             org_id = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_id_input").value
+            reg_addr = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_reg_addr_input").value
             file_name = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_file_input").value
             mem_list = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_mems_input").value
             gas = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_gas_input").value
@@ -1236,7 +1238,7 @@ class org_manage_create_page(Screen):
             quiet = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_quiet_radio").value
             verbose = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_verbose_radio").value
 
-            output, errCode = be.create_organization(org_id, file_name, mem_list, gas, index, quiet, verbose)
+            output, errCode = be.create_organization(org_id, file_name, mem_list, gas, index, quiet, verbose, reg_addr)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
