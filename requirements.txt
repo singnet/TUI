@@ -48,8 +48,8 @@ requests
 rich
 rlp
 sniffio
-textual
-textual-dev
+textual==0.43.2
+textual-dev==1.2.1
 toolz
 typing_extensions
 uc-micro-py
