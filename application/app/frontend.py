@@ -60,15 +60,21 @@ class popup_output_page(Screen):
 
 class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
-        yield Grid(
-            Input(placeholder="Identity Name", id="org_identity_input"),
-            Input(placeholder="Wallet Private Key / Seed phrase (Mnemonic)", id="wallet_info_input", password=True),
-            Select(options=(("Goerli", "Goerli") for line in """Goerli""".splitlines()), prompt="Select Network", id="network_select"),
-            RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
-            Button("Create Identity", id="create_identity_button"),
-            Button("Back", id="create_identity_back_button"),
-            id="create_identity"
-        )
+        global error_exit_label
+        network_list, errCode = be.network_list()
+        if errCode == 0:
+            yield Grid(
+                Input(placeholder="Identity Name", id="org_identity_input"),
+                Input(placeholder="Wallet Private Key / Seed phrase (Mnemonic)", id="wallet_info_input", password=True),
+                Select(options=((line, line) for line in network_list), prompt="Select Network", id="network_select"),
+                RadioButton("Mnemonic Wallet", id="mnemonic_wallet_radio"),
+                Button("Create Identity", id="create_identity_button"),
+                Button("Back", id="create_identity_back_button"),
+                id="create_identity"
+            )
+        else:
+            error_exit_label = "ERROR: Could not find network list, please check CLI installation and run the command 'snet network list'"
+            self.app.switch_screen(error_exit_page())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output

@@ -84,6 +84,14 @@ def check_cli():
         return True, output, errCode
     return False, output, errCode
 
+def network_list():
+    output, errCode = run_shell_command('snet network list')
+    if errCode == 0:
+        network_list = re.findall(r'(?m)^\s*([a-zA-Z]+)\s*:$', output)
+    else:
+        network_list = ["Unable to find network list"]
+    return network_list, errCode
+
 def check_account_balance():
     output, errCode = run_shell_command('snet account balance')
     if "    account:" in output:
