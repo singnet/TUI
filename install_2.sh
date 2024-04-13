@@ -57,7 +57,7 @@ fi
 if [ ! -f "$WORK_DIR/snetd.config.json" ]; then
     echo '{
     "blockchain_enabled":true,
-    "blockchain_network_selected":"goerli",
+    "blockchain_network_selected":"sepolia",
     "daemon_end_point":"0.0.0.0:<DAEMON_PORT>",
     "daemon_group_name":"<DAEMON_GROUP>",
     "ipfs_end_point":"http://ipfs.singularitynet.io:80",
