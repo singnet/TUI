@@ -50,7 +50,7 @@ sudo docker start docker-etcd-node-1 || sudo docker restart docker-etcd-node-1
 # 7. Install daemon
 if [ ! -f "$WORK_DIR/snetd" ]; then
     cd $WORK_DIR
-    wget "https://drive.google.com/u/0/uc?id=1jbme-TD_HVOlyvkdcT_B0iOOzUpM9c3r&export=download" -O snetd
+    wget "https://github.com/singnet/snet-daemon/releases/download/v5.1.2/snetd-linux-amd64-v5.1.2" -O snetd
     sudo chmod +x snetd
 fi
 
