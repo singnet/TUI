@@ -76,10 +76,11 @@ fi
 if [ ! -d "$WORK_DIR/snet-cli" ]; then
     cd $WORK_DIR
     source $ENV_NAME/bin/activate
-    git clone https://github.com/singnet/snet-cli.git
-    cd $HOME/snet/snet-cli/packages/snet_cli
-    ./scripts/blockchain install
-    python -m pip install -e .
+    pip install snet-cli
+    #git clone https://github.com/singnet/snet-cli.git
+    # cd $HOME/snet/snet-cli/packages/snet_cli
+    # ./scripts/blockchain install
+    # python -m pip install -e .
 fi
 
 # Patch for deprecated RIPEMD160 (if necessary)
