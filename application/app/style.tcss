@@ -94,13 +94,14 @@
 # }
 
 /* Error Exit screen */
-#error_exit_label {
+#error_exit_log {
     align: center middle;
     width: 100%;
+    height: 80%;
     margin-left: 5;
     margin-right: 5;
     margin-top: 5;
-    border: solid white;
+    border: solid white
 }
 
 #error_exit_button {
@@ -113,13 +114,14 @@
 }
 
 /* Popup screen */
-#popup_output_label {
+#popup_output_log {
     align: center middle;
     width: 100%;
+    height: 80%;
     margin-left: 5;
     margin-right: 5;
     margin-top: 5;
-    border: solid white;
+    border: solid white
 }
 
 #output_exit_button {

@@ -1,7 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import Screen
-from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
+from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator, Log
 import back.backend as be
 import re
 
@@ -35,11 +35,8 @@ class WelcomeScreen(Screen):
 class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
-        yield Grid(
-            Label(f"{error_exit_label}", id="error_exit_label"),
-            Button("Exit", id="error_exit_button"),
-            id = "error_exit_screen"
-        )
+        yield Log(id="error_exit_log").write(error_exit_label)
+        yield Button("Exit", id="error_exit_button")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "error_exit_button":
@@ -48,11 +45,8 @@ class error_exit_page(Screen):
 class popup_output_page(Screen):
     def compose(self) -> ComposeResult:
         global popup_output
-        yield Grid(
-            Label(f"{popup_output}", id="popup_output_label"),
-            Button("OK", id="output_exit_button"),
-            id = "popup_output_screen"
-        )
+        yield Log(id="popup_output_log").write(popup_output)
+        yield Button("OK", id="output_exit_button")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "output_exit_button":
