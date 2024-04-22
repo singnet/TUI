@@ -2451,6 +2451,7 @@ class custom_command_page(Screen):
                 Label("Custom CLI Command Page", id="custom_command_page_title"),
                 Input(placeholder="Input your custom command here. NOTE: omit the 'snet' prefix, this will be added automatically", id="custom_command_input"),
                 Input(placeholder="[OPTIONAL] Input the working directory you would like the command to run from (default: $HOME/snet)", id="custom_cwd_input"),
+                RadioButton(label="Print Traceback", id="custom_command_traceback_radio"),
                 Button("Run Custom Command", id="custom_command_confirm_button"),
                 id="custom_command_page_content",
                 classes="content_page"
@@ -2474,8 +2475,9 @@ class custom_command_page(Screen):
         elif event.button.id == "custom_command_confirm_button":
             command = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_command_input").value
             cwd = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_cwd_input").value
+            traceback = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_command_traceback_radio").value
 
-            output, errCode = be.custom_command(command, cwd)
+            output, errCode = be.custom_command(command, cwd, traceback)
             popup_output = output
             self.app.push_screen(popup_output_page())
 

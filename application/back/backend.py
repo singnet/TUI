@@ -1495,13 +1495,16 @@ def print_service_api_registry(org_id, service_id, reg_addr, proto_dir):
 
     return output, errCode
 
-def custom_command(command, cwd):
+def custom_command(command, cwd, traceback):
     # snet [-h] COMMAND
     global snet_dir
 
     if not command or len(command) <= 0:
         return "ERROR: Please input a command to run", 42
-    cmd = f"snet {command}"
+    if traceback:
+        cmd = f"snet --print-traceback {command}"
+    else:
+        cmd = f"snet {command}"
     if cwd and len(cwd) > 0:
         output, errCode = run_shell_command(cmd, cwd=cwd)
     else:
