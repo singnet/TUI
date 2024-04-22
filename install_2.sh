@@ -23,7 +23,7 @@ fi
 cd $WORK_DIR
 mkdir -p etcd
 if [ ! -f "$WORK_DIR/etcd/docker-etcd-setup.sh" ]; then
-    git clone https://github.com/ishaan-ghosh/sNET-TUI.git
+    git clone https://github.com/vbrltech/sNET-TUI.git
     cp $WORK_DIR/sNET-TUI/application/terminal/docker-etcd.sh $WORK_DIR/etcd/
     cd $WORK_DIR/etcd
     bash docker-etcd.sh
