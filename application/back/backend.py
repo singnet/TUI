@@ -13,43 +13,98 @@ import json
 
 # Stable build v0.1
 
-snet_dir = f"{os.environ['HOME']}/snet"
-serv_path: str
-serv_path_set = False
-daemon_end: str
-daemon_end_set = False
+condCommDict = set({
+    "account deposit",
+    "account withdraw", 
+    "account transfer",
+    "channel open-init",
+    "channel open-init-metadata",
+    "channel extend-add",
+    "channel extend-add-for-org",
+    "channel claim-timeout",
+    "channel claim-timeout-all",
+    "client call",
+    "contract MultiPartyEscrow balances",
+    "contract MultiPartyEscrow channels",
+    "contract MultiPartyEscrow nextChannelId",
+    "contract MultiPartyEscrow token",
+    "contract MultiPartyEscrow usedMessages",
+    "contract MultiPartyEscrow deposit",
+    "contract MultiPartyEscrow withdraw",
+    "contract MultiPartyEscrow transfer",
+    "contract MultiPartyEscrow openChannel",
+    "contract MultiPartyEscrow openChannelByThirdParty",
+    "contract MultiPartyEscrow depositAndOpenChannel",
+    "contract MultiPartyEscrow multiChannelClaim",
+    "contract MultiPartyEscrow channelClaim",
+    "contract MultiPartyEscrow channelExtend",
+    "contract MultiPartyEscrow channelAddFunds",
+    "contract MultiPartyEscrow channelExtendAndAddFunds",
+    "contract MultiPartyEscrow channelClaimTimeout",
+    "contract Registry supportsInterface",
+    "contract Registry createOrganization",
+    "contract Registry changeOrganizationOwner",
+    "contract Registry changeOrganizationMetadataURI",
+    "contract Registry addOrganizationMembers",
+    "contract Registry removeOrganizationMembers",
+    "contract Registry deleteOrganization",
+    "contract Registry createServiceRegistration",
+    "contract Registry updateServiceRegistration",
+    "contract Registry deleteServiceRegistration",
+    "contract Registry listOrganizations",
+    "contract Registry getOrganizationById",
+    "contract Registry listServicesForOrganization",
+    "contract Registry getServiceRegistrationById",
+    "contract SingularityNetToken DEFAULT_ADMIN_ROLE",
+    "contract SingularityNetToken MINTER_ROLE",
+    "contract SingularityNetToken PAUSER_ROLE",
+    "contract SingularityNetToken allowance",
+    "contract SingularityNetToken approve",
+    "contract SingularityNetToken balanceOf",
+    "contract SingularityNetToken burn",
+    "contract SingularityNetToken burnFrom",
+    "contract SingularityNetToken decimals",
+    "contract SingularityNetToken decreaseAllowance",
+    "contract SingularityNetToken getRoleAdmin",
+    "contract SingularityNetToken getRoleMember",
+    "contract SingularityNetToken getRoleMemberCount",
+    "contract SingularityNetToken grantRole",
+    "contract SingularityNetToken hasRole",
+    "contract SingularityNetToken increaseAllowance",
+    "contract SingularityNetToken name",
+    "contract SingularityNetToken paused",
+    "contract SingularityNetToken renounceRole",
+    "contract SingularityNetToken revokeRole",
+    "contract SingularityNetToken symbol",
+    "contract SingularityNetToken totalSupply",
+    "contract SingularityNetToken transfer",
+    "contract SingularityNetToken transferFrom",
+    "contract SingularityNetToken mint",
+    "contract SingularityNetToken pause",
+    "contract SingularityNetToken unpause",
+    "organization create",
+    "organization update-metadata",
+    "organization change-owner",
+    "organization add-members",
+    "organization rem-members",
+    "organization delete",
+    "service publish",
+    "service publish-in-ipfs",
+    "service update-metadata",
+    "service update-add-tags",
+    "service update-remove-tags",
+    "service delete",
+    "treasurer claim",
+    "treasurer claim-all",
+    "treasurer claim-expired"
+})
 
-# TODO
-class Identity():
-    def __init__(self, identity_name, network, wallet_priv_key=None, seed_phrase=None) -> None:
-        self.identity_name = identity_name
-        self.network = network
-        self.seed = seed_phrase
-        if wallet_priv_key == None:
-            self.mnemonic = True
-        else:
-            self.mnemonic = False
-# TODO
-class Organization():
-    def __init__(self, org_name, org_id, org_type, org_email, org_website, org_description, org_assets, org_owner, org_members) -> None:
-        self.org_name: str = org_name
-        self.org_id: str = org_id
-        self.org_type: str = org_type
-        self.org_email: str = org_email
-        self.org_website: str = org_website
-        self.org_description: str = org_description
-        self.org_assets: {str, str} = org_assets
-        self.org_owner: Identity = org_owner
-        self.org_members: list[Identity] = org_members
-
-def run_shell_command(command, cwd=None):
+def run_shell_command(command, workdir=None):
     try:
-        global snet_dir
-
-        if cwd != None:
-            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
+        if workdir != None:
+            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=workdir)
         else:
-            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=snet_dir)
+            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         
         stdout, stderr, errCode = result.stdout, result.stderr, result.returncode
         
@@ -70,13 +125,24 @@ def run_shell_command(command, cwd=None):
         else:
             return stderr, errCode 
     
-def run_shell_command_with_input(command, input_text):
+def run_shell_command_with_input(command, input_text, workdir=None):
     try:
-        process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        output, error = process.communicate(input=input_text)
-        return output, error, process.returncode
+        if workdir != None:
+            process = subprocess.Popen(args=command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=workdir)
+        else:
+            process = subprocess.Popen(args=command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        
+        stdout, stderr = process.communicate(input_text)
+        
+        if stdout:
+            return stdout, 0
+        elif stderr:
+            return stderr, 1
+        else:
+            return stdout, 42
+
     except Exception as e:
-        return str(e)
+        return str(e), 1
 
 def check_cli():
     output, errCode = run_shell_command('snet')
@@ -103,6 +169,7 @@ def nav_sidebar_vert() -> Vertical:
                 Button("Account", id="account_page_nav", classes="nav_sidebar_button"),
                 Button("Organization", id="organization_page_nav", classes="nav_sidebar_button"),
                 Button("Services", id="services_page_nav", classes="nav_sidebar_button"),
+                Button("Client", id="client_page_nav", classes="nav_sidebar_button"),
                 Button("Custom Command", id="custom_command_page_nav", classes="nav_sidebar_button"),
                 Button("Exit", id="exit_page_nav", classes="nav_sidebar_button"),
                 classes="nav_sidebar",
@@ -114,8 +181,11 @@ def nav_sidebar_vert() -> Vertical:
 
 def wallet_dict_create():
     check, output, errCode = check_account_balance()
-    matches = re.findall(r'(\w+):\s*(\S+)', output)
-    return {key: value for key, value in matches}
+    if check:
+        matches = re.findall(r'(\w+):\s*(\S+)', output)
+        return {key: value for key, value in matches}, 0
+    else:
+        return {}, 1
 
 def create_identity_cli(id_name, wallet_info, network, mnemonic):
     if mnemonic:
@@ -135,7 +205,7 @@ def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet
     #                  [--yes] [--quiet | --verbose]
     #                  AMOUNT
     command = "snet --print-traceback account deposit"
-    if not isinstance(agi_amount, str) and agi_amount <= 0:
+    if not isinstance(agi_amount, str) or len(agi_amount) <= 0:
         return "ERROR: Deposit amount must be greater than 0", 42
     if isinstance(contract_address, str) and len(contract_address) > 0:
         command += f" --singularitynettoken-at {contract_address}"
@@ -160,8 +230,8 @@ def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, ve
     #                   [--yes] [--quiet | --verbose]
     #                   AMOUNT
     command = "snet --print-traceback account withdraw"
-    if not isinstance(agi_amount, str) and agi_amount <= 0:
-        return "Error: Withdraw amount must be greater than 0", 42
+    if not isinstance(agi_amount, str) or len(agi_amount) <= 0:
+        return "ERROR: Withdraw amount must be greater than 0", 42
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
     if isinstance(gas_price, str) and len(gas_price) > 0:
@@ -183,9 +253,9 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
     #                   [--yes] [--quiet | --verbose]
     #                   RECEIVER AMOUNT
     command = "snet --print-traceback account transfer"
-    if not isinstance(reciever_addr, str) and len(reciever_addr) > 0:
+    if not isinstance(reciever_addr, str) or len(reciever_addr) <= 0:
         return "ERROR: Please input the reciever address", 42
-    if not isinstance(agi_amount, str) and agi_amount <= 0:
+    if not isinstance(agi_amount, str) or len(agi_amount) <= 0:
         return "ERROR: Withdraw amount must be greater than 0", 42
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
@@ -203,61 +273,58 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
 
     return run_shell_command(command)
 
-def print_org_metadata():
-    global snet_dir
-    if os.path.exists(f"{snet_dir}/organization_metadata.json"):
-        output, errCode = run_shell_command(f"cat {snet_dir}/organization_metadata.json")
-        return output, errCode
-    else:
-        return f"ERROR: Organization metdata not found at '{snet_dir}', please initialize metadata first", 42
+def print_org_metadata(org_name, org_id):
+    # snet organization print-metadata [-h] org_name org_id
+    command = "snet organization print-metadata"
+    if not isinstance(org_name, str) or len(org_name) <= 0:
+        return "ERROR: Organization name is required", 42
+    if not isinstance(org_id, str) or len(org_id) <= 0:
+        return "ERROR: Organization identity is required", 42
+    
+    command += f" {org_name} {org_id}"
+
+    return run_shell_command(command)
 
 def init_org_metadata(org_name, org_id, org_type, reg_addr):
     # snet organization metadata-init [-h] [--registry-at REGISTRY_AT]
     #                             [--metadata-file METADATA_FILE]
     #                             ORG_NAME ORG_ID ORG_TYPE
-    global snet_dir
-    if os.path.exists(f"{snet_dir}/organization_metadata.json"):
-        return f"ERROR: Organization metdata already exists at {snet_dir}/organization_metadata.json'", 42
-    elif os.path.exists(snet_dir):
-        command = "snet --print-traceback organization metadata-init"
-        if org_type == Select.BLANK or not isinstance(org_type, str):
-            return "ERROR: Please select an organization type", 42
-        else:
-            org_type = org_type.lower()
-        if org_name == None or len(org_name) == 0:
-            return "ERROR: Organization name is required", 42
-        if org_id == None or len(org_id) == 0:
-            return "ERROR: Organization identity is required", 42
-        if isinstance(reg_addr, str) and len(reg_addr) > 0:
-            command += f" --registry-at {reg_addr}"
-        command += f" {org_name}"
-        command += f" {org_id}"
-        command += f" {org_type}"
-        output, errCode = run_shell_command(command, cwd=snet_dir)
-        if len(output) == 0 and errCode == 0:
-            output = f"Successfully initialized organization metadata at '{snet_dir}'"
-        return output, errCode
+    command = "snet --print-traceback organization metadata-init"
+    if org_type == Select.BLANK or not isinstance(org_type, str):
+        return "ERROR: Please select an organization type", 42
     else:
-        return f"ERROR: Cannot find work directory '{snet_dir}'", 1
+        org_type = org_type.lower()
+    if not isinstance(org_name, str) or len(org_name) <= 0:
+        return "ERROR: Organization name is required", 42
+    if not isinstance(org_id, str) or len(org_id) <= 0:
+        return "ERROR: Organization identity is required", 42
+    if isinstance(reg_addr, str) and len(reg_addr) > 0:
+        command += f" --registry-at {reg_addr}"
+    command += f" {org_name}"
+    command += f" {org_id}"
+    command += f" {org_type}"
+    output, errCode = run_shell_command(command)
+    if len(output) == 0 and errCode == 0:
+        output = f"Successfully initialized organization metadata!"
+    return output, errCode
 
 def add_org_metadata_desc(long_desc, short_desc, url, meta_path):
     # snet organization metadata-add-description [-h] [--description DESCRIPTION]
     #                                        [--short-description SHORT_DESCRIPTION]
     #                                        [--url URL]
     #                                        [--metadata-file METADATA_FILE]
-    global snet_dir
-
     command = "snet --print-traceback organization metadata-add-description"
+    if not isinstance(meta_path, str) or len(meta_path) <= 0:
+        return "ERROR: Organization metadata path is required", 42
     if long_desc and len(long_desc) > 0:
         command += f" --description \"{long_desc}\""
     if short_desc and len(short_desc) > 0:
         command += f" --short-description \"{short_desc}\""
     if url and len(url) > 0:
         command += f" --url {url}"
-    if meta_path and len(meta_path) > 0:
-        command += f" --metadata-file {meta_path}"
+    command += f" --metadata-file {meta_path}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         return "Description successfully added!", 0
     return output, errCode
@@ -265,30 +332,27 @@ def add_org_metadata_desc(long_desc, short_desc, url, meta_path):
 def add_org_metadata_assets(asset_file_path, metadata_file_name):
     # snet organization metadata-add-assets [-h] [--metadata-file METADATA_FILE]
     #                                   ASSET_FILE_PATH hero_image
-    global snet_dir
 
     if not asset_file_path:
         return "ERROR: Asset file path is required", 42
-
+    if not isinstance(metadata_file_name, str) or len(metadata_file_name) <= 0:
+        return "ERROR: Organization metadata path is required", 42
     command = "snet --print-traceback organization metadata-add-assets"
     command += f" {asset_file_path} hero_image"  # Assuming the asset type is always 'hero_image'
+    command += f" --metadata-file {metadata_file_name}"
 
-    if metadata_file_name and len(metadata_file_name) > 0:
-        command += f" --metadata-file {metadata_file_name}"
-
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     return output, errCode
 
 def remove_all_org_metadata_assets(metadata_file_name):
     # snet organization metadata-remove-all-assets [-h]
     #                                          [--metadata-file METADATA_FILE]
-    global snet_dir
-
     command = "snet --print-traceback organization metadata-remove-all-assets"
-    if metadata_file_name and len(metadata_file_name) > 0:
-        command += f" --metadata-file {metadata_file_name}"
+    if not isinstance(metadata_file_name, str) or len(metadata_file_name) <= 0:
+        return "ERROR: Organization metadata path is required", 42
+    command += f" --metadata-file {metadata_file_name}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Successfully deleted all assets!"
 
@@ -298,19 +362,19 @@ def add_org_metadata_contact(contact_type, phone, email, metadata_file):
     # snet organization metadata-add-contact [-h] [--phone PHONE] [--email EMAIL]
     #                                    [--metadata-file METADATA_FILE]
     #                                    contact_type
-    global snet_dir
 
     if not contact_type:
         return "ERROR: Contact type is required", 42
+    if not isinstance(metadata_file, str) or len(metadata_file) <= 0:
+        return "ERROR: Organization metadata path is required", 42
     command = f"snet --print-traceback organization metadata-add-contact {contact_type}"
     if phone and len(phone) > 0:
         command += f" --phone {phone}"
     if email and len(email) > 0:
         command += f" --email {email}"
-    if metadata_file and len(metadata_file) > 0:
-        command += f" --metadata-file {metadata_file}"
+    command += f" --metadata-file {metadata_file}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Successfully added contact!"
     return output, errCode
@@ -318,13 +382,14 @@ def add_org_metadata_contact(contact_type, phone, email, metadata_file):
 def remove_org_metadata_contacts(metadata_file):
     # snet organization metadata-remove-all-contacts [-h]
     #                                            [--metadata-file METADATA_FILE]
-    global snet_dir
 
     command = "snet --print-traceback organization metadata-remove-all-contacts"
-    if metadata_file and len(metadata_file) > 0:
-        command += f" --metadata-file {metadata_file}"
+    if not isinstance(metadata_file, str) or len(metadata_file) <= 0:
+        return "ERROR: Organization metadata path is required", 42
+    
+    command += f" --metadata-file {metadata_file}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Successfully deleted all contacts!"
     return output, errCode
@@ -337,13 +402,13 @@ def update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose)
     #                               [--quiet | --verbose]
     #                               [--registry-at REGISTRY_ADDRESS]
     #                               ORG_ID
-    global snet_dir
 
     if org_id == None or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
+    if not isinstance(file_name, str) or len(file_name) <= 0:
+        return "ERROR: Organization metadata path is required", 42
     command = f"snet --print-traceback organization update-metadata {org_id}"
-    if file_name and len(file_name) > 0:
-        command += f" --metadata-file {file_name}"
+    command += f" --metadata-file {file_name}"
     if mem_list and len(mem_list) > 0:
         command += f" --members {mem_list}"
     if gas and len(gas) > 0:
@@ -356,7 +421,7 @@ def update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose)
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Organization metadata successfully updated!"
     return output, errCode
@@ -368,13 +433,13 @@ def create_organization(org_id, metadata_file, members, gas, index, quiet, verbo
     #                      [--quiet | --verbose]
     #                      [--registry-at REGISTRY_ADDRESS]
     #                      ORG_ID
-    global snet_dir
 
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
+    if not isinstance(metadata_file, str) or len(metadata_file) <= 0:
+        return "ERROR: Organization metadata path is required", 42
     command = f"snet --print-traceback organization create {org_id}"
-    if metadata_file and len(metadata_file) > 0:
-        command += f" --metadata-file {metadata_file}"
+    command += f" --metadata-file {metadata_file}"
     if members and len(members) > 0:
         command += f" --members {members}"
     if gas and len(gas) > 0:
@@ -389,7 +454,7 @@ def create_organization(org_id, metadata_file, members, gas, index, quiet, verbo
         command += f" --registry-at {registry_address}"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Organization successfully created!"
     return output, errCode
@@ -400,7 +465,6 @@ def change_organization_owner(org_id, owner_address, gas_price, wallet_index, qu
     #                            [--quiet | --verbose]
     #                            [--registry-at REGISTRY_ADDRESS]
     #                            ORG_ID OWNER_ADDRESS
-    global snet_dir
 
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
@@ -419,7 +483,7 @@ def change_organization_owner(org_id, owner_address, gas_price, wallet_index, qu
         command += f" --registry-at {registry_address}"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Organization owner successfully changed!"
     return output, errCode
@@ -430,7 +494,6 @@ def add_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
     #                           ORG_ID ORG_MEMBERS
-    global snet_dir
     
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
@@ -449,9 +512,9 @@ def add_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet
         command += f" --registry-at {registry_address}"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
-        output = "Members successfully added to organization metadata!"
+        output = "Members successfully added to organization!"
     return output, errCode
 
 def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet, verbose, registry_address):
@@ -460,7 +523,6 @@ def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, qu
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
     #                           ORG_ID ORG_MEMBERS
-    global snet_dir
     
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
@@ -479,9 +541,9 @@ def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, qu
         command += f" --registry-at {registry_address}"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
-        output = "Members successfully removed from organization metadata!"
+        output = "Members successfully removed from organization!"
     return output, errCode
 
 def delete_organization(org_id, gas_price, wallet_index, quiet, verbose, registry_address):
@@ -490,7 +552,6 @@ def delete_organization(org_id, gas_price, wallet_index, quiet, verbose, registr
     #                      [--quiet | --verbose]
     #                      [--registry-at REGISTRY_ADDRESS]
     #                      ORG_ID
-    global snet_dir
 
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
@@ -521,12 +582,11 @@ def print_organization_info(registry_address=None, wallet_index=None):
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0:
         output = f"ERROR: Unable to find organizations, ensure you have created one\nCLI Output: {output}"
     return output, errCode
 
-# TODO
 def add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr):
     # snet organization add-group [-h]
     #                         [--payment-expiration-threshold PAYMENT_EXPIRATION_THRESHOLD]
@@ -537,7 +597,6 @@ def add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_t
     #                         [--registry-at REGISTRY_AT]
     #                         group_name payment_address
     #                         [endpoints [endpoints ...]]
-    global snet_dir
     
     if not group_name or len(group_name) <= 0:
         return "ERROR: Must enter group name", 42
@@ -545,6 +604,8 @@ def add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_t
         return "ERROR: Must enter group payment address", 42
     if not endpoints or len(endpoints) <= 0:
         return "ERROR: Must enter group endpoints", 42
+    if not isinstance(metadata_file, str) or len(metadata_file) <= 0:
+        return "ERROR: Organization metadata path is required", 42
     command = f"snet --print-traceback organization add-group {group_name} {pay_addr} {endpoints}"
     if payment_expiration_threshold and len(payment_expiration_threshold) > 0:
         command += f" --payment-expiration-threshold {payment_expiration_threshold}"
@@ -554,17 +615,15 @@ def add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_t
         command += f" --payment-channel-connection-timeout {pay_chann_conn_to}"
     if pay_chann_req_to and len(pay_chann_req_to) > 0:
         command += f" --payment-channel-request-timeout {pay_chann_req_to}"
-    if metadata_file and len(metadata_file) > 0:
-        command += f" --metadata-file {metadata_file}"
+    command += f" --metadata-file {metadata_file}"
     if reg_addr and len(reg_addr) > 0:
         command += f" --registry-at {reg_addr}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
-        output = "Group successfully added to organization metadata!"
+        output = "Group successfully added to organization!"
     return output, errCode
 
-# TODO
 def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr):
     # snet organization update-group [-h] [--payment-address PAYMENT_ADDRESS]
     #                            [--endpoints [ENDPOINTS [ENDPOINTS ...]]]
@@ -575,10 +634,11 @@ def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiratio
     #                            [--metadata-file METADATA_FILE]
     #                            [--registry-at REGISTRY_AT]
     #                            group_id
-    global snet_dir
 
     if not group_name or len(group_name) <= 0:
         return "ERROR: Must enter group name", 42
+    if not isinstance(metadata_file, str) or len(metadata_file) <= 0:
+        return "ERROR: Organization metadata path is required", 42
     command = f"snet --print-traceback organization update-group {group_name}"
     if pay_addr:
         command += f" --payment-address {pay_addr}"
@@ -592,12 +652,11 @@ def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiratio
         command += f" --payment-channel-connection-timeout {pay_chann_conn_to}"
     if pay_chann_req_to:
         command += f" --payment-channel-request-timeout {pay_chann_req_to}"
-    if metadata_file and len(metadata_file) > 0:
-        command += f" --metadata-file {metadata_file}"
+    command += f" --metadata-file {metadata_file}"
     if reg_addr and len(reg_addr) > 0:
         command += f" --registry-at {reg_addr}"
 
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Group in organization metadata successfully updated!"
     return output, errCode
@@ -611,8 +670,6 @@ def init_service_metadata(service_path, proto_path, service_display, metadata_fi
     #                        [--encoding {proto,json}]
     #                        [--service-type {grpc,jsonrpc,process}]
     #                        PROTO_DIR DISPLAY_NAME
-    global serv_path
-    global serv_path_set
 
     if not service_path or len(service_path) <= 0:
         return "ERROR: Must enter service directory path", 42
@@ -637,10 +694,7 @@ def init_service_metadata(service_path, proto_path, service_display, metadata_fi
     if serv_type:
         command += f" --service-type {serv_type}"
 
-    output, errCode = run_shell_command(command, cwd=service_path)
-    if errCode == 0:
-        serv_path = service_path
-        serv_path_set = True
+    output, errCode = run_shell_command(command, workdir=service_path)
     if len(output) == 0 and errCode == 0:
         output = "Service metadata successfully initialized!"
     return output, errCode
@@ -650,11 +704,7 @@ def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
     #                                   [--description DESCRIPTION]
     #                                   [--short-description SHORT_DESCRIPTION]
     #                                   [--metadata-file METADATA_FILE]
-    global serv_path
-    global serv_path_set
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to add description", 42
-
+    
     command = "snet --print-traceback service metadata-add-description"
     if long_desc and len(long_desc) > 0:
         command += f" --description \"{long_desc}\""
@@ -665,7 +715,7 @@ def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
     if metadata_file and len(metadata_file) > 0:
         command += f" --metadata-file {metadata_file}"
 
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Service description successfully added!"
     return output, errCode
@@ -678,12 +728,6 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
     #                  [--wallet-index WALLET_INDEX] [--yes]
     #                  [--quiet | --verbose]
     #                  ORG_ID SERVICE_ID
-    global serv_path
-    global serv_path_set
-
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before publishing", 42
-
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization ID", 42
     if not service_id or len(service_id) <= 0:
@@ -708,21 +752,16 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Service successfully published!"
     return output, errCode
 
-# TODO
 def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
     # snet service delete [-h] [--registry-at REGISTRY_AT] [--gas-price GAS_PRICE]
     #                 [--wallet-index WALLET_INDEX] [--yes]
     #                 [--quiet | --verbose]
     #                 ORG_ID SERVICE_ID
-    global serv_path
-    global serv_path_set
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to delete service", 42
 
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization ID", 42
@@ -742,12 +781,11 @@ def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
         command += " --verbose"
     command += " --yes"
 
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Service successfully deleted!"
     return output, errCode
 
-# TODO
 def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
     # snet organization add-members [-h] [--gas-price GAS_PRICE]
     #                           [--wallet-index WALLET_INDEX] [--yes]
@@ -774,7 +812,6 @@ def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
         output = "Members successfully added to the organization!"
     return output, errCode
 
-# TODO
 def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
     # snet organization rem-members [-h] [--gas-price GAS_PRICE]
     #                           [--wallet-index WALLET_INDEX] [--yes]
@@ -801,14 +838,12 @@ def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
         output = "Members successfully removed from the organization!"
     return output, errCode
 
-# TODO
 def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
     # snet organization change-owner [-h] [--gas-price GAS_PRICE]
     #                            [--wallet-index WALLET_INDEX] [--yes]
     #                            [--quiet | --verbose]
     #                            [--registry-at REGISTRY_ADDRESS]
     #                            ORG_ID OWNER_ADDRESS
-    global snet_dir
 
     if not org_id or len(org_id) == 0:
         return "ERROR: Organization ID is required", 42
@@ -831,22 +866,10 @@ def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
         output = "Organization owner successfully changed!"
     return output, errCode
 
-def print_unclaimed_payments():
+def print_unclaimed_payments(endpoint):
     # snet treasurer print-unclaimed [-h] --endpoint ENDPOINT
     #                            [--wallet-index WALLET_INDEX]
-    global snet_dir
-    global daemon_end
-    global daemon_end_set
-
-    if not daemon_end_set:
-        with open(f'{snet_dir}/snetd.config.json', 'r') as f:
-            daemon_config = json.load(f)
-        endpoint = daemon_config["daemon_end_point"]
-        if endpoint == "0.0.0.0:<DAEMON_PORT>":
-            return f"ERROR: Please correctly configure the daemon ({snet_dir}/snetd.config.json) and ensure it is running before attempting to view payments", 42
-        else:
-            daemon_end = endpoint
-            daemon_end_set = True
+    # URGENT: Redo snetd endpoint retrieval
     
     command = f"snet --print-traceback treasurer print-unclaimed --endpoint {endpoint}"
 
@@ -928,32 +951,24 @@ def treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, ve
     command += " --yes"
 
     output, errCode = run_shell_command(command)
-    if errCode == 0:
-        return output.strip(), errCode
-    elif len(output) == 0:
-        return "ERROR: Failed to claim expired payments", errCode
+    if len(output) == 0 and errCode == 0:
+        return "Claimed expired payments!", errCode
+    return output, errCode
 
 def service_metadata_set_model(proto_dir, metadata_file):
     # snet service metadata-set-model [-h] [--metadata-file METADATA_FILE] PROTO_DIR
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before setting the model", 42
 
     # Check for required parameters
     if not proto_dir or len(proto_dir) == 0:
         return "ERROR: Protobuf directory path is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-set-model {proto_dir}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Model successfully set in service metadata!"
 
@@ -962,24 +977,17 @@ def service_metadata_set_model(proto_dir, metadata_file):
 def service_metadata_set_fixed_price(group_name, price, metadata_file):
     # snet service metadata-set-fixed-price [-h] [--metadata-file METADATA_FILE]
     #                                   group_name PRICE
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before setting the model", 42
 
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
     if price is None or price <= 0:
         return "ERROR: Price must be greater than 0", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     command = f"snet --print-traceback service metadata-set-fixed-price {group_name} {price}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Fixed price successfully set in service metadata!"
 
@@ -989,12 +997,6 @@ def service_metadata_set_method_price(group_name, package_name, service_name, me
     # snet service metadata-set-method-price [-h] [--metadata-file METADATA_FILE]
     #                                    group_name package_name service_name
     #                                    method PRICE
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before setting the model", 42
     
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
@@ -1006,15 +1008,14 @@ def service_metadata_set_method_price(group_name, package_name, service_name, me
         return "ERROR: Method is required", 42
     if price is None or price <= 0:
         return "ERROR: Price must be greater than 0", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-set-method-price {group_name} {package_name} {service_name} {method} {price}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Method price successfully set in service metadata!"
 
@@ -1023,27 +1024,20 @@ def service_metadata_set_method_price(group_name, package_name, service_name, me
 def service_metadata_set_free_calls(group_name, free_calls, metadata_file):
     # snet service metadata-set-free-calls [-h] [--metadata-file METADATA_FILE]
     #                                  GROUP_NAME free_calls
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before setting free calls", 42
 
     # Validate input parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
     if free_calls is None or free_calls < 0:
         return "ERROR: Free calls must be a non-negative integer", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-set-free-calls {group_name} {free_calls}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Free calls successfully set in service metadata!"
 
@@ -1053,27 +1047,20 @@ def service_metadata_set_freecall_signer_addr(group_name, signer_addr, metadata_
     # snet service metadata-set-freecall-signer-address [-h]
     #                                               [--metadata-file METADATA_FILE]
     #                                               GROUP_NAME signer_address
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before setting the freecall signer address", 42
 
     # Validate input parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
     if not signer_addr or len(signer_addr) == 0:
         return "ERROR: Signer address is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-set-freecall-signer-address {group_name} {signer_addr}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Freecall signer address successfully set in service metadata!"
 
@@ -1082,25 +1069,18 @@ def service_metadata_set_freecall_signer_addr(group_name, signer_addr, metadata_
 def service_metadata_add_group(group_name, metadata_file):
     # snet service metadata-add-group [-h] [--metadata-file METADATA_FILE]
     #                             GROUP_NAME
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to add a group", 42
 
     # Check for required parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-add-group {group_name}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Group successfully added to service metadata!"
 
@@ -1109,25 +1089,18 @@ def service_metadata_add_group(group_name, metadata_file):
 def service_metadata_remove_group(group_name, metadata_file):
     # snet service metadata-remove-group [-h] [--metadata-file METADATA_FILE]
     #                                GROUP_NAME
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to remove a group", 42
 
     # Check for required parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-remove-group {group_name}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Group successfully removed from service metadata!"
 
@@ -1138,27 +1111,20 @@ def service_metadata_add_daemon_addr(group_name, daemon_addr, metadata_file):
     #                                        [--metadata-file METADATA_FILE]
     #                                        group_name DAEMON ADDRESSES
     #                                        [DAEMON ADDRESSES ...]
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to add daemon address", 42
 
     # Check for required parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
     if not daemon_addr or len(daemon_addr) == 0:
         return "ERROR: Daemon address is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-add-daemon-addresses {group_name} {daemon_addr}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Daemon address successfully added to service metadata!"
 
@@ -1168,27 +1134,20 @@ def service_metadata_remove_daemon_addr(group_name, daemon_addr, metadata_file):
     # snet service metadata-remove-all-daemon-addresses [-h]
     #                                               [--metadata-file METADATA_FILE]
     #                                               group_name
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to remove daemon address", 42
 
     # Check for required parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
     if not daemon_addr or len(daemon_addr) == 0:
         return "ERROR: Daemon address is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-remove-daemon-addresses {group_name} {daemon_addr}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Daemon address successfully removed from service metadata!"
 
@@ -1197,27 +1156,20 @@ def service_metadata_remove_daemon_addr(group_name, daemon_addr, metadata_file):
 def service_metadata_add_assets(asset_path, asset_type, metadata_file):
     # snet service metadata-add-assets [-h] [--metadata-file METADATA_FILE]
     #                              asset_file_path asset_type
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to add assets", 42
 
     # Check for required parameters
     if not asset_path or len(asset_path) == 0:
         return "ERROR: Asset path is required", 42
     if not asset_type or len(asset_type) == 0:
         return "ERROR: Asset type is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-add-assets {asset_path} {asset_type}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Asset successfully added to service metadata!"
 
@@ -1226,25 +1178,18 @@ def service_metadata_add_assets(asset_path, asset_type, metadata_file):
 def service_metadata_remove_assets(asset_type, metadata_file):
     # snet service metadata-remove-assets [-h] [--metadata-file METADATA_FILE]
     #                                 asset_type
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to remove assets", 42
 
     # Check for required parameters
     if not asset_type or len(asset_type) == 0:
         return "ERROR: Asset type is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-remove-assets {asset_type}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Asset successfully removed from service metadata!"
 
@@ -1254,28 +1199,21 @@ def service_metadata_add_media(url, hero_image, metadata_file):
     # snet service metadata-add-media [-h] [--hero_image]
     #                             [--metadata-file METADATA_FILE]
     #                             MEDIA_URL
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to add media", 42
 
     # Check for required parameters
     if not url or len(url) == 0:
         return "ERROR: Media URL is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = "snet --print-traceback service metadata-add-media"
     command += f" {url}"
     if hero_image:
         command += " --hero-image"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Media successfully added to service metadata!"
 
@@ -1283,23 +1221,14 @@ def service_metadata_add_media(url, hero_image, metadata_file):
 
 def service_metadata_remove_media(metadata_file):
     # snet service metadata-remove-all-media [-h] [--metadata-file METADATA_FILE]
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to remove media", 42
-
-    # Check for required parameters
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = "snet --print-traceback service metadata-remove-all-media"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "All media successfully removed from service metadata!"
 
@@ -1310,27 +1239,20 @@ def service_metadata_update_daemon_addr(group_name, daemon_addr, metadata_file):
     #                                           [--metadata-file METADATA_FILE]
     #                                           group_name DAEMON ADDRESSES
     #                                           [DAEMON ADDRESSES ...]
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to update daemon addresses", 42
 
     # Check for required parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
     if not daemon_addr or len(daemon_addr) == 0:
         return "ERROR: New daemon address is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-update-daemon-addresses {group_name} {daemon_addr}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Daemon address successfully updated in service metadata!"
 
@@ -1338,12 +1260,6 @@ def service_metadata_update_daemon_addr(group_name, daemon_addr, metadata_file):
 
 def service_metadata_update_validate_metadata(metadata_file):
     # snet service validate-metadata [-h] [--metadata-file METADATA_FILE]
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before attempting to validate it", 42
 
     # Check for required parameters
     if not metadata_file or len(metadata_file) == 0:
@@ -1353,7 +1269,7 @@ def service_metadata_update_validate_metadata(metadata_file):
     command = f"snet --print-traceback service validate-metadata --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Service metadata validation successful!"
 
@@ -1368,12 +1284,6 @@ def service_metadata_update_update_metadata(org_id, service_id, metadata_file, r
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
     #                          ORG_ID SERVICE_ID
-    global serv_path
-    global serv_path_set
-
-    # Validate if service metadata is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize service metadata before updating", 42
 
     # Check for required parameters
     if not org_id or len(org_id) == 0:
@@ -1403,7 +1313,7 @@ def service_metadata_update_update_metadata(org_id, service_id, metadata_file, r
     command += " --yes"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Service metadata successfully updated!"
     else:
@@ -1415,7 +1325,6 @@ def print_service_status(org_id, service_id, pay_group, reg_addr):
     # snet service print-service-status [-h] [--registry-at REGISTRY_AT]
     #                               [--group-name GROUP_NAME]
     #                               ORG_ID SERVICE_ID
-    global snet_dir
 
     # Check for required parameters
     if not org_id or len(org_id) == 0:
@@ -1431,8 +1340,8 @@ def print_service_status(org_id, service_id, pay_group, reg_addr):
         command += f" --registry-at {reg_addr}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=snet_dir)
-    if len(output) == 0 and errCode == 0:
+    output, errCode = run_shell_command(command)
+    if len(output) > 0 and errCode == 0:
         output = "Service status:\n" + output
     else:
         output = f"ERROR in printing service status: {output}"
@@ -1441,26 +1350,19 @@ def print_service_status(org_id, service_id, pay_group, reg_addr):
 
 def print_service_api_metadata(proto_dir, metadata_file):
     # snet service get-api-metadata [-h] [--metadata-file METADATA_FILE] PROTO_DIR
-    global serv_path
-    global serv_path_set
-
-    # Validate if service path is initialized
-    if not serv_path_set:
-        return "ERROR: Please initialize the service path before attempting to print API metadata", 42
 
     # Check for required parameters
     if not proto_dir or len(proto_dir) == 0:
         return "ERROR: Protobuf directory path is required", 42
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
 
     # Construct the command
     command = f"snet --print-traceback service get-api-metadata {proto_dir}"
-    command += f" --metadata-file {metadata_file}"
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=serv_path)
-    if len(output) == 0 and errCode == 0:
+    output, errCode = run_shell_command(command)
+    if len(output) > 0 and errCode == 0:
         output = "API Metadata:\n" + output
     else:
         output = f"ERROR in printing service API metadata: {output}"
@@ -1471,7 +1373,6 @@ def print_service_api_metadata(proto_dir, metadata_file):
 def print_service_api_registry(org_id, service_id, reg_addr, proto_dir):
     # snet service get-api-registry [-h] [--registry-at REGISTRY_AT]
     #                           ORG_ID SERVICE_ID PROTO_DIR
-    global snet_dir
 
     # Check for required parameters
     if not org_id or len(org_id) == 0:
@@ -1487,7 +1388,7 @@ def print_service_api_registry(org_id, service_id, reg_addr, proto_dir):
         command += f" --registry-at {reg_addr}"
 
     # Execute the command
-    output, errCode = run_shell_command(command, cwd=snet_dir)
+    output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = "Service API Registry:\n" + output
     else:
@@ -1495,10 +1396,154 @@ def print_service_api_registry(org_id, service_id, reg_addr, proto_dir):
 
     return output, errCode
 
-def custom_command(command, cwd, traceback):
-    # snet [-h] COMMAND
-    global snet_dir
+def client_call(org_id, serv_id, group_name, method, params, proto_serv=None, mpe_addr=None, file_name=None, endpoint=None, channel_id=None, from_block=None, skip_update=False, wallet_index=None, view=True):
+    # snet client call [-h] [--service SERVICE] [--wallet-index WALLET_INDEX]
+    #              [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #              [--save-response FILENAME]
+    #              [--save-field SAVE_FIELD SAVE_FIELD] [--endpoint ENDPOINT]
+    #              [--channel-id CHANNEL_ID] [--from-block FROM_BLOCK] [--yes]
+    #              [--skip-update-check]
+    #              ORG_ID SERVICE_ID group_name METHOD [PARAMS]
 
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42, None
+    if not serv_id or len(serv_id) == 0:
+        return "ERROR: Service ID is required", 42, None
+    if not method or len(method) == 0:
+        return "ERROR: Method name of target service is required", 42, None
+    if not params or len(params) == 0:
+        return "ERROR: Protobuf directory path is required", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback client call {org_id} {serv_id}"
+    if group_name and len(group_name) > 0:
+        command += f" {group_name}"
+    command += f" {method} {params}"
+
+    if proto_serv and len(proto_serv) > 0:
+        command += f" --service {proto_serv}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if file_name and len(file_name) > 0:
+        command += f" --save-response {file_name}"
+    if endpoint and len(endpoint) > 0:
+        command += f" --endpoint {endpoint}"
+    if channel_id and len(channel_id) > 0:
+        command += f" --channel-id {channel_id}"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if skip_update:
+        command += " --skip-update-check"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+    if len(output) > 0 and errCode == 0:
+        output = "Call price listed below:\n" + output
+    else:
+        output = f"ERROR in client call: {output}"
+
+    return output, errCode, command
+
+def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index, view):
+    # snet client call-lowlevel [-h] [--service SERVICE]
+    #                       [--wallet-index WALLET_INDEX]
+    #                       [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                       [--save-response FILENAME]
+    #                       [--save-field SAVE_FIELD SAVE_FIELD]
+    #                       [--endpoint ENDPOINT]
+    #                       ORG_ID SERVICE_ID group_name CHANNEL_ID NONCE
+    #                       AMOUNT_IN_COGS METHOD [PARAMS]
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42, None
+    if not serv_id or len(serv_id) == 0:
+        return "ERROR: Service ID is required", 42, None
+    if not channel_id or len(channel_id) == 0:
+        return "ERROR: Channel ID is required", 42, None
+    if not nonce or len(nonce) == 0:
+        return "ERROR: Nonce is required", 42, None
+    if not cog_amt or int(cog_amt) < 0:
+        return "ERROR: Amount of cogs is required", 42, None
+    if not method or len(method) == 0:
+        return "ERROR: Method name of target service is required", 42, None
+    if not params or len(params) == 0:
+        return "ERROR: Protobuf directory path is required", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback client call-lowlevel {org_id} {serv_id}"
+    if group_name and len(group_name) > 0:
+        command += f" {group_name}"
+    command += f" {channel_id} {nonce} {cog_amt} {method} {params}"
+    
+
+    if proto_serv and len(proto_serv) > 0:
+        command += f" --service {proto_serv}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if file_name and len(file_name) > 0:
+        command += f" --save-response {file_name}"
+    if endpoint and len(endpoint) > 0:
+        command += f" --endpoint {endpoint}"
+    if channel_id and len(channel_id) > 0:
+        command += f" --channel-id {channel_id}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+    if len(output) > 0 and errCode == 0:
+        output = "Call price listed below:\n" + output
+    else:
+        output = f"ERROR in client low-level call: {output}"
+
+    return output, errCode, command
+
+def get_channel_state(channel_id, endpoint, mpe_addr, wallet_index, view):
+    # snet client get-channel-state [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                           [--wallet-index WALLET_INDEX]
+    #                           CHANNEL_ID ENDPOINT
+
+    # Check for required parameters
+    if not channel_id or len(channel_id) == 0:
+        return "ERROR: Channel ID is required", 42, None
+    if not endpoint or len(endpoint) == 0:
+        return "ERROR: Service endpoint is required", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback client call-lowlevel {channel_id} {endpoint}"
+
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+    if len(output) > 0 and errCode == 0:
+        output = "Call price listed below:\n" + output
+    else:
+        output = f"ERROR in client low-level call: {output}"
+
+    return output, errCode, command
+
+def custom_command(root, sub, args, cwd, traceback):
+    # snet [-h] COMMAND SUBCOMMAND ARGS
+
+    command = root + " " + sub + " " + args
+    
     if not command or len(command) <= 0:
         return "ERROR: Please input a command to run", 42
     if traceback:
@@ -1506,8 +1551,40 @@ def custom_command(command, cwd, traceback):
     else:
         cmd = f"snet {command}"
     if cwd and len(cwd) > 0:
-        output, errCode = run_shell_command(cmd, cwd=cwd)
+        output, errCode = run_shell_command(cmd, workdir=cwd)
     else:
-        output, errCode = run_shell_command(cmd, cwd=snet_dir)
+        output, errCode = run_shell_command(cmd)
 
     return output, errCode
+
+def custom_conditional_command(root, sub, args, cwd, traceback, view):
+    # snet [-h] COMMAND SUBCOMMAND ARGS
+
+    command = f"{root} {sub} {args}"
+
+    if not command or len(command) <= 0:
+        return "ERROR: Please input a command to run", 42
+    if traceback:
+        cmd = f"snet --print-traceback {command}"
+    else:
+        cmd = f"snet {command}"
+
+    if view:
+        if cwd and len(cwd) > 0:
+            output, errCode = run_shell_command_with_input(cmd, input_text="n\n", workdir=cwd)
+        else:
+            output, errCode = run_shell_command_with_input(cmd, input_text="n\n")
+    else:
+        if cwd and len(cwd) > 0:
+            output, errCode = run_shell_command_with_input(cmd, input_text="y\n", workdir=cwd)
+        else:
+            output, errCode = run_shell_command_with_input(cmd, input_text="y\n")
+
+    return output, errCode, cmd
+
+def custom_conditional_check(root, sub):
+    global condCommDict
+    comm = root + " " + sub
+    return comm in condCommDict
+
+
