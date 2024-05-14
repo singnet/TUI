@@ -3,7 +3,8 @@ from textual.containers import Grid, Vertical, Horizontal
 from textual.screen import Screen
 from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator, Log
 import back.backend as be
-import re
+import sys
+import os
 
 # Unstable build v0.1.0
 # Global variables for passing parameters between screens, as textual does not support this
@@ -2879,9 +2880,13 @@ class exit_page(Screen):
         else:
             self.app.pop_screen()
 
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 class Singularity_Net_TUI(App):
 
-    CSS_PATH = "style.tcss"
+    CSS_PATH = resource_path('application/app/style.tcss')
 
     def compose(self) -> ComposeResult:
         yield Header()

@@ -1,2 +1,4 @@
 .DS_Store
 __pycache__/
+build
+SNET TUI v0.1.0.spec
