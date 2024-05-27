@@ -273,15 +273,13 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
 
     return run_shell_command(command)
 
-def print_org_metadata(org_name, org_id):
-    # snet organization print-metadata [-h] org_name org_id
+def print_org_metadata(org_id):
+    # snet organization print-metadata [-h] org_id
     command = "snet organization print-metadata"
-    if not isinstance(org_name, str) or len(org_name) <= 0:
-        return "ERROR: Organization name is required", 42
     if not isinstance(org_id, str) or len(org_id) <= 0:
         return "ERROR: Organization identity is required", 42
     
-    command += f" {org_name} {org_id}"
+    command += f" {org_id}"
 
     return run_shell_command(command)
 
@@ -1262,11 +1260,15 @@ def service_metadata_update_validate_metadata(metadata_file):
     # snet service validate-metadata [-h] [--metadata-file METADATA_FILE]
 
     # Check for required parameters
-    if not metadata_file or len(metadata_file) == 0:
-        return "ERROR: Metadata file path is required", 42
+    # if not metadata_file or len(metadata_file) == 0:
+    #     return "ERROR: Metadata file path is required", 42
 
     # Construct the command
-    command = f"snet --print-traceback service validate-metadata --metadata-file {metadata_file}"
+    # command = f"snet --print-traceback service validate-metadata --metadata-file {metadata_file}"
+    command = f"snet --print-traceback service validate-metadata"
+
+    if isinstance(metadata_file, str) and len(metadata_file) > 0:
+        command += f" --metadata-file {metadata_file}"
 
     # Execute the command
     output, errCode = run_shell_command(command)
@@ -1413,7 +1415,7 @@ def client_call(org_id, serv_id, group_name, method, params, proto_serv=None, mp
     if not method or len(method) == 0:
         return "ERROR: Method name of target service is required", 42, None
     if not params or len(params) == 0:
-        return "ERROR: Protobuf directory path is required", 42, None
+        return "ERROR: Parameters for method call are required", 42, None
 
     # Construct command
     command = f"snet --print-traceback client call {org_id} {serv_id}"

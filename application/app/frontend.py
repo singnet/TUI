@@ -218,13 +218,13 @@ class treasurer_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "treasurer_back_button":
-            self.app.push_screen(exit_page())
+            self.app.push_screen(account_page())
         elif event.button.id == "treasurer_claim_button":
-            self.app.push_screen(exit_page())
+            self.app.push_screen(treasurer_claim_page())
         elif event.button.id == "treasurer_claim_exp_button":
-            self.app.push_screen(exit_page())
+            self.app.push_screen(treasurer_claim_expr_page())
         elif event.button.id == "treasurer_claim_all_button":
-            self.app.push_screen(exit_page())
+            self.app.push_screen(treasurer_claim_all_page())
 
 class treasurer_claim_page(Screen):
     def compose(self) -> ComposeResult:
@@ -468,6 +468,7 @@ class account_deposit_page(Screen):
         elif event.button.id == "account_deposit_confirm_button":
             output, errCode = be.account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose)
             popup_output = output
+            self.app.switch_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class account_withdraw_page(Screen):
@@ -514,6 +515,7 @@ class account_withdraw_page(Screen):
         elif event.button.id == "account_withdraw_confirm_button":
             output, errCode = be.account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose)
             popup_output = output
+            self.app.switch_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class account_transfer_page(Screen):
@@ -613,7 +615,7 @@ class org_metadata_page(Screen):
             be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Metadata Page", id="org_metadata_page_title"),
-                Button(label="My Metadata", id="org_metadata_page_print_button"),
+                Button(label="Print Metadata", id="org_metadata_page_print_button"),
                 Button(label="Initialize Metadata", id="org_metadata_page_init_button"),
                 Button(label="Add Description", id="org_metadata_add_desc_button"),
                 Button(label="Manage Assets", id="org_metadata_assets_button"),
@@ -656,13 +658,11 @@ class org_metadata_page(Screen):
 
 class print_org_metadata_page(Screen):
     def compose(self) -> ComposeResult:
-        output, errCode = be.print_org_metadata()
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert(),
             Grid(
                 Label("Organization Metadata Page", id="print_org_metadata_page_title"),
-                Input(placeholder="Organization Name", id="print_org_metadata_name_input"),
                 Input(placeholder="Organization ID", id="print_org_metadata_id_input"),
                 Button(label="View Metadata", id="print_org_metadata_confirm_button"),
                 Button(label="Back", id="print_org_metadata_back_button"),
@@ -673,6 +673,8 @@ class print_org_metadata_page(Screen):
         )
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -686,9 +688,8 @@ class print_org_metadata_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "print_org_metadata_confirm_button":
-            org_name = self.get_child_by_id("print_org_metadata_page").get_child_by_id("print_org_metadata_page_content").get_child_by_id("print_org_metadata_name_input").value
             org_id = self.get_child_by_id("print_org_metadata_page").get_child_by_id("print_org_metadata_page_content").get_child_by_id("print_org_metadata_id_input").value
-            output, errCode = be.print_org_metadata(org_name, org_id)
+            output, errCode = be.print_org_metadata(org_id)
             popup_output = output
             self.app.push_screen(popup_output_page())
         elif event.button.id == "print_org_metadata_back_button":
@@ -1014,6 +1015,7 @@ class add_org_group_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "add_org_group_back_button":
             self.app.pop_screen()
+            self.app.switch_screen(organization_page())
         elif event.button.id == "add_org_group_confirm_button":
             group_name = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_name_input").value
             pay_addr = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_pay_addr_input").value
@@ -1027,6 +1029,7 @@ class add_org_group_page(Screen):
 
             output, errCode = be.add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
             popup_output = output
+            self.app.switch_screen(organization_page())
             self.app.push_screen(popup_output_page())
         
 
@@ -1071,6 +1074,7 @@ class update_org_group_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "update_org_group_back_button":
             self.app.pop_screen()
+            self.app.switch_screen(organization_page())
         elif event.button.id == "update_org_group_confirm_button":
             group_name = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_name_input").value
             pay_addr = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_pay_addr_input").value
@@ -1084,6 +1088,7 @@ class update_org_group_page(Screen):
 
             output, errCode = be.update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
             popup_output = output
+            self.app.switch_screen(organization_page())
             self.app.push_screen(popup_output_page())
 
 class members_page(Screen):
@@ -1175,7 +1180,7 @@ class manage_members_page(Screen):
             output, errCode = be.add_org_members(org_id, mem_list, gas, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
-        elif event.button.id == "manage_members_add_button":
+        elif event.button.id == "manage_members_remove_button":
             output, errCode = be.remove_org_members(org_id, mem_list, gas, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
@@ -1277,8 +1282,8 @@ class org_manage_create_page(Screen):
             Grid(
                 Label("Create Organization Page", id="org_manage_create_page_title"),
                 Input(placeholder="Your Organization ID", id="org_manage_create_id_input"),
+                Input(placeholder="Organization metadata json file path", id="org_manage_create_file_input"),
                 Input(placeholder="[OPTIONAL] Registery contract address", id="org_reg_addr_input"),
-                Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="org_manage_create_file_input"),
                 Input(placeholder="[OPTIONAL] List of members to be added to the organization", id="org_manage_create_mems_input"),
                 Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="org_manage_create_gas_input"),
                 Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="org_manage_create_index_input"),
@@ -2192,7 +2197,7 @@ class service_metadata_update_validate_metadata_page(Screen):
         elif event.button.id == "service_metadata_update_validate_metadata_back_button":
             self.app.pop_screen()
         elif event.button.id == "service_metadata_update_validate_metadata_validate_button":
-            metadata_file = self.get_child_by_id("service_metadata_update_daemon_addr_page").get_child_by_id("service_metadata_update_daemon_addr_page_content").get_child_by_id("service_metadata_update_validate_metadata_file_input").value
+            metadata_file = self.get_child_by_id("service_metadata_update_validate_metadata_page").get_child_by_id("service_metadata_update_validate_metadata_page_content").get_child_by_id("service_metadata_update_validate_metadata_file_input").value
             output, errCode = be.service_metadata_update_validate_metadata(metadata_file)
             popup_output = output
             self.app.push_screen(popup_output_page())
@@ -2624,9 +2629,9 @@ class client_call_page(Screen):
                 Label("Client Call Server Page", id="client_call_page_title"),
                 Input(placeholder="Id of the organization", id="client_call_org_id_input"),
                 Input(placeholder="Id of service", id="client_call_service_id_input"),
-                Input(placeholder="[OPTIONAL] Name of the payment group. Parameter should be specified only for services with several payment groups", id="client_call_pay_group_input"),
                 Input(placeholder="Target service's method name to call", id="client_call_method_input"),
                 Input(placeholder="JSON-serialized parameters object or path containing JSON-serialized parameters object", id="client_call_params_input"),
+                Input(placeholder="[OPTIONAL] Name of the payment group. Parameter should be specified only for services with several payment groups", id="client_call_pay_group_input"),
                 Input(placeholder="[OPTIONAL] Name of protobuf service to call. It should be specified in case of method name conflict.", id="client_call_service_input"),
                 Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="client_call_mpe_addr_input"),
                 Input(placeholder="[OPTIONAL] Name of file to save response to", id="client_call_save_file_name_input"),
@@ -2636,6 +2641,7 @@ class client_call_page(Screen):
                 Input(placeholder="[OPTIONAL] Wallet index of account to use for calling (defaults to session.identity.default_wallet_index)", id="client_call_wallet_index_input"),
                 RadioButton(label="Skip check for service update", id="client_call_skip_update_check_radio"),
                 Button(label="View Server Call Price", id="client_call_view_price_button"),
+                Button(label="Back", id="client_call_back_button"),
                 id="client_call_page_content",
                 classes="content_page"
             ),
@@ -2659,6 +2665,8 @@ class client_call_page(Screen):
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "client_call_back_button":
+            self.app.pop_screen()
         elif event.button.id == "client_call_view_price_button":
             org_id = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_org_id_input").value
             serv_id = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_service_id_input").value
@@ -2693,18 +2701,19 @@ class client_call_low_page(Screen):
                 Label("Client Call Server (Low Level function) Page", id="client_call_low_page_title"),
                 Input(placeholder="Id of the organization", id="client_call_low_org_id_input"),
                 Input(placeholder="Id of service", id="client_call_low_service_id_input"),
-                Input(placeholder="[OPTIONAL] Name of the payment group. Parameter should be specified only for services with several payment groups", id="client_call_low_pay_group_input"),
                 Input(placeholder="The Channel Id", id="client_call_low_channel_id_input"),
                 Input(placeholder="Nonce of the channel", id="client_call_low_nonce_input"),
                 Input(placeholder="Amount in cogs", id="client_call_low_cogs_input"),
                 Input(placeholder="Target service's method name to call", id="client_call_low_method_input"),
                 Input(placeholder="JSON-serialized parameters object or path containing JSON-serialized parameters object", id="client_call_low_params_input"),
+                Input(placeholder="[OPTIONAL] Name of the payment group. Parameter should be specified only for services with several payment groups", id="client_call_low_pay_group_input"),
                 Input(placeholder="[OPTIONAL] Name of protobuf service to call. It should be specified in case of method name conflict.", id="client_call_low_service_input"),
                 Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="client_call_low_mpe_addr_input"),
                 Input(placeholder="[OPTIONAL] Name of file to save response to", id="client_call_low_save_file_name_input"),
                 Input(placeholder="[OPTIONAL] Service endpoint (by default we read it from metadata)", id="client_call_low_endpoint_input"),
-                Input(placeholder="[OPTIONAL] Wallet index of account to use for calling (defaults to session.identity.default_wallet_index)", id="client_call_wallet_index_input"),
-                Button(label="View Server Low-Level Call Price", id="client_call_view_price_button"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for calling (defaults to session.identity.default_wallet_index)", id="client_call_low_wallet_index_input"),
+                Button(label="View Server Low-Level Call Price", id="client_call_low_view_price_button"),
+                Button(label="Back", id="client_call_low_back_button"),
                 id="client_call_low_page_content",
                 classes="content_page"
             ),
@@ -2728,20 +2737,22 @@ class client_call_low_page(Screen):
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
-        elif event.button.id == "client_call_view_price_button":
-            org_id = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_low_org_id_input").value
-            serv_id = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_low_service_id_input").value
-            group_name = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_low_pay_group_input").value
-            channel_id = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_low_channel_id_input").value
-            nonce = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_low_nonce_input").value
-            cog_amt = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_low_cogs_input").value
-            method = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_method_input").value
-            params = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_params_input").value
-            proto_serv = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_service_input").value
-            mpe_addr = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_mpe_addr_input").value
-            file_name = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_save_file_name_input").value
-            endpoint = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_endpoint_input").value
-            wallet_index = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_wallet_index_input").value
+        elif event.button.id == "client_call_low_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "client_call_low_view_price_button":
+            org_id = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_org_id_input").value
+            serv_id = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_service_id_input").value
+            group_name = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_pay_group_input").value
+            channel_id = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_channel_id_input").value
+            nonce = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_nonce_input").value
+            cog_amt = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_cogs_input").value
+            method = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_method_input").value
+            params = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_params_input").value
+            proto_serv = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_service_input").value
+            mpe_addr = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_mpe_addr_input").value
+            file_name = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_save_file_name_input").value
+            endpoint = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_endpoint_input").value
+            wallet_index = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_wallet_index_input").value
 
             output, errCode, command = be.client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index, True)
 
@@ -2760,11 +2771,12 @@ class client_channel_state_page(Screen):
             be.nav_sidebar_vert(),
             Grid(
                 Label("Client Channel State Page", id="client_channel_state_page_title"),
-                Input(placeholder="The Channel Id", id="client_call_low_channel_id_input"),
-                Input(placeholder="Service endpoint", id="client_call_low_endpoint_input"),
-                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="client_call_low_mpe_addr_input"),
-                Input(placeholder="[OPTIONAL] Wallet index of account to use for calling (defaults to session.identity.default_wallet_index)", id="client_call_wallet_index_input"),
+                Input(placeholder="The Channel Id", id="client_channel_state_id_input"),
+                Input(placeholder="Service endpoint", id="client_channel_state_endpoint_input"),
+                Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="client_channel_state_mpe_addr_input"),
+                Input(placeholder="[OPTIONAL] Wallet index of account to use for calling (defaults to session.identity.default_wallet_index)", id="client_channel_state_wallet_index_input"),
                 Button(label="Get Channel State", id="client_channel_state_submit_button"),
+                Button(label="Back", id="client_channel_state_back_button"),
                 id="client_channel_state_page_content",
                 classes="content_page"
             ),
@@ -2788,11 +2800,13 @@ class client_channel_state_page(Screen):
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
+        elif event.button.id == "client_channel_state_back_button":
+            self.app.pop_screen()
         elif event.button.id == "client_channel_state_submit_button":
-            channel_id = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_call_low_channel_id_input").value
-            endpoint = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_call_low_endpoint_input").value
-            mpe_addr = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_call_low_mpe_addr_input").value
-            wallet_index = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_call_wallet_index_input").value
+            channel_id = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_id_input").value
+            endpoint = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_endpoint_input").value
+            mpe_addr = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_mpe_addr_input").value
+            wallet_index = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_wallet_index_input").value
 
             output, errCode, command = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet_index, True)
 
@@ -2885,8 +2899,10 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 class Singularity_Net_TUI(App):
+    
+    # CSS_PATH = resource_path('application/app/style.tcss')
 
-    CSS_PATH = resource_path('application/app/style.tcss')
+    CSS_PATH = "style.tcss"
 
     def compose(self) -> ComposeResult:
         yield Header()
