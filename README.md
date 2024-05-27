@@ -27,7 +27,7 @@ To get started with sNET-TUI, follow these steps:
 **For UNIX Operating Systems (MacOS/Linux):**
 
 ```bash
-./run_unix.sh
+bash run_unix.sh
 ```
 
 **For Windows Operating Systems:**

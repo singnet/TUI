@@ -2,25 +2,17 @@
 setlocal
 
 :: Check for Python and ensure it's version 3.10 or higher
-for /f "delims=" %%i in ('python -c "import sys; print(sys.version_info.major)" 2^>NUL') do set PYTHONMAJOR=%%i
-for /f "delims=" %%i in ('python -c "import sys; print(sys.version_info.minor)" 2^>NUL') do set PYTHONMINOR=%%i
+where python >nul 2>nul || (echo Python 3 is not installed. Please install Python 3 to continue. & exit /b)
+for /f "delims=" %%i in ('python -c "import sys; print(sys.version_info.major)" 2^>nul') do set PYTHONMAJOR=%%i
+for /f "delims=" %%i in ('python -c "import sys; print(sys.version_info.minor)" 2^>nul') do set PYTHONMINOR=%%i
 
-if "%PYTHONMAJOR%"=="" (
-    echo Python is not installed. Please install Python to continue.
-    goto End
-)
+if "%PYTHONMAJOR%"=="" goto ErrorPython
+if %PYTHONMAJOR% LSS 3 goto ErrorVersion
+if %PYTHONMAJOR% EQU 3 if %PYTHONMINOR% LSS 10 goto ErrorVersion
 
-if %PYTHONMAJOR% LSS 3 (
-    echo Python version must be 3.10 or higher.
-    goto End
-)
-
-if %PYTHONMAJOR% EQU 3 (
-    if %PYTHONMINOR% LSS 10 (
-        echo Python version must be 3.10 or higher. You have Python %PYTHONMAJOR%.%PYTHONMINOR%.
-        goto End
-    )
-)
+:: Check for pip and venv
+python -m pip --version >nul 2>nul || (echo pip is not installed. Please install pip. & goto End)
+python -m venv --help >nul 2>nul || (echo venv is not installed. Please install the Python venv module. & goto End)
 
 :: Check if the virtual environment exists
 if not exist "tui_venv\" (
@@ -39,6 +31,15 @@ if not exist "tui_venv\" (
 
 :: Run the main.py script
 python application\main.py
+goto End
+
+:ErrorPython
+echo Python 3 is not correctly installed. Please check your Python installation.
+goto End
+
+:ErrorVersion
+echo Python version must be 3.10 or higher. Please upgrade your Python.
+goto End
 
 :End
 endlocal
