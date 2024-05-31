@@ -1,7 +1,28 @@
 #!/bin/bash
 
+# Function to prompt user for installation
+prompt_install() {
+    read -p "$1 is not installed. Would you like to install it now? (y/n): " response
+    if [[ "$response" == "y" ]]; then
+        eval "$2"
+        if [[ $? -ne 0 ]]; then
+            echo "Failed to install $1. Please install it manually and rerun the script."
+            exit 1
+        fi
+        # Recheck installation
+        eval "$3"
+        if [[ $? -ne 0 ]]; then
+            echo "Failed to detect $1 after installation. Please install it manually and rerun the script."
+            exit 1
+        fi
+    else
+        echo "Please install $1 to continue."
+        exit 1
+    fi
+}
+
 # Check if Python is installed and its version
-command -v python3 &>/dev/null || { echo "Python 3 is not installed. Please install Python 3 to continue."; exit 1; }
+command -v python3 &>/dev/null || prompt_install "Python 3" "sudo apt-get update && sudo apt-get install python3 -y" "command -v python3 &>/dev/null"
 PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
 PYTHON_MAJOR=$(echo $PYTHON_VERSION | cut -d. -f1)
 PYTHON_MINOR=$(echo $PYTHON_VERSION | cut -d. -f2)
@@ -11,17 +32,14 @@ if [ "$PYTHON_MAJOR" -lt 3 ] || { [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR"
     exit 1
 fi
 
-# Check for pip and venv
-python3 -m pip --version &>/dev/null || { echo "pip is not installed. Please install pip."; exit 1; }
-python3 -m venv --help &>/dev/null || { echo "venv is not installed. Please install the Python venv module."; exit 1; }
+# Check for pip
+python3 -m pip --version &>/dev/null || prompt_install "pip" "sudo apt-get install python3-pip -y" "python3 -m pip --version &>/dev/null"
+
+# Check for venv
+python3 -m venv --help &>/dev/null || prompt_install "venv" "sudo apt-get install python3-venv -y" "python3 -m venv --help &>/dev/null"
 
 # Check for ensurepip
-python3 -c "import ensurepip" &>/dev/null || { 
-    echo "The ensurepip module is not available, which is needed to create a virtual environment."
-    echo "On Debian/Ubuntu systems, you can install it by running: sudo apt install python3.x-venv"
-    echo "After installing the python3-venv package, please rerun this script."
-    exit 1; 
-}
+python3 -c "import ensurepip" &>/dev/null || prompt_install "ensurepip" "sudo apt-get install python3-venv -y" "python3 -c 'import ensurepip' &>/dev/null"
 
 # Check for the virtual environment folder
 if [ ! -d "tui_venv" ]; then

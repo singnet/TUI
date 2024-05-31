@@ -1,8 +1,32 @@
 @echo off
 setlocal
 
-:: Check for Python and ensure it's version 3.10 or higher
-where python >nul 2>nul || (echo Python 3 is not installed. Please install Python 3 to continue. & exit /b)
+:: Function to prompt user for installation
+:prompt_install
+set /p response=%1 is not installed. Would you like to install it now? (y/n): 
+if /i "%response%"=="y" (
+    %2
+    if errorlevel 1 (
+        echo Failed to install %1. Please install it manually and rerun the script.
+        exit /b 1
+    )
+    :: Recheck installation
+    %3
+    if errorlevel 1 (
+        echo Failed to detect %1 after installation. Please install it manually and rerun the script.
+        exit /b 1
+    )
+) else (
+    echo Please install %1 to continue.
+    exit /b 1
+)
+goto :eof
+
+:: Check for Python and ensure its version is 3.10 or higher
+where python >nul 2>nul
+if errorlevel 1 (
+    call :prompt_install "Python 3" "choco install python --version=3.10" "where python >nul 2>nul"
+)
 for /f "delims=" %%i in ('python -c "import sys; print(sys.version_info.major)" 2^>nul') do set PYTHONMAJOR=%%i
 for /f "delims=" %%i in ('python -c "import sys; print(sys.version_info.minor)" 2^>nul') do set PYTHONMINOR=%%i
 
@@ -10,9 +34,23 @@ if "%PYTHONMAJOR%"=="" goto ErrorPython
 if %PYTHONMAJOR% LSS 3 goto ErrorVersion
 if %PYTHONMAJOR% EQU 3 if %PYTHONMINOR% LSS 10 goto ErrorVersion
 
-:: Check for pip and venv
-python -m pip --version >nul 2>nul || (echo pip is not installed. Please install pip. & goto End)
-python -m venv --help >nul 2>nul || (echo venv is not installed. Please install the Python venv module. & goto End)
+:: Check for pip
+python -m pip --version >nul 2>nul
+if errorlevel 1 (
+    call :prompt_install "pip" "python -m ensurepip" "python -m pip --version >nul 2>nul"
+)
+
+:: Check for venv
+python -m venv --help >nul 2>nul
+if errorlevel 1 (
+    call :prompt_install "venv" "python -m pip install virtualenv" "python -m venv --help >nul 2>nul"
+)
+
+:: Check for ensurepip
+python -c "import ensurepip" >nul 2>nul
+if errorlevel 1 (
+    call :prompt_install "ensurepip" "python -m pip install --upgrade pip" "python -c 'import ensurepip' >nul 2>nul"
+)
 
 :: Check if the virtual environment exists
 if not exist "tui_venv\" (
