@@ -2,7 +2,7 @@
 
 # Function to prompt user for installation
 prompt_install() {
-    read -p "$1 is not installed or not sufficient. Would you like to install it now? (y/n): " response
+    read -p "$1 is not installed or is out of date. Would you like to install it now? (y/n): " response
     if [[ "$response" == "y" ]]; then
         eval "$2"
         if [[ $? -ne 0 ]]; then
@@ -47,33 +47,51 @@ fi
 # Ensure python points to the correct version
 sudo ln -sf $(which python3) /usr/local/bin/python
 
-# Check for pip
-python3 -m pip --version &>/dev/null || prompt_install "pip" "python3 -m ensurepip --upgrade" "python3 -m pip --version &>/dev/null"
+# Determine the correct venv package name
+VENV_PKG="python3.$PYTHON_MINOR-venv"
 
-# Check for venv
-python3 -m venv --help &>/dev/null || prompt_install "venv" "python3 -m pip install virtualenv" "python3 -m venv --help &>/dev/null"
+# Check for python3-venv
+python3 -m venv --help &>/dev/null || prompt_install "python3-venv" "$PM_INSTALL $VENV_PKG" "python3 -m venv --help &>/dev/null"
+
+# Check for pip
+python3 -m pip --version &>/dev/null || prompt_install "pip" "$PM_INSTALL python3-pip" "python3 -m pip --version &>/dev/null"
 
 # Check for ensurepip
-python3 -c "import ensurepip" &>/dev/null || prompt_install "ensurepip" "python3 -m pip install --upgrade pip" "python3 -c 'import ensurepip' &>/dev/null"
+python3 -c "import ensurepip" &>/dev/null || prompt_install "ensurepip" "$PM_INSTALL $VENV_PKG" "python3 -c 'import ensurepip' &>/dev/null"
 
 # Check for the virtual environment folder
 if [ ! -d "tui_venv" ]; then
     # Create the virtual environment
     python3 -m venv tui_venv
+    if [ $? -ne 0 ]; then
+        echo "Failed to create virtual environment."
+        rm -r tui_venv
+        exit 1
+    fi
     echo "Virtual environment created."
-
-    # Activate the virtual environment
-    source tui_venv/bin/activate
-    echo "Virtual environment activated."
-
-    # Install requirements from the requirements.txt file
-    pip install -r requirements.txt
-    echo "Dependencies installed."
-else
-    # Activate the virtual environment
-    source tui_venv/bin/activate
-    echo "Virtual environment activated."
 fi
+
+# Activate the virtual environment
+if [ -f "tui_venv/bin/activate" ]; then
+    source tui_venv/bin/activate
+    echo "Virtual environment activated."
+else
+    echo "Failed to find the virtual environment activation script."
+    rm -r tui_venv
+    exit 1
+fi
+
+# Install requirements from the requirements.txt file
+pip install -r requirements.txt
+if [ $? -ne 0 ]; then
+    echo "Failed to install dependencies."
+    exit 1
+fi
+echo "Dependencies installed."
 
 # Run the main.py script
 python3 application/main.py
+if [ $? -ne 0 ]; then
+    echo "Failed to run the application."
+    exit 1
+fi
