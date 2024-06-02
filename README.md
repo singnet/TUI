@@ -7,7 +7,18 @@ Welcome to the sNET Terminal User Interface, a Python-based application that all
 Before starting, ensure you have the following installed:
 
 - Git
-- Python 3.10 or higher
+
+The run script will prompt you to install the following dependancies (if required):
+
+- [Python](https://www.python.org) >= 3.10
+
+- [pip](https://pypi.org/project/pip/) ***Python package manager***
+
+- [venv](https://docs.python.org/3/library/venv.html) ***Python virtual-environment manager***
+
+- [Homebrew](https://brew.sh) ***Package manager (MacOS only)***
+
+- [Chocolatey](https://chocolatey.org) ***Package manager (Windows only)***
 
 ## Installation
 
@@ -24,16 +35,22 @@ To get started with sNET-TUI, follow these steps:
 
 ## Running the application
 
-**For UNIX Operating Systems (MacOS/Linux):**
+**For Linux Operating Systems:**
 
 ```bash
-bash run_unix.sh
+bash linux_run.sh
+```
+
+**For MacOS:**
+
+```bash
+bash macos_run.sh
 ```
 
 **For Windows Operating Systems:**
 
 ```powershell
-run_windows.bat
+windows_run.bat
 ```
 
-NOTE: First startup will take longer than usual, as the script will generate a virtual environment and install the python requirements. The "run" scripts are simple and commented, please read through them so you understand what is being done on your machine.
+NOTE: First startup will take longer than usual, as the script will generate a virtual environment and install the python requirements. The scripts are simple and commented, please read through them so you understand what is being done on your machine.
