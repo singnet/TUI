@@ -69,6 +69,14 @@ if [ ! -d "tui_venv" ]; then
         exit 1
     fi
     echo "Virtual environment created."
+    source tui_venv/bin/activate
+    pip install -r requirements.txt
+    if [ $? -ne 0 ]; then
+        echo "Failed to install dependencies."
+        exit 1
+    fi
+    echo "Dependencies installed."
+    deactivate
 fi
 
 # Activate the virtual environment
@@ -80,14 +88,6 @@ else
     rm -r tui_venv
     exit 1
 fi
-
-# Install requirements from the requirements.txt file
-pip install -r requirements.txt
-if [ $? -ne 0 ]; then
-    echo "Failed to install dependencies."
-    exit 1
-fi
-echo "Dependencies installed."
 
 # Run the main.py script
 python3 application/main.py
