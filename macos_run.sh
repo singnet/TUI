@@ -1,8 +1,23 @@
-#!/bin/bash
+#!/bin/sh
+
+# Detect the shell
+if [ -n "$ZSH_VERSION" ]; then
+    SHELL_NAME="zsh"
+elif [ -n "$BASH_VERSION" ]; then
+    SHELL_NAME="bash"
+else
+    echo "Unsupported shell. Please run this script using bash or zsh."
+    exit 1
+fi
 
 # Function to prompt user for installation
 prompt_install() {
-    read -p "$1 is not installed or is out of date. Would you like to install it now? (y/n): " response
+    if [ "$SHELL_NAME" = "zsh" ]; then
+        read "response?$1 is not installed or is out of date. Would you like to install it now? (y/n): "
+    else
+        read -p "$1 is not installed or is out of date. Would you like to install it now? (y/n): " response
+    fi
+
     if [[ "$response" == "y" ]]; then
         eval "$2"
         if [[ $? -ne 0 ]]; then
@@ -11,8 +26,13 @@ prompt_install() {
         fi
         # Re-source Homebrew after installation
         if [[ "$1" == "Homebrew" ]]; then
-            echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.bash_profile
-            eval "$(/usr/local/bin/brew shellenv)"
+            if [ "$SHELL_NAME" = "zsh" ]; then
+                echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zshrc
+                eval "$(/usr/local/bin/brew shellenv)"
+            else
+                echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.bash_profile
+                eval "$(/usr/local/bin/brew shellenv)"
+            fi
         fi
     else
         echo "Please install $1 to continue."
@@ -24,9 +44,16 @@ prompt_install() {
 command -v brew &>/dev/null || prompt_install "Homebrew" 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
 
 # Update PATH for Homebrew
-if [[ -e ~/.bash_profile ]]; then
-    source ~/.bash_profile
+if [ "$SHELL_NAME" = "zsh" ]; then
+    if [[ -e ~/.zshrc ]]; then
+        source ~/.zshrc
+    fi
+else
+    if [[ -e ~/.bash_profile ]]; then
+        source ~/.bash_profile
+    fi
 fi
+
 eval "$(/usr/local/bin/brew shellenv)"
 
 # Check if Python >= 3.10 is installed
@@ -42,7 +69,7 @@ fi
 ln -sf $(brew --prefix)/bin/python3 $(brew --prefix)/bin/python
 
 # Check for the virtual environment folder
-if [ ! -d "tui_venv" ]; then
+if [[ ! -d "tui_venv" ]]; then
     # Create the virtual environment
     python -m venv tui_venv
     echo "Virtual environment created."
