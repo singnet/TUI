@@ -164,7 +164,14 @@ def check_account_balance():
         return True, output, errCode
     return False, output, errCode
 
-def nav_sidebar_vert() -> Vertical:
+def identity_check():
+    output, errCode = run_shell_command('snet --print-traceback account print')
+    if errCode == 0:
+        return True, output, errCode
+    else:
+        return False, output, errCode
+
+def nav_sidebar_vert(focus_button) -> Vertical:
     ret_vert = Vertical(
                 Button("Account", id="account_page_nav", classes="nav_sidebar_button"),
                 Button("Organization", id="organization_page_nav", classes="nav_sidebar_button"),
@@ -176,6 +183,17 @@ def nav_sidebar_vert() -> Vertical:
                 name="nav_sidebar_name",
                 id="nav_sidebar"
             )
+
+    if focus_button == "account":
+        ret_vert.get_child_by_id("account_page_nav").focus()
+    elif focus_button == "org":
+        ret_vert.get_child_by_id("organization_page_nav").focus()
+    elif focus_button == "serv":
+        ret_vert.get_child_by_id("services_page_nav").focus()
+    elif focus_button == "client":
+        ret_vert.get_child_by_id("client_page_nav").focus()
+    elif focus_button == "custom":
+        ret_vert.get_child_by_id("custom_command_page_nav").focus()
 
     return ret_vert
 

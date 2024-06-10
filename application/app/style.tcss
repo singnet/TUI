@@ -1,97 +1,44 @@
 /* Welcome screen */
 #welcome_screen {
     align: center middle;
+    background: #f6d7b0;
+    width: 100w;
+    height: 100h;
+}
+
+#welcome_screen_content {
+    align: center middle;
+    background: #2d2d2d;
+    height: 50h;
+    width: 90w;
+}
+
+#welcome_label_1 {
+    color: #f6d7b0;
+    margin-left: 21;
+}
+
+#welcome_label_2 {
+    color: #f6d7b0;
+    margin-left: 7;
 }
 
 #start_button {
-    width: 40%;
-    border: solid white;
+    background: #0185b5;
+    color: #f6d7b0;
+    border: none;
+    height: 3;
+    width: 8;
+    margin-left: 20;
 }
 
-/* Create Identity screen */
-#create_identity_button {
-    width: 40%;
-    border: solid white;
-    background: rgba(40, 40, 40, 0.5);
-    align: center middle;
-    margin-left: 50;
-    margin-top: 5;
+#start_button:focus {
+    text-style: none;
 }
 
-#create_identity_button:hover {
-    background: rgba(40, 40, 40, 0.9);
+#start_button:hover {
+    background: #05b9fa;
 }
-
-/* Navigation sidebar */
-.nav_sidebar {
-    color: blue;
-    height: 100%;
-    width: 20%;
-    align: left middle;
-}
-
-.nav_sidebar_button {
-    width: 100%;
-    height: 7%;
-    border: solid white;
-    background: rgba(40, 40, 40, 0.5);
-    margin: 2;
-}
-
-.nav_sidebar_button:hover {
-    background: rgba(40, 40, 40, 0.9);
-}
-
-/* All content pages */
-.content_page {
-    color: white;
-    height: 100%;
-    width: 80%;
-    align: right middle;
-    background: grey;
-    content-align: left middle;
-}
-
-.content_page Input {
-    background: rgba(40, 40, 40, 0.5);
-    width: 100%;
-    margin-left: 1;
-    margin-right: 1;
-}
-
-.content_page Select {
-    background: rgba(40, 40, 40, 0.5);
-    width: 100%;
-    margin-left: 1;
-    margin-right: 1;
-}
-
-/* Wallet screen */
-# #account_page_content {
-#     color: white;
-#     height: 100%;
-#     width: 80%;
-#     align: right middle;
-#     background: grey;
-# }
-
-/* Organization screen */
-# #organization_page_content {
-#     color: white;
-#     height: 100%;
-#     width: 80%;
-#     align: right middle;
-#     background: grey;
-# }
-
-/* Services screen */
-# #services_page_content {
-#     color: white;
-#     height: 100%;
-#     width: 80%;
-#     align: right middle;
-#     background: grey;
-# }
 
 /* Error Exit screen */
 #error_exit_log {
@@ -187,4 +134,3048 @@ exit_page {
 
 #exit_button, #cancel_exit_button {
     width: 100%;
+}
+
+/* Create Identity screen */
+#create_identity {
+    background: #f6d7b0;
+    height: auto;
+}
+
+.create_identity_full_page Horizontal {
+    height: auto;
+}
+
+.create_identity_full_page ScrollableContainer {
+    height: auto;
+}
+
+#create_identity_page_left_block {
+    margin-left: 3;
+    margin-top: 3;
+    margin-bottom: 3;
+    padding-left: 20;
+    padding-right: 20;
+    padding-top: 17;
+    padding-bottom: 20;
+    background: #2d2d2d;
+}
+
+#create_identity_right_div {
+    margin-left: 8;
+    margin-right: 3;
+    color: black;
+    margin-top: 8;
+    height: auto;
+}
+
+.create_identity_right_div_class Input {
+    width: 80w;
+    border: black solid;
+}
+
+.create_identity_div {
+    height: auto;
+}
+
+#create_identity_page_info_label_1 {
+    text-style: bold;
+    margin-bottom: 2;
+}
+
+#create_identity_page_info_label_2 {
+    text-style: bold;
+    margin-bottom: 3;
+}
+
+.create_identity_div {
+    margin-bottom: 3;
+}
+
+#create_identity_page_name_label {
+    margin-right: 4;
+    margin-top: 1;
+}
+
+#create_identity_page_wallet_label { 
+    margin-right: 2;
+    margin-top: 1;
+}
+
+#create_identity_page_network_label {
+    margin-right: 4;
+    margin-top: 1;
+}
+
+#create_identity_button_div {
+    align: right middle;
+}
+
+#create_identity_back_button {
+    margin-right: 3;
+}
+
+#create_identity_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#create_identity_button:hover {
+    background: #05b9fa;
+}
+
+/* Navigation sidebar */
+.nav_sidebar {
+    height: 100%;
+    width: 20%;
+    align: left top;
+    background: #2d2d2d;
+}
+
+.nav_sidebar_button {
+    width: 100w;
+    height: 7h;
+    background: #2d2d2d;
+    border: none;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.nav_sidebar_button:focus {
+    background: #f6d7b0;
+    text-style: none;
+}
+
+.nav_sidebar_button:hover {
+    background: #303030;
+}
+
+#account_page_nav {
+    margin-top: 3;
+    padding-top: 1;
+}
+
+#exit_page_nav {
+    margin-top: 20;
+    padding-top: 1;
+}
+
+/* All content pages */
+.content_page {
+    color: black;
+    height: 100%;
+    width: 80%;
+    align: right middle;
+    background: #f6d7b0;
+    content-align: left middle;
+}
+
+.content_page Input {
+    border: heavy black;
+    padding: 0;
+}
+
+.content_page Horizontal {
+    height: auto;
+}
+
+.content_page ScrollableContainer {
+    height: auto;
+}
+
+/* Account Page */
+#account_page_content {
+    align: left middle;
+}
+
+#account_page_title {
+    margin-left: 3;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+#account_page_info_label {
+    margin-left: 3;
+    margin-top: 5;
+}
+
+#account_page_info_log {
+    margin-top: 1;
+    margin-left: 3;
+    width: 80;
+    background: #f6d7b0;
+    border: black solid;
+    
+}
+
+.account_page_button_div {
+    margin-top: 1;
+    margin-bottom: 1;
+}
+
+#account_page_top_button_div {
+    margin-left: 3;
+    margin-top: 4;
+}
+
+#account_page_bottom_button_div {
+    margin-left: 18;
+    margin-top: 3;
+}
+
+#account_page_deposit_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#account_page_withdraw_button {
+    margin-left: 8;
+    padding-top: 3;
+    padding-left: 9;
+    padding-right: 9;
+}
+
+#account_page_transfer_button {
+    margin-left: 8;
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#account_treasurer_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#account_page_identity_settings_button {
+    margin-left: 8;
+    padding-top: 3;
+    padding-left: 5;
+    padding-right: 5;
+}
+
+/* Account identity page */
+#identity_page_content {
+    align: left middle;
+}
+
+#identity_page_title {
+    margin-left: 3;
+    margin-bottom: 2;
+    margin-top: 3;
+    text-style: bold underline;
+}
+
+#identity_page_log_label {
+    margin-top: 5;
+    margin-bottom: 1;
+    margin-left: 3;
+    text-style: bold;
+}
+
+#identity_page_log {
+    width: 90;
+    margin-left: 3;
+    margin-bottom: 2;
+}
+
+#identity_page_create_identity_button {
+    margin-left: 80;
+    padding-left: 4;
+    padding-right: 4;
+    margin-bottom: 8;
+}
+
+#identity_page_delete_label {
+    margin-left: 3;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#identity_page_delete_input {
+    width: 80w;
+    margin-left: 3;
+    margin-bottom: 2;
+}
+
+#identity_page_delete_identity_button {
+    margin-left: 85;
+    margin-right: 2;
+    margin-bottom: 5;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #fff;
+}
+
+#identity_page_delete_identity_button:hover {
+    background: #ff5c5c;
+}
+
+
+#identity_page_back_button {
+    margin-left: 3;
+    margin-bottom: 1;
+}
+
+/* Account deposit Page */
+#account_deposit_page_content {
+    align: left middle;
+}
+
+#account_deposit_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.account_deposit_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.account_deposit_page_div {
+    margin-top: 1;
+}
+
+.account_deposit_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.account_deposit_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+.account_deposit_page_radio {
+    border: black solid;
+    margin-left: 3;
+}
+
+#account_deposit_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#account_deposit_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#account_deposit_back_button {
+    margin-left: 3;
+}
+
+/* Account withdraw Page */
+#account_withdraw_page_content {
+    align: left middle;
+}
+
+#account_withdraw_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.account_withdraw_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.account_withdraw_page_div {
+    margin-top: 1;
+}
+
+.account_withdraw_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.account_withdraw_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 3;
+}
+
+#account_withdraw_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#account_withdraw_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#account_withdraw_back_button {
+    margin-left: 3;
+}
+
+.account_withdraw_page_radio {
+    border: black solid;
+    margin-left: 3;
+}
+
+/* Account transfer Page */
+#account_transfer_page_content {
+    align: left middle;
+}
+
+#account_transfer_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.account_transfer_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.account_transfer_page_div {
+    margin-top: 1;
+}
+
+.account_transfer_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.account_transfer_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#account_transfer_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#account_transfer_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#account_transfer_back_button {
+    margin-left: 3;
+}
+
+.account_transfer_page_radio {
+    border: black solid;
+    margin-left: 3;
+}
+
+/* Account Treasurer Page */
+#treasurer_page_title {
+    margin-left: 3;
+    text-style: bold underline;
+    margin-bottom: 10;
+}
+
+.treasurer_button_div {
+    margin-left: 17;
+    margin-bottom: 5;
+}
+
+#treasurer_claim_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#treasurer_claim_exp_button {
+    margin-left: 30;
+    padding-top: 3;
+    padding-left: 5;
+    padding-right: 5;
+}
+
+#treasurer_claim_all_button {
+    margin-left: 25;
+    padding-top: 3;
+    padding-left: 7;
+    padding-right: 7;
+}
+
+#treasurer_back_button {
+    margin-left: 3;
+    margin-top: 3;
+}
+
+/* Account Treasurer claim Page */
+#treasurer_claim_page_content {
+    align: left middle;
+}
+
+#treasurer_claim_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.treasurer_claim_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.treasurer_claim_page_div {
+    margin-top: 3;
+}
+
+.treasurer_claim_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.treasurer_claim_page_radio {
+    border: black solid;
+    margin-left: 3;
+    margin-top: 1;
+}
+
+#treasurer_claim_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#treasurer_claim_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#treasurer_claim_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Account Treasurer claim-all Page */
+#treasurer_claim_all_page_content {
+    align: left middle;
+}
+
+#treasurer_claim_all_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.treasurer_claim_all_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.treasurer_claim_all_page_div {
+    margin-top: 3;
+}
+
+.treasurer_claim_all_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.treasurer_claim_all_page_radio {
+    border: black solid;
+    margin-left: 3;
+    margin-top: 2;
+}
+
+#treasurer_claim_all_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#treasurer_claim_all_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#treasurer_claim_all_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Account Treasurer claim-expr Page */
+#treasurer_claim_expr_page_content {
+    align: left middle;
+}
+
+#treasurer_claim_expr_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.treasurer_claim_expr_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.treasurer_claim_expr_page_div {
+    margin-top: 3;
+}
+
+.treasurer_claim_expr_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.treasurer_claim_expr_page_radio {
+    border: black solid;
+    margin-left: 3;
+    margin-top: 1;
+}
+
+#treasurer_claim_expr_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#treasurer_claim_expr_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#treasurer_claim_expr_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Organization Page */
+#organization_page_content {
+    align: left middle;
+}
+
+#organization_page_title {
+    margin-left: 3;
+    margin-top: 2;
+    margin-bottom: 5;
+    text-style: bold underline;
+}
+
+#organization_page_log_label {
+    margin-left: 3;
+}
+
+#org_metadata_info_log {
+    margin-left: 3;
+    margin-top: 1;
+    margin-bottom: 2;
+    width: 95w;
+    height: 30h;
+}
+
+.organization_page_button_div {
+    margin-top: 1;
+    margin-bottom: 1;
+}
+
+#organization_page_top_button_div {
+    margin-left: 10;
+}
+
+#organization_page_bottom_button_div {
+    margin-top: 3;
+    margin-left: 10;
+}
+
+#organization_page_metadata_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#organization_page_groups_button {
+    margin-left: 33;
+    padding-top: 3;
+    padding-left: 9;
+    padding-right: 9;
+}
+
+#organization_page_members_button {
+    padding-top: 3;
+    padding-left: 9;
+    padding-right: 8;
+}
+
+#organization_page_create_delete_button {
+    margin-left: 33;
+    padding-top: 3;
+    padding-left: 9;
+    padding-right: 9;
+}
+
+/* Organization metadata page */
+#org_metadata_page_title {
+    margin-left: 3;
+    text-style: bold underline;
+    margin-bottom: 7;
+}
+
+#org_metadata_page_upper_div {
+    margin-left: 5;
+    margin-bottom: 5;
+}
+
+#org_metadata_page_lower_div {
+    margin-left: 5;
+    margin-bottom: 7;
+}
+
+.org_metadata_page_div {
+    margin-top: 3;
+}
+
+#org_metadata_page_print_button {
+    padding-top: 3;
+    padding-left: 4;
+    padding-right: 4;
+}
+
+#org_metadata_page_init_button {
+    margin-left: 10;
+    padding-top: 3;
+    padding-left: 3;
+    padding-right: 3;
+}
+
+#org_metadata_add_desc_button {
+    margin-left: 10;
+    padding-top: 3;
+    padding-left: 4;
+    padding-right: 4;
+}
+
+#org_metadata_assets_button {
+    padding-top: 3;
+    padding-left: 5;
+    padding-right: 5;
+}
+
+#org_metadata_contacts_button {
+    margin-left: 9;
+    padding-top: 3;
+    padding-left: 5;
+    padding-right: 5;
+}
+
+#org_metadata_update_button {
+    margin-left: 10;
+    padding-top: 3;
+    padding-left: 4;
+    padding-right: 4;
+}
+
+#org_metadata_back_button {
+    margin-left: 3;
+}
+
+/* Organization Print metadata page */
+#print_org_metadata_page_content {
+    align: left middle;
+}
+
+#print_org_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.print_org_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.print_org_metadata_page_div {
+    margin-top: 15;
+}
+
+.print_org_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#print_org_metadata_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 12;
+}
+
+#print_org_metadata_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#print_org_metadata_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#print_org_metadata_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Organization Initialize metadata page */
+#init_org_metadata_page_content {
+    align: left middle;
+}
+
+#init_org_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.init_org_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.init_org_metadata_page_div {
+    margin-top: 4;
+}
+
+.init_org_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#init_org_metadata_name_input {
+    margin-left: 3;
+}
+
+#init_org_metadata_id_input {
+    margin-left: 5;
+    width: 81w;
+}
+
+#init_org_metadata_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#init_org_metadata_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#init_org_metadata_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#init_org_metadata_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Organization Add description page */
+#add_org_metadata_desc_page_content {
+    align: left middle;
+}
+
+#add_org_metadata_desc_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.add_org_metadata_desc_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.add_org_metadata_desc_page_div {
+    margin-top: 3;
+}
+
+.add_org_metadata_desc_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#add_org_metadata_desc_button_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#add_org_metadata_desc_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#add_org_metadata_desc_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#add_org_metadata_desc_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Organization Manage Assets page */
+#manage_org_assets_page_content {
+    align: left middle;
+}
+
+#manage_org_assets_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.manage_org_assets_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.manage_org_assets_page_div {
+    margin-top: 7;
+}
+
+.manage_org_assets_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#manage_org_assets_button_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#manage_org_assets_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#manage_org_assets_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#manage_org_assets_remove_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #fff;
+}
+
+#manage_org_assets_remove_button:hover {
+    background: #ff5c5c;
+}
+
+#manage_org_assets_back_button {
+    margin-top: 3;
+    margin-left: 3;
+}
+
+/* Organization Manage contacts page */
+#manage_org_contacts_page_content {
+    align: left middle;
+}
+
+#manage_org_contacts_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.manage_org_contacts_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.manage_org_contacts_page_div {
+    margin-top: 3;
+}
+
+.manage_org_contacts_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#manage_org_contacts_button_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#manage_org_contacts_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#manage_org_contacts_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#manage_org_contacts_remove_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #fff;
+}
+
+#manage_org_contacts_remove_button:hover {
+    background: #ff5c5c;
+}
+
+#manage_org_contacts_back_button {
+    margin-top: 3;
+    margin-left: 3;
+}
+
+/* Organization Update metadata page */
+#update_org_metadata_page_content {
+    align: left middle;
+}
+
+#update_org_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.update_org_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.update_org_metadata_page_div {
+    margin-top: 1;
+}
+
+.update_org_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.update_org_metadata_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+.update_org_metadata_page_radio {
+    border: black solid;
+    margin-left: 3;
+}
+
+#update_org_metadata_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#update_org_metadata_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Organization Groups page */
+#org_groups_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+    margin-bottom: 10;
+}
+
+#org_groups_page_button_div {
+    margin-left: 10;
+    margin-bottom: 10;
+}
+
+#org_groups_add_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#org_groups_update_button {
+    margin-left: 33;
+    padding-top: 3;
+    padding-left: 9;
+    padding-right: 9;
+}
+
+#org_groups_back_button {
+    margin-left: 3;
+    margin-top: 15;
+}
+
+/* Organization Groups add page */
+#add_org_group_content {
+    align: left middle;
+}
+
+#add_org_group_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.add_org_group_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.add_org_group_div {
+    margin-top: 1;
+}
+
+.add_org_group_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#add_org_group_button_div {
+    align: right middle;
+    margin-top: 3;
+}
+
+#add_org_group_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#add_org_group_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Organization Groups update page */
+#update_org_group_content {
+    align: left middle;
+}
+
+#update_org_group_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.update_org_group_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.update_org_group_div {
+    margin-top: 1;
+}
+
+.update_org_group_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#update_org_group_button_div {
+    align: right middle;
+    margin-top: 3;
+}
+
+#update_org_group_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#update_org_group_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Organization Members page */
+#members_page_title {
+    margin-left: 3;
+    text-style: bold underline;
+    margin-bottom: 10;
+}
+
+#members_page_button_div {
+    margin-left: 10;
+    margin-bottom: 10;
+}
+
+#members_manage_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#members_change_owner_button {
+    margin-left: 20;
+    padding-top: 3;
+    padding-left: 4;
+    padding-right: 4;
+}
+
+#members_back_button {
+    margin-left: 3;
+    margin-top: 15;
+}
+
+/* Organization Members manage page */
+#manage_members_page_content {
+    align: left middle;
+}
+
+#manage_members_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.manage_members_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.manage_members_page_div {
+    margin-top: 1;
+}
+
+.manage_members_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.manage_members_radio {
+    color: black;
+    border: black solid;
+    margin-left: 1;
+    margin-top: 2;
+    margin-bottom: 2;
+}
+
+#manage_members_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#manage_members_add_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#manage_members_add_button:hover {
+    background: #05b9fa;
+}
+
+#manage_members_remove_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#manage_members_remove_button:hover {
+    background: #ff5c5c;
+}
+
+#manage_members_back_button {
+    margin-left: 3;
+    margin-top: 2;
+}
+
+/* Organization Members change owner page */
+#change_org_owner_page_content {
+    align: left middle;
+}
+
+#change_org_owner_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.change_org_owner_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.change_org_owner_page_div {
+    margin-top: 1;
+}
+
+.change_org_owner_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#change_org_owner_quiet_radio {
+    color: black;
+    border: black solid;
+    margin-left: 1;
+    margin-top: 2;
+    margin-bottom: 2;
+}
+
+#change_org_owner_verbose_radio {
+    color: black;
+    border: black solid;
+    margin-left: 1;
+    margin-top: 2;
+    margin-bottom: 2;
+}
+
+#change_org_owner_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 3;
+}
+
+#change_org_owner_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#change_org_owner_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Organization Manage page */
+#org_manage_page_title {
+    margin-left: 3;
+    text-style: bold underline;
+    margin-bottom: 15;
+}
+
+#org_manage_page_button_div {
+    margin-left: 10;
+    margin-bottom: 10;
+}
+
+#org_manage_add_button {
+    padding-top: 3;
+    padding-left: 3;
+    padding-right: 3;
+}
+
+#org_manage_delete_button {
+    margin-left: 33;
+    padding-top: 3;
+    padding-left: 3;
+    padding-right: 3;
+}
+
+#org_manage_back_button {
+    margin-left: 3;
+}
+
+/* Organization Manage create org page */
+#org_manage_create_page_content {
+    align: left middle;
+}
+
+#org_manage_create_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.org_manage_create_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.org_manage_create_page_div {
+    margin-top: 1;
+}
+
+.org_manage_create_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.org_manage_create_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+.org_manage_create_page_radio {
+    border: black solid;
+    margin-left: 3;
+}
+
+#org_manage_create_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#org_manage_create_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#org_manage_create_back_button {
+    margin-left: 3;
+}
+
+/* Organization Manage delete org page */
+#org_manage_delete_page_content {
+    align: left middle;
+}
+
+#org_manage_delete_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.org_manage_delete_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.org_manage_delete_page_div {
+    margin-top: 1;
+}
+
+.org_manage_delete_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.org_manage_delete_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+.org_manage_delete_page_radio {
+    border: black solid;
+    margin-left: 3;
+}
+
+#org_manage_delete_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#org_manage_delete_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#org_manage_delete_back_button {
+    margin-left: 3;
+}
+
+/* Services page */
+#services_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+    margin-bottom: 15;
+}
+
+#services_page_button_div {
+    margin-left: 17;
+    margin-bottom: 10;
+    # margin-top: 15;
+}
+
+#services_metadata_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#services_page_manage_button {
+    margin-left: 33;
+    padding-top: 3;
+    padding-left: 9;
+    padding-right: 9;
+}
+
+/* Services metadata page */
+#manage_services_metadata_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+.manage_services_metadata_page_button {
+    padding-top: 3;
+}
+
+#manage_services_metadata_page_upper_div {
+    margin-left: 3;
+}
+
+#services_set_button {
+    padding-top: 3;
+    padding-left: 10;
+    padding-right: 10;
+    margin-left: 10;
+    margin-right: 10;
+}
+
+#services_add_remove_button {
+    padding-top: 3;
+    padding-left: 7;
+    padding-right: 7;
+    margin-left: 10;
+    margin-right: 10;
+}
+
+#manage_services_metadata_page_lower_div {
+    margin-left: 20;
+}
+
+#services_update_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+    margin-left: 5;
+}
+
+#services_get_button {
+    padding-top: 3;
+    padding-left: 10;
+    padding-right: 10;
+    margin-left: 10;
+}
+
+#services_metadata_back_button {
+    margin-left: 3;
+}
+
+/* Init metadata Page */
+#init_service_metadata_page_content {
+    align: left middle;
+}
+
+#init_service_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.init_service_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.init_service_metadata_page_div {
+    margin-top: 1;
+}
+
+.init_service_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.init_service_metadata_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#init_service_metadata_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#init_service_metadata_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Service Metadata Set Page */
+#service_metadata_set_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+.services_metadata_set_page_button {
+    padding-top: 3;
+}
+
+#service_metadata_set_upper_div {
+    margin-left: 3;
+}
+
+#service_metadata_set_model_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+    margin-left: 2;
+    margin-right: 10;
+}
+
+#service_metadata_set_fixed_price_button {
+    padding-top: 3;
+    padding-left: 5;
+    padding-right: 5;
+    margin-left: 10;
+    margin-right: 10;
+}
+
+#service_metadata_set_method_price_button {
+    padding-top: 3;
+    padding-left: 7;
+    padding-right: 7;
+    margin-left: 10;
+    margin-right: 10;
+}
+
+#service_metadata_set_lower_div {
+    margin-left: 15;
+}
+
+#service_metadata_set_free_calls_button {
+    padding-top: 3;
+    padding-left: 6;
+    padding-right: 6;
+    margin-left: 8;
+}
+
+#service_metadata_set_freecall_signer_button {
+    padding-top: 3;
+    padding-left: 1;
+    padding-right: 1;
+    margin-left: 10;
+}
+
+#service_metadata_set_back_button {
+    margin-left: 3;
+}
+
+/* Service metadata set model Page */
+#service_metadata_set_model_page_content {
+    align: left middle;
+}
+
+#service_metadata_set_model_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 10;
+    text-style: bold underline;
+}
+
+.service_metadata_set_model_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_set_model_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_set_model_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_set_model_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 8;
+}
+
+#service_metadata_set_model_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_set_model_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Service metadata set fixed price Page */
+#service_metadata_set_fixed_price_page_content {
+    align: left middle;
+}
+
+#service_metadata_set_fixed_price_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_set_fixed_price_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_set_fixed_price_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_set_fixed_price_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_set_fixed_price_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 6;
+}
+
+#service_metadata_set_fixed_price_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_set_fixed_price_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Service metadata set method price */
+#service_metadata_set_method_price_page_content {
+    align: left middle;
+}
+
+#service_metadata_set_method_price_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_set_method_price_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_set_method_price_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_set_method_price_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_set_method_price_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 2;
+}
+
+#service_metadata_set_method_price_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_set_method_price_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Service metadata set free calls page */
+#service_metadata_set_free_calls_page_content {
+    align: left middle;
+}
+
+#service_metadata_set_free_calls_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_set_free_calls_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_set_free_calls_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_set_free_calls_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_set_free_calls_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 6;
+}
+
+#service_metadata_set_free_calls_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_set_free_calls_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Service metadata freecall signer page */
+#service_metadata_set_freecall_signer_page_content {
+    align: left middle;
+}
+
+#service_metadata_set_freecall_signer_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_set_freecall_signer_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_set_freecall_signer_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_set_freecall_signer_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_set_freecall_signer_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 6;
+}
+
+#service_metadata_set_freecall_signer_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_set_freecall_signer_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Service metadata add/remove page */
+#service_metadata_add_remove_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+.services_metadata_add_remove_button {
+    padding-top: 3;
+}
+
+#services_metadata_add_remove_upper_div {
+    margin-left: 3;
+}
+
+#services_metadata_add_desc_button {
+    padding-top: 3;
+    padding-left: 1;
+    padding-right: 1;
+    margin-left: 1;
+    margin-right: 5;
+}
+
+#services_metadata_add_remove_groups_button {
+    padding-top: 3;
+    padding-left: 1;
+    padding-right: 1;
+    margin-left: 5;
+    margin-right: 5;
+}
+
+#services_metadata_add_remove_daemon_button {
+    padding-top: 3;
+    padding-left: 1;
+    padding-right: 1;
+    margin-left: 5;
+    margin-right: 5;
+}
+
+#services_metadata_add_remove_lower_div {
+    margin-left: 7;
+}
+
+#services_metadata_add_remove_assets_button {
+    padding-top: 3;
+    padding-left: 1;
+    padding-right: 1;
+    margin-left: 8;
+}
+
+#services_metadata_add_remove_media_button {
+    padding-top: 3;
+    padding-left: 1;
+    padding-right: 1;
+    margin-left: 10;
+}
+
+#service_metadata_add_remove_back_button {
+    margin-left: 3;
+}
+
+/* Service metadata add desc page */
+#add_desc_service_metadata_page_content {
+    align: left middle;
+}
+
+#add_desc_service_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.add_desc_service_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.add_desc_service_metadata_page_div {
+    margin-top: 1;
+}
+
+.add_desc_service_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.add_desc_service_metadata_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 4;
+}
+
+#add_desc_service_metadata_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#add_desc_service_metadata_confirm_button:hover {
+    background: #05b9fa;
+}
+
+/* Services metadata add/remove group page */
+#service_metadata_add_remove_group_page_content {
+    align: left middle;
+}
+
+#service_metadata_add_remove_group_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_add_remove_group_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_add_remove_group_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_add_remove_group_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_add_remove_group_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 8;
+}
+
+#service_metadata_add_remove_group_add_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_group_add_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_add_remove_group_remove_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_group_remove_button:hover {
+    background: #ff5c5c;
+}
+
+#service_metadata_add_remove_group_back_button {
+    margin-left: 3;
+}
+
+/* Service metadata add/remove daemon addr Page */
+#service_metadata_add_remove_daemon_addr_page_content {
+    align: left middle;
+}
+
+#service_metadata_add_remove_daemon_addr_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_add_remove_daemon_addr_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_add_remove_daemon_addr_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_add_remove_daemon_addr_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_add_remove_daemon_addr_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#service_metadata_add_remove_daemon_addr_add_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_daemon_addr_add_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_add_remove_daemon_addr_remove_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_daemon_addr_remove_button:hover {
+    background: #ff5c5c;
+}
+
+#service_metadata_add_remove_daemon_addr_back_button {
+    margin-left: 3;
+}
+
+/* Services Metadata add/remove assets Page */
+#service_metadata_add_remove_assets_page_content {
+    align: left middle;
+}
+
+#service_metadata_add_remove_assets_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_add_remove_assets_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_add_remove_assets_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_add_remove_assets_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_add_remove_assets_page_select {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_add_remove_assets_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#service_metadata_add_remove_assets_add_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_assets_add_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_add_remove_assets_remove_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_assets_remove_button:hover {
+    background: #ff5c5c;
+}
+
+#service_metadata_add_remove_assets_back_button {
+    margin-left: 3;
+}
+
+/* Services metadata add/remove media Page */
+#service_metadata_add_remove_media_page_content {
+    align: left middle;
+}
+
+#service_metadata_add_remove_media_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_add_remove_media_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_add_remove_media_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_add_remove_media_page_radio {
+    margin-left: 2;
+    margin-top: 4;
+    margin-bottom: 2;
+    border: black solid;
+}
+
+.service_metadata_add_remove_media_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#service_metadata_add_remove_media_remove_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #e63946;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_media_remove_button:hover {
+    background: #ff5c5c;
+}
+
+#service_metadata_add_remove_media_add_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_add_remove_media_add_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_add_remove_media_back_button {
+    margin-left: 3;
+}
+
+/* Services metadata update page */
+#service_metadata_update_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+.service_metadata_update_button {
+    padding-top: 3;
+}
+
+#service_metadata_update_daemon_button {
+    margin-left: 10;
+    margin-right: 25;
+}
+
+#service_metadata_update_validate_button{
+    margin-left: 25;
+    margin-right: 25;
+    padding-left: 8;
+    padding-right: 8;
+    padding-top: 3
+}
+
+#service_metadata_update_metadata_button{
+    margin-left: 37;
+    padding-left: 9;
+    padding-right: 9;
+    padding-top: 3;
+}
+
+#serivce_metadata_update_back_button {
+    margin-left: 3;
+}
+
+/* Service metadata update daemon addr page */
+#service_metadata_update_daemon_addr_page_content {
+    align: left middle;
+}
+
+#service_metadata_update_daemon_addr_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_update_daemon_addr_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_update_daemon_addr_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_update_daemon_addr_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_update_daemon_addr_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 5;
+}
+
+#service_metadata_update_daemon_addr_update_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_update_daemon_addr_update_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_update_daemon_addr_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Services metadata updata/validate page */
+#service_metadata_update_validate_metadata_page_content {
+    align: left middle;
+}
+
+#service_metadata_update_validate_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 10;
+    text-style: bold underline;
+}
+
+.service_metadata_update_validate_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_update_validate_metadata_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_update_validate_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_update_validate_metadata_page_div {
+    align: right middle;
+    margin-bottom: 9;
+    margin-top: 5;
+}
+
+#service_metadata_update_validate_metadata_validate_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_update_validate_metadata_validate_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_update_validate_metadata_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Service metadata update page */
+#service_metadata_update_metadata_page_content {
+    align: left middle;
+}
+
+#service_metadata_update_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_update_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_update_metadata_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_update_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_update_metadata_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 2;
+}
+
+.service_metadata_update_metadata_page_radio {
+    border: black solid;
+    margin-left: 2;
+}
+
+#service_metadata_update_metadata_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_update_metadata_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_update_metadata_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Services Metadata Get Page */
+#service_metadata_get_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+.service_metadata_get_page_button {
+    padding-top: 3;
+}
+
+#service_metadata_get_status_button {
+    margin-left: 12;
+    margin-right: 25;
+    padding-top: 3;
+    padding-left: 7;
+    padding-right: 7;
+}
+
+#service_metadata_get_metadata_button{
+    margin-left: 25;
+    margin-right: 25;
+    padding-left: 8;
+    padding-right: 8;
+    padding-top: 3
+}
+
+#service_metadata_get_registry_button{
+    margin-left: 40;
+    padding-left: 9;
+    padding-right: 9;
+    padding-top: 3;
+}
+
+#service_metadata_get_back_button {
+    margin-left: 3;
+}
+
+/* Services metadata get service status page */
+#service_metadata_get_service_status_page_content {
+    align: left middle;
+}
+
+#service_metadata_get_service_status_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_get_service_status_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_get_service_status_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_get_service_status_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_get_service_status_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 4;
+}
+
+#service_metadata_get_service_status_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_get_service_status_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_get_service_status_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Services Get api metadata page */
+#service_metadata_get_api_metadata_page_content {
+    align: left middle;
+}
+
+#service_metadata_get_api_metadata_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_get_api_metadata_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_get_api_metadata_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_get_api_metadata_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_get_api_metadata_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 8;
+}
+
+#service_metadata_get_api_metadata_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_get_api_metadata_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_get_api_metadata_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Services Get api registry page */
+#service_metadata_get_api_registry_page_content {
+    align: left middle;
+}
+
+#service_metadata_get_api_registry_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.service_metadata_get_api_registry_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.service_metadata_get_api_registry_page_div {
+    margin-top: 1;
+}
+
+.service_metadata_get_api_registry_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.service_metadata_get_api_registry_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 4;
+}
+
+#service_metadata_get_api_registry_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#service_metadata_get_api_registry_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#service_metadata_get_api_registry_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Services Manage Page */
+#services_manage_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+#services_manage_create_button {
+    margin-left: 12;
+    margin-right: 25;
+    padding-top: 3;
+    padding-left: 7;
+    padding-right: 7;
+}
+
+#services_manage_delete_button {
+    margin-left: 25;
+    margin-right: 25;
+    padding-left: 8;
+    padding-right: 8;
+    padding-top: 3
+}
+
+#services_manage_back_button {
+    margin-left: 3;
+    margin-top: 2;
+}
+
+/* Services publish page */
+#publish_service_page_content {
+    align: left middle;
+}
+
+#publish_service_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.publish_service_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.publish_service_page_div {
+    margin-top: 1;
+}
+
+.publish_service_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.publish_service_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 3;
+}
+
+.publish_service_page_radio {
+    border: black solid;
+    margin-left: 3;
+}
+
+#publish_service_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#publish_service_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#publish_service_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+/* Services delete page */
+#delete_service_page_content {
+    align: left middle;
+}
+
+#delete_service_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.delete_service_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.delete_service_page_div {
+    margin-top: 1;
+}
+
+.delete_service_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.delete_service_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 3;
+}
+
+#delete_service_confirm_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#delete_service_confirm_button:hover {
+    background: #05b9fa;
+}
+
+#delete_service_back_button {
+    margin-left: 5;
+    margin-right: 2;
+}
+
+.delete_service_page_radio {
+    border: black solid;
+    margin-left: 3;
+    margin-top: 2;
+}
+
+/* Client page */
+#client_page_title{
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+#client_page_button_div {
+    margin-left: 17;
+}
+
+#client_page_call_button {
+    padding-top: 3;
+    padding-left: 8;
+    padding-right: 8;
+}
+
+#client_page_call_low_button {
+    margin-left: 33;
+    padding-top: 3;
+    padding-left: 3;
+    padding-right: 3;
+}
+
+#client_page_channel_state_button {
+    margin-left: 45;
+    padding-top: 3;
+    padding-left: 2;
+    padding-right: 2;
+}
+
+/* Client call page */
+#client_call_page_content {
+    align: left middle;
+}
+
+
+#client_call_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.client_call_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.client_call_page_div {
+    margin-top: 1;
+}
+
+.client_call_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+#client_call_skip_update_check_radio {
+    color: black;
+    border: black solid;
+    margin-left: 1;
+    margin-top: 2;
+    margin-bottom: 2;
+}
+
+.client_call_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#client_call_view_price_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#client_call_view_price_button:hover {
+    background: #05b9fa;
+}
+
+/* Client call low-level page */
+#client_call_low_page_content {
+    align: left middle;
+}
+
+#client_call_low_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.client_call_low_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.client_call_low_page_div {
+    margin-top: 1;
+}
+
+.client_call_low_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.client_call_low_page_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#client_call_low_view_price_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#client_call_low_view_price_button:hover {
+    background: #05b9fa;
+}
+
+/* Client channel state page */
+#client_channel_state_page_content {
+    align: left middle;
+}
+
+#client_channel_state_page_title {
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+.client_channel_state_page_label {
+    margin-left: 2;
+    margin-top: 1;
+}
+
+.client_channel_state_page_channel_id_div {
+    margin-top: 1;
+}
+
+.client_channel_state_page_input {
+    margin-left: 4;
+    width: 80w;
+}
+
+.client_channel_state_page_div {
+    align: right middle;
+    margin-bottom: 1;
+    margin-top: 3;
+}
+
+#client_channel_state_submit_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#client_channel_state_submit_button:hover {
+    background: #05b9fa;
+}
+
+/* Custom command page */
+#custom_command_page_title {
+    margin-left: 3;
+    text-style: bold underline;
+}
+
+.custom_command_div {
+    margin-left: 3;
+    margin-top: 3;
+}
+
+#custom_command_root_label {
+    margin-top: 1;
+}
+
+#custom_command_root_input {
+    margin-left: 8;
+    border: heavy black;
+    padding: 0;
+    width: 73w;
+}
+
+#custom_command_sub_label {
+    margin-top: 1;
+}
+
+#custom_command_sub_input {
+    margin-left: 9;
+    border: heavy black;
+    padding: 0;
+    width: 74w;
+}
+
+#custom_command_args_label {
+    margin-top: 1;
+}
+
+#custom_command_args_input {
+    margin-left: 3;
+    border: heavy black;
+    padding: 0;
+    width: 70w;
+}
+
+#custom_command_dir_label {
+    margin-top: 1;
+}
+
+#custom_cwd_input {
+    margin-left: 3;
+    border: heavy black;
+    padding: 0;
+    width: 70w;
+}
+
+#custom_command_traceback_radio {
+    color: black;
+    border: black solid;
+    margin-left: 2;
+    margin-top: 3;
+}
+
+#custom_command_run_div {
+    align: right middle;
+}
+
+#custom_command_confirm_button {
+    margin-right: 3;
+    background: #0185b5;
+    color: #f6d7b0;
+    border: none;
+    padding: 1;
+}
+
+#custom_command_confirm_button:hover {
+    background: #05b9fa;
 }

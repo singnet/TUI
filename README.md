@@ -12,13 +12,13 @@ The run script will prompt you to install the following dependancies (if require
 
 - [Python](https://www.python.org) >= 3.10
 
-- [pip](https://pypi.org/project/pip/) ***Python package manager***
+- [pip](https://pypi.org/project/pip/) **_Python package manager_**
 
-- [venv](https://docs.python.org/3/library/venv.html) ***Python virtual-environment manager***
+- [venv](https://docs.python.org/3/library/venv.html) **_Python virtual-environment manager_**
 
-- [Homebrew](https://brew.sh) ***Package manager (MacOS only)***
+- [Homebrew](https://brew.sh) **_Package manager (MacOS only)_**
 
-- [Chocolatey](https://chocolatey.org) ***Package manager (Windows only)***
+- [Chocolatey](https://chocolatey.org) **_Package manager (Windows only)_**
 
 ## Installation
 
@@ -35,22 +35,26 @@ To get started with sNET-TUI, follow these steps:
 
 ## Running the application
 
-**For Linux Operating Systems:**
+**For Linux Operating Systems (Bash):**
 
 ```bash
 bash linux_run.sh
 ```
 
-**For MacOS:**
+**For MacOS (Zsh/Bash):**
 
 ```bash
-bash macos_run.sh
+sh macos_run.sh
 ```
 
-**For Windows Operating Systems:**
+**For Windows Operating Systems (CMD):**
+
+**_Double click the "windows_run.sh" file, or run the following in CMD_**
 
 ```powershell
 windows_run.bat
 ```
 
-NOTE: First startup will take longer than usual, as the script will generate a virtual environment and install the python requirements. The scripts are simple and commented, please read through them so you understand what is being done on your machine.
+**NOTE:**
+
+First startup will take longer than usual, as the script will check and install base dependancies, generate a virtual environment and install the python requirements. The scripts are simple and commented, please read through them so you understand what is being done on your machine.
