@@ -224,7 +224,12 @@ def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet
     #                  AMOUNT
     command = "snet --print-traceback account deposit"
     if not isinstance(agi_amount, str) or len(agi_amount) <= 0:
-        return "ERROR: Deposit amount must be greater than 0", 42
+        return "ERROR: Please enter deposit amount", 42
+    try:
+        if float(agi_amount) <= 0:
+            return "ERROR: Please enter deposit amount greater than 0", 42
+    except ValueError:
+        return "ERROR: Please enter deposit amount greater than 0", 42
     if isinstance(contract_address, str) and len(contract_address) > 0:
         command += f" --singularitynettoken-at {contract_address}"
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
@@ -249,7 +254,12 @@ def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, ve
     #                   AMOUNT
     command = "snet --print-traceback account withdraw"
     if not isinstance(agi_amount, str) or len(agi_amount) <= 0:
-        return "ERROR: Withdraw amount must be greater than 0", 42
+        return "ERROR: Please enter deposit amount", 42
+    try:
+        if float(agi_amount) <= 0:
+            return "ERROR: Please enter deposit amount greater than 0", 42
+    except ValueError:
+        return "ERROR: Please enter deposit amount greater than 0", 42
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
     if isinstance(gas_price, str) and len(gas_price) > 0:
@@ -274,7 +284,12 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
     if not isinstance(reciever_addr, str) or len(reciever_addr) <= 0:
         return "ERROR: Please input the reciever address", 42
     if not isinstance(agi_amount, str) or len(agi_amount) <= 0:
-        return "ERROR: Withdraw amount must be greater than 0", 42
+        return "ERROR: Please enter deposit amount", 42
+    try:
+        if float(agi_amount) <= 0:
+            return "ERROR: Please enter deposit amount greater than 0", 42
+    except ValueError:
+        return "ERROR: Please enter deposit amount greater than 0", 42
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
     if isinstance(gas_price, str) and len(gas_price) > 0:
@@ -943,16 +958,19 @@ def treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose):
         output = "All available payments successfully claimed!"
     return output, errCode
 
-def treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, verbose):
+def treasurer_claim_expr(threshold: str, endpoint, gas_price, wallet_index, quiet, verbose):
     # snet treasurer claim-expired [-h]
     #                          [--expiration-threshold EXPIRATION_THRESHOLD]
     #                          --endpoint ENDPOINT [--gas-price GAS_PRICE]
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
 
-    if threshold is None or threshold <= 0:
-        return "ERROR: Invalid expiration threshold", 42
-    if not endpoint:
+    try:
+        if threshold is None or float(threshold) <= 0:
+            return "ERROR: Invalid expiration threshold, must be a number > 0", 42
+    except ValueError:
+        return "ERROR: Invalid expiration threshold, must be a number > 0", 42
+    if endpoint is None:
         return "ERROR: Endpoint is required", 42
 
     command = f"snet --print-traceback treasurer claim-expired --expiration-threshold {threshold} --endpoint {endpoint}"
@@ -996,8 +1014,11 @@ def service_metadata_set_fixed_price(group_name, price, metadata_file):
 
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
-    if price is None or price <= 0:
-        return "ERROR: Price must be greater than 0", 42
+    try:
+        if price is None or float(price) <= 0:
+            return "ERROR: Price must be greater than 0", 42
+    except ValueError:
+        return "ERROR: Price must be a number greater than 0", 42
 
     command = f"snet --print-traceback service metadata-set-fixed-price {group_name} {price}"
     if isinstance(metadata_file, str) and len(metadata_file) > 0:
@@ -1022,8 +1043,11 @@ def service_metadata_set_method_price(group_name, package_name, service_name, me
         return "ERROR: Service name is required", 42
     if not method or len(method) == 0:
         return "ERROR: Method is required", 42
-    if price is None or price <= 0:
-        return "ERROR: Price must be greater than 0", 42
+    try:
+        if price is None or float(price) <= 0:
+            return "ERROR: Price must be greater than 0", 42
+    except ValueError:
+        return "ERROR: Price must be a number greater than 0", 42
 
     # Construct the command
     command = f"snet --print-traceback service metadata-set-method-price {group_name} {package_name} {service_name} {method} {price}"
@@ -1037,14 +1061,17 @@ def service_metadata_set_method_price(group_name, package_name, service_name, me
 
     return output, errCode
 
-def service_metadata_set_free_calls(group_name, free_calls, metadata_file):
+def service_metadata_set_free_calls(group_name, free_calls: str, metadata_file):
     # snet service metadata-set-free-calls [-h] [--metadata-file METADATA_FILE]
     #                                  GROUP_NAME free_calls
 
     # Validate input parameters
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
-    if free_calls is None or free_calls < 0:
+    try:
+        if free_calls is None or int(free_calls) < 0:
+            return "ERROR: Free calls must be a non-negative integer", 42
+    except ValueError:
         return "ERROR: Free calls must be a non-negative integer", 42
 
     # Construct the command
@@ -1489,8 +1516,11 @@ def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, met
         return "ERROR: Channel ID is required", 42, None
     if not nonce or len(nonce) == 0:
         return "ERROR: Nonce is required", 42, None
-    if not cog_amt or int(cog_amt) < 0:
-        return "ERROR: Amount of cogs is required", 42, None
+    try:
+        if not cog_amt or float(cog_amt) < 0:
+            return "ERROR: Amount of cogs > 0 is required", 42, None
+    except ValueError:
+        return "ERROR: Amount of cogs > 0 is required", 42, None
     if not method or len(method) == 0:
         return "ERROR: Method name of target service is required", 42, None
     if not params or len(params) == 0:
