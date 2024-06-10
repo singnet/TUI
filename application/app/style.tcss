@@ -647,6 +647,21 @@ exit_page {
     width: 80w;
 }
 
+#treasurer_claim_endpoint_input {
+    margin-left: 6;
+    width: 82w;
+}
+
+#treasurer_claim_gas_input {
+    margin-left: 12;
+    width: 87w;
+}
+
+#treasurer_claim_index_input {
+    margin-left: 9;
+    width: 84w;
+}
+
 .treasurer_claim_page_radio {
     border: black solid;
     margin-left: 3;
@@ -697,6 +712,16 @@ exit_page {
     width: 80w;
 }
 
+#treasurer_claim_all_gas_input {
+    margin-left: 10;
+    width: 85;
+}
+
+#treasurer_claim_all_index_input {
+    margin-left: 7;
+    width: 83w;
+}
+
 .treasurer_claim_all_page_radio {
     border: black solid;
     margin-left: 3;
@@ -745,6 +770,21 @@ exit_page {
 .treasurer_claim_expr_page_input {
     margin-left: 4;
     width: 80w;
+}
+
+#treasurer_claim_expr_endpoint_input {
+    margin-left: 5;
+    width: 81w;
+}
+
+#treasurer_claim_expr_gas_input {
+    margin-left: 11;
+    width: 86w;
+}
+
+#treasurer_claim_expr_index_input {
+    margin-left: 8;
+    width: 83w;
 }
 
 .treasurer_claim_expr_page_radio {
@@ -1035,6 +1075,21 @@ exit_page {
     width: 80w;
 }
 
+#add_org_metadata_desc_long_input {
+    margin-left: 6;
+    width: 82w;
+}
+
+#add_org_metadata_desc_short_input {
+    margin-left: 5;
+    width: 81w;
+}
+
+#add_org_metadata_desc_url_input {
+    margin-left: 6;
+    width: 82w;
+}
+
 #add_org_metadata_desc_button_div {
     align: right middle;
     margin-bottom: 1;
@@ -1083,6 +1138,11 @@ exit_page {
 .manage_org_assets_page_input {
     margin-left: 4;
     width: 80w;
+}
+
+#manage_org_assets_meta_input {
+    margin-left: 6;
+    width: 82w;
 }
 
 #manage_org_assets_button_div {
@@ -1146,6 +1206,21 @@ exit_page {
 .manage_org_contacts_page_input {
     margin-left: 4;
     width: 80w;
+}
+
+#manage_org_contacts_type_input {
+    margin-left: 5;
+    width: 81w;
+}
+
+#manage_org_contacts_phone_input {
+    margin-left: 5;
+    width: 81w;
+}
+
+#manage_org_contacts_email_input {
+    margin-left: 9;
+    width: 84w;
 }
 
 #manage_org_contacts_button_div {
@@ -1290,9 +1365,54 @@ exit_page {
     width: 80w;
 }
 
+#add_org_group_name_input {
+    margin-left: 28;
+    width: 84w;
+}
+
+#add_org_group_pay_addr_input {
+    margin-left: 23;
+    width: 79w;
+}
+
+#add_org_group_endpoint_input {
+    margin-left: 29;
+    width: 85w;
+}
+
+#add_org_group_pay_expr_threshold_input {
+    margin-left: 10;
+    width: 69w;
+}
+
+#add_org_group_pay_chann_storage_input {
+    margin-left: 15;
+    width: 72w;
+}
+
+#add_org_group_pay_chann_conn_to_input {
+    width: 65w;
+}
+
+#add_org_group_pay_chann_req_to_input {
+    margin-left: 7;
+    width: 66w;
+}
+
+#add_org_group_registry_input {
+    margin-left: 22;
+    width: 78w;
+}
+
+#add_org_group_metadata_file_input {
+    margin-left: 25;
+    width: 81w;
+}
+
 #add_org_group_button_div {
     align: right middle;
     margin-top: 3;
+    margin-bottom: 1;
 }
 
 #add_org_group_confirm_button {
@@ -1334,9 +1454,55 @@ exit_page {
     width: 80w;
 }
 
+#update_org_group_name_input {
+    margin-left: 20;
+    width: 87w;
+}
+
+#update_org_group_pay_addr_input {
+    margin-left: 15;
+    width: 82w;
+}
+
+#update_org_group_endpoint_input {
+    margin-left: 21;
+    width: 88w;
+}
+
+#update_org_group_pay_expr_threshold_input {
+    margin-left: 2;
+    width: 72w;
+}
+
+#update_org_group_pay_chann_storage_input {
+    margin-left: 15;
+    width: 82w;
+}
+
+#update_org_group_pay_chann_conn_to_input {
+    margin-left: 12;
+    width: 79w;
+}
+
+#update_org_group_pay_chann_req_to_input {
+    margin-left: 15;
+    width: 82w;
+}
+
+#update_org_group_registry_input {
+    margin-left: 14;
+    width: 81w;
+}
+
+#update_org_group_metadata_file_input {
+    margin-left: 17;
+    width: 84w;
+}
+
 #update_org_group_button_div {
     align: right middle;
     margin-top: 3;
+    margin-bottom: 1;
 }
 
 #update_org_group_confirm_button {
@@ -1408,6 +1574,21 @@ exit_page {
     width: 80w;
 }
 
+#manage_members_mem_list_input {
+    margin-left: 8;
+    width: 83w;
+}
+
+#manage_members_gas_input {
+    margin-left: 10;
+    width: 85w;
+}
+
+#manage_members_index_input {
+    margin-left: 7;
+    width: 83w;
+}
+
 .manage_members_radio {
     color: black;
     border: black solid;
@@ -1476,6 +1657,21 @@ exit_page {
 .change_org_owner_page_input {
     margin-left: 4;
     width: 80w;
+}
+
+#change_org_owner_id_input {
+    margin-left: 6;
+    width: 82w;
+}
+
+#change_org_owner_gas_input {
+    margin-left: 12;
+    width: 87w;
+}
+
+#change_org_owner_index_input {
+    margin-left: 9;
+    width: 84w;
 }
 
 #change_org_owner_quiet_radio {
