@@ -139,7 +139,7 @@ exit_page {
 /* Create Identity screen */
 #create_identity {
     background: #f6d7b0;
-    height: auto;
+    height: 100h;
 }
 
 .create_identity_full_page Horizontal {
@@ -1023,6 +1023,11 @@ exit_page {
 #init_org_metadata_id_input {
     margin-left: 5;
     width: 81w;
+}
+
+#init_org_metadata_meta_path_input {
+    margin-left: 7;
+    width: 82w;
 }
 
 #init_org_metadata_page_button_div {

@@ -38,9 +38,9 @@ class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
         if error_exit_label:
-            yield Log(id="error_exit_log").write(error_exit_label)
+            yield Log(id="error_exit_log", auto_scroll=False).write(error_exit_label)
         else:
-            yield Log(id="error_exit_log").write("ERROR: Internal error, attempted to create popup without context")
+            yield Log(id="error_exit_log", auto_scroll=False).write("ERROR: Internal error, attempted to create popup without context")
         yield Button("Exit", id="error_exit_button")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -51,9 +51,9 @@ class popup_output_page(Screen):
     def compose(self) -> ComposeResult:
         global popup_output
         if popup_output:
-            yield Log(id="popup_output_log").write(popup_output)
+            yield Log(id="popup_output_log", auto_scroll=False).write(popup_output)
         else:
-            yield Log(id="popup_output_log").write("ERROR: Internal error, attempted to create popup without context")
+            yield Log(id="popup_output_log", auto_scroll=False).write("ERROR: Internal error, attempted to create popup without context")
         yield Button("OK", id="output_exit_button")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -65,7 +65,7 @@ class conditional_input_page(Screen):
         global conditional_output
         global conditional_command
         global popup_output
-        yield Log(id="conditional_input_log").write(conditional_output)
+        yield Log(id="conditional_input_log", auto_scroll=False).write(conditional_output)
         yield Horizontal(Button("Yes", id="conditional_input_accept_button"), Button("No", id="conditional_input_deny_button"), id="conditional_input_buttons")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -359,13 +359,13 @@ class treasurer_claim_all_page(Screen):
                 ),
                 Horizontal(
                     Label("Gas Price", id="treasurer_claim_all_gas_label", classes="treasurer_claim_all_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="treasurer_claim_all_gas_input", classes="treasurer_claim_all_page_input"),
+                    Input(placeholder="[OPTIONAL] In Wei or time based gas price strategy (defaults to session.default_gas_price)", id="treasurer_claim_all_gas_input", classes="treasurer_claim_all_page_input"),
                     id="treasurer_claim_all_gas_div",
                     classes="treasurer_claim_all_page_div"
                 ),
                 Horizontal(
                     Label("Wallet Index", id="treasurer_claim_all_index_label", classes="treasurer_claim_all_page_label"),
-                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="treasurer_claim_all_index_input", classes="treasurer_claim_all_page_input"),
+                    Input(placeholder="[OPTIONAL] Account to use for signing (defaults to session.identity.default_wallet_index)", id="treasurer_claim_all_index_input", classes="treasurer_claim_all_page_input"),
                     id="treasurer_claim_all_index_div",
                     classes="treasurer_claim_all_page_div"
                 ),
@@ -494,7 +494,7 @@ class identity_page(Screen):
             ScrollableContainer(
                 Label("Identity Page", id="identity_page_title"),
                 Label("Identity Info Section:", id="identity_page_log_label"),
-                Log(id="identity_page_log").write(f"Identity List:\n\n{idList}"),
+                Log(id="identity_page_log", auto_scroll=False).write(f"Identity List:\n\n{idList}"),
                 Button("Create Identity Page", id="identity_page_create_identity_button"),
                 Label("Identity Delete Section:", id="identity_page_delete_label"),
                 Input(placeholder="Identity name to delete", id="identity_page_delete_input"),
@@ -950,6 +950,12 @@ class init_org_metadata_page(Screen):
                     classes="init_org_metadata_page_div"
                 ),
                 Horizontal(
+                    Label("Metadata Path", id="init_org_metadata_meta_path_label", classes="init_org_metadata_page_label"),
+                    Input(placeholder="[OPTIONAL] Service metadata json file (default organization_metadata.json)", id="init_org_metadata_meta_path_input", classes="init_org_metadata_page_input"),
+                    id="init_org_metadata_page_meta_path_div",
+                    classes="init_org_metadata_page_div"
+                ),
+                Horizontal(
                     Label("Registry Address", id="init_org_metadata_registry_label", classes="init_org_metadata_page_label"),
                     Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="init_org_metadata_registry_input", classes="init_org_metadata_page_input"),
                     id="init_org_metadata_page_registry_div",
@@ -978,6 +984,7 @@ class init_org_metadata_page(Screen):
 
         org_name = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_name_div").get_child_by_id("init_org_metadata_name_input").value
         org_id = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_id_div").get_child_by_id("init_org_metadata_id_input").value
+        meta_file = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_meta_path_div").get_child_by_id("init_org_metadata_meta_path_input").value
         reg_addr = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_registry_div").get_child_by_id("init_org_metadata_registry_input").value
         org_type = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_type_div").get_child_by_id("init_org_metadata_type_select").value
 
@@ -996,7 +1003,7 @@ class init_org_metadata_page(Screen):
         elif event.button.id == "init_org_metadata_back_button":
             self.app.pop_screen()
         elif event.button.id == "init_org_metadata_confirm_button":
-            output, errCode = be.init_org_metadata(org_name, org_id, org_type, reg_addr)
+            output, errCode = be.init_org_metadata(org_name, org_id, org_type, reg_addr, meta_file)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -1221,7 +1228,7 @@ class update_org_metadata_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="update_org_metadata_file_label", classes="update_org_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="update_org_metadata_file_input", classes="update_org_metadata_page_input"),
+                    Input(placeholder="Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="update_org_metadata_file_input", classes="update_org_metadata_page_input"),
                     id="update_org_metadata_file_div",
                     classes="update_org_metadata_page_div"
                 ),
@@ -1416,7 +1423,6 @@ class add_org_group_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "add_org_group_back_button":
             self.app.pop_screen()
-            self.app.switch_screen(organization_page())
         elif event.button.id == "add_org_group_confirm_button":
             group_name = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_name_div").get_child_by_id("add_org_group_name_input").value
             pay_addr = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_pay_addr_div").get_child_by_id("add_org_group_pay_addr_input").value
@@ -1524,7 +1530,6 @@ class update_org_group_page(Screen):
             self.app.push_screen(exit_page())
         elif event.button.id == "update_org_group_back_button":
             self.app.pop_screen()
-            self.app.switch_screen(organization_page())
         elif event.button.id == "update_org_group_confirm_button":
             group_name = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_name_div").get_child_by_id("update_org_group_name_input").value
             pay_addr = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_pay_addr_div").get_child_by_id("update_org_group_pay_addr_input").value
@@ -1682,13 +1687,13 @@ class change_org_owner_page(Screen):
                 ),
                 Horizontal(
                     Label("Gas Price", id="change_org_owner_gas_label", classes="change_org_owner_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="change_org_owner_gas_input", classes="change_org_owner_page_input"),
+                    Input(placeholder="[OPTIONAL] In Wei or time based gas price strategy (defaults to session.default_gas_price)", id="change_org_owner_gas_input", classes="change_org_owner_page_input"),
                     id="change_org_owner_page_gas_div",
                     classes="change_org_owner_page_div"
                 ),
                 Horizontal(
                     Label("Wallet Index", id="change_org_owner_index_label", classes="change_org_owner_page_label"),
-                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="change_org_owner_index_input", classes="change_org_owner_page_input"),
+                    Input(placeholder="[OPTIONAL] Account to use for signing (defaults to session.identity.default_wallet_index)", id="change_org_owner_index_input", classes="change_org_owner_page_input"),
                     id="change_org_owner_page_index_div",
                     classes="change_org_owner_page_div"
                 ),
@@ -1876,18 +1881,6 @@ class org_manage_delete_page(Screen):
                     classes="org_manage_delete_page_div"
                 ),
                 Horizontal(
-                    Label("Metadata File Path", id="org_manage_delete_file_label", classes="org_manage_delete_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="org_manage_delete_file_input", classes="org_manage_delete_page_input"),
-                    id="org_manage_delete_file_div",
-                    classes="org_manage_delete_page_div"
-                ),
-                Horizontal(
-                    Label("Member List", id="org_manage_delete_mems_label", classes="org_manage_delete_page_label"),
-                    Input(placeholder="[OPTIONAL] List of members to be added to the organization", id="org_manage_delete_mems_input", classes="org_manage_delete_page_input"),
-                    id="org_manage_delete_mems_div",
-                    classes="org_manage_delete_page_div"
-                ),
-                Horizontal(
                     Label("Gas Price", id="org_manage_delete_gas_label", classes="org_manage_delete_page_label"),
                     Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="org_manage_delete_gas_input", classes="org_manage_delete_page_input"),
                     id="org_manage_delete_gas_div",
@@ -1897,6 +1890,12 @@ class org_manage_delete_page(Screen):
                     Label("Wallet Index", id="org_manage_delete_index_label", classes="org_manage_delete_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="org_manage_delete_index_input", classes="org_manage_delete_page_input"),
                     id="org_manage_delete_index_div",
+                    classes="org_manage_delete_page_div"
+                ),
+                Horizontal(
+                    Label("Contract Address", id="org_manage_reg_addr_label", classes="org_manage_delete_page_label"),
+                    Input(placeholder="[OPTIONAL] registry contract address (defaults to session.current_registry_at)", id="org_manage_delete_reg_addr_input", classes="org_manage_delete_page_input"),
+                    id="org_manage_delete_reg_addr_div",
                     classes="org_manage_delete_page_div"
                 ),
                 RadioButton(label="Quiet transaction printing", id="org_manage_delete_quiet_radio", classes="org_manage_delete_page_radio"),
@@ -1932,14 +1931,13 @@ class org_manage_delete_page(Screen):
             self.app.pop_screen()
         elif event.button.id == "org_manage_delete_confirm_button":
             org_id = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_id_div").get_child_by_id("org_manage_delete_id_input").value
-            file_name = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_file_div").get_child_by_id("org_manage_delete_file_input").value
-            mem_list = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_mems_div").get_child_by_id("org_manage_delete_mems_input").value
             gas = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_gas_div").get_child_by_id("org_manage_delete_gas_input").value
             index = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_index_div").get_child_by_id("org_manage_delete_index_input").value
+            reg_addr = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_reg_addr_div").get_child_by_id("org_manage_delete_reg_addr_input").value
             quiet = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_quiet_radio").value
             verbose = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_verbose_radio").value
 
-            output, errCode = be.delete_organization(org_id, file_name, mem_list, gas, index, quiet, verbose)
+            output, errCode = be.delete_organization(org_id, gas, index, quiet, verbose, reg_addr)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -2220,7 +2218,7 @@ class service_metadata_set_model_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_set_model_file_label", classes="service_metadata_set_model_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_model_file_input", classes="service_metadata_set_model_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_set_model_file_input", classes="service_metadata_set_model_page_input"),
                     id="service_metadata_set_model_file_div",
                     classes="service_metadata_set_model_page_div"
                 ),
@@ -2283,7 +2281,7 @@ class service_metadata_set_fixed_price_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_set_fixed_price_file_label", classes="service_metadata_set_fixed_price_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_fixed_price_file_input", classes="service_metadata_set_fixed_price_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_set_fixed_price_file_input", classes="service_metadata_set_fixed_price_page_input"),
                     id="service_metadata_set_fixed_price_file_div",
                     classes="service_metadata_set_fixed_price_page_div"
                 ),
@@ -2364,7 +2362,7 @@ class service_metadata_set_method_price_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_set_method_price_file_label", classes="service_metadata_set_method_price_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_method_price_file_input", classes="service_metadata_set_method_price_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_set_method_price_file_input", classes="service_metadata_set_method_price_page_input"),
                     id="service_metadata_set_method_price_file_div",
                     classes="service_metadata_set_method_price_page_div"
                 ),
@@ -2430,7 +2428,7 @@ class service_metadata_set_free_calls_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_set_free_calls_file_label", classes="service_metadata_set_free_calls_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_free_calls_file_input", classes="service_metadata_set_free_calls_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_set_free_calls_file_input", classes="service_metadata_set_free_calls_page_input"),
                     id="service_metadata_set_free_calls_file_div",
                     classes="service_metadata_set_free_calls_page_div"
                 ),
@@ -2493,7 +2491,7 @@ class service_metadata_set_freecall_signer_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_set_freecall_signer_file_label", classes="service_metadata_set_freecall_signer_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_set_freecall_signer_file_input", classes="service_metadata_set_freecall_signer_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_set_freecall_signer_file_input", classes="service_metadata_set_freecall_signer_page_input"),
                     id="service_metadata_set_freecall_signer_file_div",
                     classes="service_metadata_set_freecall_signer_page_div"
                 ),
@@ -2617,7 +2615,7 @@ class add_desc_service_metadata_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="add_desc_service_metadata_meta_file_label", classes="add_desc_service_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="add_desc_service_metadata_meta_file_input", classes="add_desc_service_metadata_page_input"),
+                    Input(placeholder="Service metadata json file path", id="add_desc_service_metadata_meta_file_input", classes="add_desc_service_metadata_page_input"),
                     id="add_desc_service_metadata_meta_file_div",
                     classes="add_desc_service_metadata_page_div"
                 ),
@@ -2675,7 +2673,7 @@ class service_metadata_add_remove_group_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_add_remove_group_file_label", classes="service_metadata_add_remove_group_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_add_remove_group_file_input", classes="service_metadata_add_remove_group_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_add_remove_group_file_input", classes="service_metadata_add_remove_group_page_input"),
                     id="service_metadata_add_remove_group_file_div",
                     classes="service_metadata_add_remove_group_page_div"
                 ),
@@ -2742,7 +2740,7 @@ class service_metadata_add_remove_daemon_addr_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_add_remove_daemon_addr_file_label", classes="service_metadata_add_remove_daemon_addr_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_add_remove_daemon_addr_file_input", classes="service_metadata_add_remove_daemon_addr_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_add_remove_daemon_addr_file_input", classes="service_metadata_add_remove_daemon_addr_page_input"),
                     id="service_metadata_add_remove_daemon_addr_file_div",
                     classes="service_metadata_add_remove_daemon_addr_page_div"
                 ),
@@ -2804,7 +2802,7 @@ class service_metadata_add_remove_assets_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_add_remove_assets_file_label", classes="service_metadata_add_remove_assets_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_add_remove_assets_file_input", classes="service_metadata_add_remove_assets_page_input"),
+                    Input(placeholder="Service metadata json file", id="service_metadata_add_remove_assets_file_input", classes="service_metadata_add_remove_assets_page_input"),
                     id="service_metadata_add_remove_assets_file_div",
                     classes="service_metadata_add_remove_assets_page_div"
                 ),
@@ -2872,7 +2870,7 @@ class service_metadata_add_remove_media_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_add_media_file_label", classes="service_metadata_add_remove_media_page_label"),
-                    Input(placeholder="Service metadata json file (default service_metadata.json)", id="service_metadata_add_media_file_input", classes="service_metadata_add_remove_media_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_add_media_file_input", classes="service_metadata_add_remove_media_page_input"),
                     id="service_metadata_add_remove_media_file_div",
                     classes="service_metadata_add_remove_media_page_div"
                 ),
@@ -2985,7 +2983,7 @@ class service_metadata_update_daemon_addr_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_update_daemon_addr_file_label", classes="service_metadata_update_daemon_addr_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_update_daemon_addr_file_input", classes="service_metadata_update_daemon_addr_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_update_daemon_addr_file_input", classes="service_metadata_update_daemon_addr_page_input"),
                     id="service_metadata_update_daemon_addr_file_div",
                     classes="service_metadata_update_daemon_addr_page_div"
                 ),
@@ -3036,7 +3034,7 @@ class service_metadata_update_validate_metadata_page(Screen):
                 Label("Validate Service Metadata Page", id="service_metadata_update_validate_metadata_page_title"),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_update_validate_metadata_file_label", classes="service_metadata_update_validate_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_update_validate_metadata_file_input", classes="service_metadata_update_validate_metadata_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_update_validate_metadata_file_input", classes="service_metadata_update_validate_metadata_page_input"),
                     id="service_metadata_update_validate_metadata_file_div",
                     classes="service_metadata_update_validate_metadata_page_div"
                 ),
@@ -3096,12 +3094,12 @@ class service_metadata_update_metadata_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_update_metadata_file_label", classes="service_metadata_update_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="service_metadata_update_metadata_file_input", classes="service_metadata_update_metadata_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_update_metadata_file_input", classes="service_metadata_update_metadata_page_input"),
                     id="service_metadata_update_metadata_file_div",
                     classes="service_metadata_update_metadata_page_div"
                 ),
                 Horizontal(
-                    Label("Contract Address", id="service_metadata_update_metadata_reg_contract_label", classes="service_metadata_update_metadata_page_label"),
+                    Label("Registry Contract", id="service_metadata_update_metadata_reg_contract_label", classes="service_metadata_update_metadata_page_label"),
                     Input(placeholder="[OPTIONAL] if not specified we read address from 'networks'", id="service_metadata_update_metadata_reg_contract_input", classes="service_metadata_update_metadata_page_input"),
                     id="service_metadata_update_metadata_reg_contract_div",
                     classes="service_metadata_update_metadata_page_div"
@@ -3242,7 +3240,7 @@ class service_metadata_get_service_status_page(Screen):
                     classes="service_metadata_get_service_status_page_div"
                 ),
                 Horizontal(
-                    Label("Contract Address", id="service_metadata_get_service_status_reg_contract_label", classes="service_metadata_get_service_status_page_label"),
+                    Label("Registry Contract", id="service_metadata_get_service_status_reg_contract_label", classes="service_metadata_get_service_status_page_label"),
                     Input(placeholder="[OPTIONAL] if not specified we read address from 'networks'", id="service_metadata_get_service_status_reg_contract_input", classes="service_metadata_get_service_status_page_input"),
                     id="service_metadata_get_service_status_reg_contract_div",
                     classes="service_metadata_get_service_status_page_div"
@@ -3301,7 +3299,7 @@ class service_metadata_get_api_metadata_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="service_metadata_get_api_metadata_file_label", classes="service_metadata_get_api_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json)", id="service_metadata_get_api_metadata_file_input", classes="service_metadata_get_api_metadata_page_input"),
+                    Input(placeholder="Service metadata json file path", id="service_metadata_get_api_metadata_file_input", classes="service_metadata_get_api_metadata_page_input"),
                     id="service_metadata_get_api_metadata_file_div",
                     classes="service_metadata_get_api_metadata_page_div"
                 ),
@@ -3472,7 +3470,7 @@ class publish_service_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata File", id="publish_service_file_label", classes="publish_service_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="publish_service_file_input", classes="publish_service_page_input"),
+                    Input(placeholder="Service metadata json file path", id="publish_service_file_input", classes="publish_service_page_input"),
                     id="publish_service_file_div",
                     classes="publish_service_page_div"
                 ),
@@ -3697,13 +3695,13 @@ class client_call_page(Screen):
                 ),
                 Horizontal(
                     Label("Parameters", id="client_call_params_label", classes="client_call_page_label"),
-                    Input(placeholder="JSON-serialized parameters object or path containing JSON-serialized parameters object", id="client_call_params_input", classes="client_call_page_input"),
+                    Input(placeholder="Path to file containing JSON-serialized parameters object", id="client_call_params_input", classes="client_call_page_input"),
                     id="client_call_page_params_div",
                     classes="client_call_page_div"
                 ),
                 Horizontal(
                     Label("Payment Group", id="client_call_pay_group_label", classes="client_call_page_label"),
-                    Input(placeholder="[OPTIONAL] Parameter should be specified only for services with several payment groups", id="client_call_pay_group_input", classes="client_call_page_input"),
+                    Input(placeholder="[OPTIONAL] Only specified for services with several groups", id="client_call_pay_group_input", classes="client_call_page_input"),
                     id="client_call_page_pay_group_div",
                     classes="client_call_page_div"
                 ),
@@ -3851,7 +3849,7 @@ class client_call_low_page(Screen):
                 ),
                 Horizontal(
                     Label("Parameters", id="client_call_low_page_params_label", classes="client_call_low_page_label"),
-                    Input(placeholder="JSON-serialized parameters object or path containing JSON-serialized parameters object", id="client_call_low_params_input", classes="client_call_low_page_input"),
+                    Input(placeholder="Path to file containing JSON-serialized parameters object", id="client_call_low_params_input", classes="client_call_low_page_input"),
                     id="client_call_low_page_params_div",
                     classes="client_call_low_page_div"
                 ),
