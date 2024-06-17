@@ -1748,26 +1748,24 @@ def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, walle
     if not channel_id or len(channel_id) == 0:
         return "ERROR: Channel ID is required", 42, None
 
-    try:
-        if expr and int(expr) <= 0:
-            return "ERROR: Expiration must be a positive integer", 42, None
-    except ValueError:
-        return "ERROR: Expiration must be a valid positive integer", 42, None
-
-    try:
-        if agi_amount and float(agi_amount) < 0:
-            return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
-    except ValueError:
-        return "ERROR: Amount of AGI must be a valid number", 42, None
-
     # Construct command
     command = f"snet --print-traceback channel extend-add {channel_id}"
     
     if expr and len(expr) > 0:
+        try:
+            if expr and int(expr) <= 0:
+                return "ERROR: Expiration must be a positive integer", 42, None
+        except ValueError:
+            return "ERROR: Expiration must be a valid positive integer", 42, None
         command += f" --expiration {expr}"
     if force:
         command += " --force"
     if agi_amount and len(agi_amount) > 0:
+        try:
+            if agi_amount and float(agi_amount) < 0:
+                return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
+        except ValueError:
+            return "ERROR: Amount of AGI must be a valid number", 42, None
         command += f" --amount {agi_amount}"
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"
@@ -1807,18 +1805,6 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
         return "ERROR: Organization ID is required", 42, None
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
-    
-    try:
-        if expr and int(expr) <= 0:
-            return "ERROR: Expiration must be a positive integer", 42, None
-    except ValueError:
-        return "ERROR: Expiration must be a valid positive integer", 42, None
-
-    try:
-        if agi_amount and float(agi_amount) < 0:
-            return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
-    except ValueError:
-        return "ERROR: Amount of AGI must be a valid number", 42, None
 
     # Construct command
     command = f"snet --print-traceback channel extend-add-for-org {org_id} {group_name}"
@@ -1826,10 +1812,20 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
     if registry and len(registry) > 0:
         command += f" --registry-at {registry}"
     if expr and len(expr) > 0:
+        try:
+            if expr and int(expr) <= 0:
+                return "ERROR: Expiration must be a positive integer", 42, None
+        except ValueError:
+            return "ERROR: Expiration must be a valid positive integer", 42, None
         command += f" --expiration {expr}"
     if force:
         command += " --force"
     if agi_amount and len(agi_amount) > 0:
+        try:
+            if agi_amount and float(agi_amount) < 0:
+                return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
+        except ValueError:
+            return "ERROR: Amount of AGI must be a valid number", 42, None
         command += f" --amount {agi_amount}"
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"

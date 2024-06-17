@@ -432,7 +432,7 @@ exit_page {
 #account_deposit_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -448,6 +448,7 @@ exit_page {
 .account_deposit_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .account_deposit_page_div {
@@ -455,9 +456,14 @@ exit_page {
     margin-bottom: 1;
 }
 
-.account_deposit_page_radio {
+#account_deposit_radio_set {
     border: black solid;
     margin-left: 3;
+    margin-bottom: 2;
+}
+
+#account_deposit_quiet_radio {
+    margin-bottom: 2;
 }
 
 #account_deposit_confirm_button {
@@ -485,7 +491,7 @@ exit_page {
 #account_withdraw_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -501,6 +507,7 @@ exit_page {
 .account_withdraw_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .account_withdraw_page_div {
@@ -526,9 +533,14 @@ exit_page {
     margin-left: 3;
 }
 
-.account_withdraw_page_radio {
+#account_withdraw_radio_set {
     border: black solid;
     margin-left: 3;
+    margin-bottom: 2;
+}
+
+#account_withdraw_quiet_radio {
+    margin-bottom: 2;
 }
 
 /* Account transfer Page */
@@ -539,7 +551,7 @@ exit_page {
 #account_transfer_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -555,6 +567,7 @@ exit_page {
 .account_transfer_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .account_transfer_page_div {
@@ -579,9 +592,14 @@ exit_page {
     margin-left: 3;
 }
 
-.account_transfer_page_radio {
+#account_transfer_radio_set {
     border: black solid;
     margin-left: 3;
+    margin-bottom: 2;
+}
+
+#account_transfer_quiet_radio {
+    margin-bottom: 2;
 }
 
 /* Account Treasurer Page */
@@ -622,14 +640,10 @@ exit_page {
 }
 
 /* Account Treasurer claim Page */
-#treasurer_claim_page_content {
-    align: left middle;
-}
-
 #treasurer_claim_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -639,38 +653,29 @@ exit_page {
 }
 
 .treasurer_claim_page_div {
-    margin-top: 3;
+    margin-top: 1;
 }
 
 .treasurer_claim_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#treasurer_claim_endpoint_input {
-    margin-left: 6;
-    width: 82w;
-}
-
-#treasurer_claim_gas_input {
-    margin-left: 12;
-    width: 87w;
-}
-
-#treasurer_claim_index_input {
-    margin-left: 9;
-    width: 84w;
-}
-
-.treasurer_claim_page_radio {
-    border: black solid;
-    margin-left: 3;
-    margin-top: 1;
-}
-
-#treasurer_claim_page_button_div {
+.treasurer_claim_page_div {
     align: right middle;
     margin-bottom: 1;
+}
+
+#treasurer_claim_radio_set{
+    border: black solid;
+    margin-left: 2;
+    margin-bottom: 2;
+}
+
+#treasurer_claim_quiet_radio {
+    margin-bottom: 2;
 }
 
 #treasurer_claim_confirm_button {
@@ -687,14 +692,10 @@ exit_page {
 }
 
 /* Account Treasurer claim-all Page */
-#treasurer_claim_all_page_content {
-    align: left middle;
-}
-
 #treasurer_claim_all_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -704,32 +705,34 @@ exit_page {
 }
 
 .treasurer_claim_all_page_div {
-    margin-top: 3;
+    margin-top: 1;
 }
 
 .treasurer_claim_all_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 1;
 }
 
-#treasurer_claim_all_gas_input {
-    margin-left: 10;
-    width: 85;
+.treasurer_claim_all_page_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
-#treasurer_claim_all_index_input {
-    margin-left: 7;
-    width: 83w;
-}
-
-.treasurer_claim_all_page_radio {
+#treasurer_claim_all_radio_set {
     border: black solid;
-    margin-left: 3;
-    margin-top: 2;
+    margin-left: 2;
+    margin-bottom: 2;
+}
+
+#treasurer_claim_all_quiet_radio {
+    margin-bottom: 2;
 }
 
 #treasurer_claim_all_page_button_div {
-    align: right middle;
+    margin-left: 5;
+    margin-right: 1;
     margin-bottom: 1;
 }
 
@@ -747,14 +750,10 @@ exit_page {
 }
 
 /* Account Treasurer claim-expr Page */
-#treasurer_claim_expr_page_content {
-    align: left middle;
-}
-
 #treasurer_claim_expr_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -770,27 +769,23 @@ exit_page {
 .treasurer_claim_expr_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#treasurer_claim_expr_endpoint_input {
-    margin-left: 5;
-    width: 81w;
+.treasurer_claim_expr_page_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
-#treasurer_claim_expr_gas_input {
-    margin-left: 11;
-    width: 86w;
-}
-
-#treasurer_claim_expr_index_input {
-    margin-left: 8;
-    width: 83w;
-}
-
-.treasurer_claim_expr_page_radio {
+#treasurer_claim_expr_radio_set {
     border: black solid;
-    margin-left: 3;
-    margin-top: 1;
+    margin-left: 2;
+    margin-bottom: 2;
+}
+
+#treasurer_claim_expr_quiet_radio {
+    margin-bottom: 2;
 }
 
 #treasurer_claim_expr_page_button_div {
@@ -941,14 +936,10 @@ exit_page {
 }
 
 /* Organization Print metadata page */
-#print_org_metadata_page_content {
-    align: left middle;
-}
-
 #print_org_metadata_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -991,14 +982,10 @@ exit_page {
 }
 
 /* Organization Initialize metadata page */
-#init_org_metadata_page_content {
-    align: left middle;
-}
-
 #init_org_metadata_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1014,20 +1001,13 @@ exit_page {
 .init_org_metadata_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#init_org_metadata_name_input {
-    margin-left: 3;
-}
-
-#init_org_metadata_id_input {
-    margin-left: 5;
-    width: 81w;
-}
-
-#init_org_metadata_meta_path_input {
-    margin-left: 7;
-    width: 83w;
+.init_org_metadata_page_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
 #init_org_metadata_page_button_div {
@@ -1055,14 +1035,10 @@ exit_page {
 }
 
 /* Organization Add description page */
-#add_org_metadata_desc_page_content {
-    align: left middle;
-}
-
 #add_org_metadata_desc_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1078,21 +1054,13 @@ exit_page {
 .add_org_metadata_desc_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#add_org_metadata_desc_long_input {
-    margin-left: 6;
-    width: 82w;
-}
-
-#add_org_metadata_desc_short_input {
-    margin-left: 5;
-    width: 81w;
-}
-
-#add_org_metadata_desc_url_input {
-    margin-left: 6;
-    width: 82w;
+.add_org_metadata_desc_page_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
 #add_org_metadata_desc_button_div {
@@ -1120,14 +1088,10 @@ exit_page {
 }
 
 /* Organization Manage Assets page */
-#manage_org_assets_page_content {
-    align: left middle;
-}
-
 #manage_org_assets_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1143,17 +1107,19 @@ exit_page {
 .manage_org_assets_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#manage_org_assets_meta_input {
-    margin-left: 6;
-    width: 82w;
+.manage_org_assets_page_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
 #manage_org_assets_button_div {
     align: right middle;
     margin-bottom: 1;
-    margin-top: 5;
+    margin-top: 3;
 }
 
 #manage_org_assets_confirm_button {
@@ -1185,17 +1151,14 @@ exit_page {
 #manage_org_assets_back_button {
     margin-top: 3;
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Organization Manage contacts page */
-#manage_org_contacts_page_content {
-    align: left middle;
-}
-
 #manage_org_contacts_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1211,21 +1174,13 @@ exit_page {
 .manage_org_contacts_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#manage_org_contacts_type_input {
-    margin-left: 5;
-    width: 81w;
-}
-
-#manage_org_contacts_phone_input {
-    margin-left: 5;
-    width: 81w;
-}
-
-#manage_org_contacts_email_input {
-    margin-left: 9;
-    width: 84w;
+.manage_org_contacts_page_div {
+    align: right middle;
+    margin-bottom: 1; 
 }
 
 #manage_org_contacts_button_div {
@@ -1253,7 +1208,7 @@ exit_page {
     background: #e63946;
     border: none;
     padding: 1;
-    color: #fff;
+    color: white;
 }
 
 #manage_org_contacts_remove_button:hover {
@@ -1263,6 +1218,7 @@ exit_page {
 #manage_org_contacts_back_button {
     margin-top: 3;
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Organization Update metadata page */
@@ -1296,9 +1252,13 @@ exit_page {
     margin-bottom: 3;
 }
 
-.update_org_metadata_page_radio {
+#update_org_metadata_radio_set {
     border: black solid;
     margin-left: 3;
+}
+
+#update_org_metadata_quiet_radio {
+    margin-bottom: 2;
 }
 
 #update_org_metadata_confirm_button {
@@ -1345,14 +1305,10 @@ exit_page {
 }
 
 /* Organization Groups add page */
-#add_org_group_content {
-    align: left middle;
-}
-
 #add_org_group_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1368,50 +1324,13 @@ exit_page {
 .add_org_group_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#add_org_group_name_input {
-    margin-left: 28;
-    width: 84w;
-}
-
-#add_org_group_pay_addr_input {
-    margin-left: 23;
-    width: 80w;
-}
-
-#add_org_group_endpoint_input {
-    margin-left: 29;
-    width: 85w;
-}
-
-#add_org_group_pay_expr_threshold_input {
-    margin-left: 10;
-    width: 69w;
-}
-
-#add_org_group_pay_chann_storage_input {
-    margin-left: 15;
-    width: 73w;
-}
-
-#add_org_group_pay_chann_conn_to_input {
-    width: 65w;
-}
-
-#add_org_group_pay_chann_req_to_input {
-    margin-left: 7;
-    width: 67w;
-}
-
-#add_org_group_registry_input {
-    margin-left: 22;
-    width: 79w;
-}
-
-#add_org_group_metadata_file_input {
-    margin-left: 25;
-    width: 81w;
+.add_org_group_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
 #add_org_group_button_div {
@@ -1434,14 +1353,10 @@ exit_page {
 }
 
 /* Organization Groups update page */
-#update_org_group_content {
-    align: left middle;
-}
-
 #update_org_group_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1457,51 +1372,13 @@ exit_page {
 .update_org_group_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#update_org_group_name_input {
-    margin-left: 20;
-    width: 87w;
-}
-
-#update_org_group_pay_addr_input {
-    margin-left: 15;
-    width: 82w;
-}
-
-#update_org_group_endpoint_input {
-    margin-left: 21;
-    width: 88w;
-}
-
-#update_org_group_pay_expr_threshold_input {
-    margin-left: 2;
-    width: 72w;
-}
-
-#update_org_group_pay_chann_storage_input {
-    margin-left: 15;
-    width: 82w;
-}
-
-#update_org_group_pay_chann_conn_to_input {
-    margin-left: 12;
-    width: 80w;
-}
-
-#update_org_group_pay_chann_req_to_input {
-    margin-left: 15;
-    width: 82w;
-}
-
-#update_org_group_registry_input {
-    margin-left: 14;
-    width: 82w;
-}
-
-#update_org_group_metadata_file_input {
-    margin-left: 17;
-    width: 84w;
+.update_org_group_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
 #update_org_group_button_div {
@@ -1554,14 +1431,10 @@ exit_page {
 }
 
 /* Organization Members manage page */
-#manage_members_page_content {
-    align: left middle;
-}
-
 #manage_members_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1571,34 +1444,25 @@ exit_page {
 }
 
 .manage_members_page_div {
-    margin-top: 2;
+    margin-top: 3;
+    align: right middle;
+    margin-bottom: 1;
 }
 
 .manage_members_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#manage_members_mem_list_input {
-    margin-left: 8;
-    width: 83w;
-}
-
-#manage_members_gas_input {
-    margin-left: 10;
-    width: 85w;
-}
-
-#manage_members_index_input {
-    margin-left: 7;
-    width: 83w;
-}
-
-.manage_members_radio {
-    color: black;
+#manage_members_radio_set {
     border: black solid;
-    margin-left: 1;
-    margin-top: 2;
+    margin-left: 2;
+    margin-bottom: 2;
+}
+
+#manage_members_quiet_radio {
     margin-bottom: 2;
 }
 
@@ -1636,17 +1500,14 @@ exit_page {
 #manage_members_back_button {
     margin-left: 3;
     margin-top: 2;
+    margin-bottom: 1;
 }
 
 /* Organization Members change owner page */
-#change_org_owner_page_content {
-    align: left middle;
-}
-
 #change_org_owner_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1657,41 +1518,24 @@ exit_page {
 
 .change_org_owner_page_div {
     margin-top: 3;
+    align: right middle;
+    margin-bottom: 1;
 }
 
 .change_org_owner_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
+    margin-right: 2;
 }
 
-#change_org_owner_id_input {
-    margin-left: 6;
-    width: 82w;
-}
-
-#change_org_owner_gas_input {
-    margin-left: 12;
-    width: 87w;
-}
-
-#change_org_owner_index_input {
-    margin-left: 9;
-    width: 84w;
-}
-
-#change_org_owner_quiet_radio {
-    color: black;
+#change_org_owner_radio_set {
     border: black solid;
-    margin-left: 1;
-    margin-top: 2;
+    margin-left: 2;
     margin-bottom: 2;
 }
 
-#change_org_owner_verbose_radio {
-    color: black;
-    border: black solid;
-    margin-left: 1;
-    margin-top: 2;
+#change_org_owner_quiet_radio {
     margin-bottom: 2;
 }
 
@@ -1751,7 +1595,7 @@ exit_page {
 #org_manage_create_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1767,6 +1611,7 @@ exit_page {
 .org_manage_create_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .org_manage_create_page_div {
@@ -1774,9 +1619,14 @@ exit_page {
     margin-bottom: 1;
 }
 
-.org_manage_create_page_radio {
+#org_manage_create_radio_set {
     border: black solid;
     margin-left: 3;
+    margin-bottom: 2;
+}
+
+#org_manage_create_quiet_radio {
+    margin-bottom: 2;
 }
 
 #org_manage_create_confirm_button {
@@ -1804,7 +1654,7 @@ exit_page {
 #org_manage_delete_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -1820,6 +1670,7 @@ exit_page {
 .org_manage_delete_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .org_manage_delete_page_div {
@@ -1827,9 +1678,14 @@ exit_page {
     margin-bottom: 3;
 }
 
-.org_manage_delete_page_radio {
+#org_manage_delete_radio_set {
     border: black solid;
     margin-left: 3;
+    margin-bottom: 2;
+}
+
+#org_manage_delete_quiet_radio{
+    margin-bottom: 2;
 }
 
 #org_manage_delete_confirm_button {
@@ -2759,7 +2615,7 @@ exit_page {
 #service_metadata_update_metadata_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -2775,6 +2631,7 @@ exit_page {
 .service_metadata_update_metadata_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .service_metadata_update_metadata_page_div {
@@ -2783,9 +2640,19 @@ exit_page {
     margin-top: 2;
 }
 
-.service_metadata_update_metadata_page_radio {
+#service_metadata_update_metadata_radio_set {
     border: black solid;
     margin-left: 2;
+    margin-bottom: 2;
+}
+
+#service_metadata_update_metadata_quiet_radio {
+    margin-bottom: 2;
+}
+
+#service_metadata_update_metadata_update_mpe_radio {
+    margin-left: 2;
+    border: black solid;
 }
 
 #service_metadata_update_metadata_confirm_button {
@@ -3028,7 +2895,7 @@ exit_page {
 #publish_service_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -3044,6 +2911,7 @@ exit_page {
 .publish_service_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .publish_service_page_div {
@@ -3052,7 +2920,17 @@ exit_page {
     margin-top: 3;
 }
 
-.publish_service_page_radio {
+#publish_service_radio_set {
+    border: black solid;
+    margin-left: 3;
+    margin-bottom: 2;
+}
+
+#publish_service_quiet_radio{
+    margin-bottom: 2;
+}
+
+#publish_service_update_mpe_radio{
     border: black solid;
     margin-left: 3;
 }
@@ -3083,7 +2961,7 @@ exit_page {
 #delete_service_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
@@ -3099,6 +2977,7 @@ exit_page {
 .delete_service_page_input {
     margin-left: 4;
     width: 80w;
+    margin-bottom: 3;
 }
 
 .delete_service_page_div {
@@ -3125,10 +3004,14 @@ exit_page {
     margin-right: 2;
 }
 
-.delete_service_page_radio {
+#delete_service_radio_set {
     border: black solid;
     margin-left: 3;
     margin-top: 2;
+}
+
+#delete_service_quiet_radio {
+    margin-bottom: 2;
 }
 
 /* Client page */
@@ -4335,76 +4218,46 @@ exit_page {
 
 /* Custom command page */
 #custom_command_page_title {
-    margin-left: 3;
+    margin-left: 2;
+    margin-top: 2;
+    margin-bottom: 3;
     text-style: bold underline;
 }
 
-.custom_command_div {
-    margin-left: 3;
-    margin-top: 3;
-}
-
-#custom_command_root_label {
+.custom_command_page_label {
+    margin-left: 2;
     margin-top: 1;
 }
 
-#custom_command_root_input {
-    margin-left: 8;
-    border: heavy black;
-    padding: 0;
-    width: 73w;
-}
-
-#custom_command_sub_label {
+.custom_command_page_div {
     margin-top: 1;
 }
 
-#custom_command_sub_input {
-    margin-left: 9;
-    border: heavy black;
-    padding: 0;
-    width: 74w;
+.custom_command_page_input {
+    margin-left: 4;
+    width: 80w;
+    margin-right: 2;
+    margin-bottom: 3;
 }
 
-#custom_command_args_label {
-    margin-top: 1;
-}
-
-#custom_command_args_input {
-    margin-left: 3;
-    border: heavy black;
-    padding: 0;
-    width: 70w;
-}
-
-#custom_command_dir_label {
-    margin-top: 1;
-}
-
-#custom_cwd_input {
-    margin-left: 3;
-    border: heavy black;
-    padding: 0;
-    width: 70w;
+.custom_command_page_div {
+    align: right middle;
+    margin-bottom: 1;
 }
 
 #custom_command_traceback_radio {
-    color: black;
-    border: black solid;
     margin-left: 2;
-    margin-top: 3;
-}
-
-#custom_command_run_div {
-    align: right middle;
+    border: black solid;
+    margin-bottom: 2;
 }
 
 #custom_command_confirm_button {
-    margin-right: 3;
+    margin-left: 5;
+    margin-right: 2;
     background: #0185b5;
-    color: #f6d7b0;
     border: none;
     padding: 1;
+    color: #f6d7b0;
 }
 
 #custom_command_confirm_button:hover {

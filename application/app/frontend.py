@@ -301,8 +301,11 @@ class treasurer_claim_page(Screen):
                     id="treasurer_claim_index_div",
                     classes="treasurer_claim_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="treasurer_claim_quiet_radio", classes="treasurer_claim_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="treasurer_claim_verbose_radio", classes="treasurer_claim_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="treasurer_claim_quiet_radio", classes="treasurer_claim_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="treasurer_claim_verbose_radio", classes="treasurer_claim_page_radio"),
+                    id="treasurer_claim_radio_set"
+                ),
                 Horizontal(
                     Button("Back", id="treasurer_claim_back_button"),
                     Button("Claim", id="treasurer_claim_confirm_button"),
@@ -337,8 +340,8 @@ class treasurer_claim_page(Screen):
             endpoint = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_endpoint_div").get_child_by_id("treasurer_claim_endpoint_input").value
             gas_price = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_gas_div").get_child_by_id("treasurer_claim_gas_input").value
             wallet_index = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_index_div").get_child_by_id("treasurer_claim_index_input").value
-            quiet = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_quiet_radio").value
-            verbose = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_verbose_radio").value
+            quiet = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_radio_set").get_child_by_id("treasurer_claim_quiet_radio").value
+            verbose = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_radio_set").get_child_by_id("treasurer_claim_verbose_radio").value
 
             output, errCode = be.treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose)
             popup_output = output
@@ -369,8 +372,11 @@ class treasurer_claim_all_page(Screen):
                     id="treasurer_claim_all_index_div",
                     classes="treasurer_claim_all_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="treasurer_claim_all_quiet_radio", classes="treasurer_claim_all_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="treasurer_claim_all_verbose_radio", classes="treasurer_claim_all_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="treasurer_claim_all_quiet_radio", classes="treasurer_claim_all_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="treasurer_claim_all_verbose_radio", classes="treasurer_claim_all_page_radio"),
+                    id="treasurer_claim_all_radio_set"
+                ),
                 Horizontal(
                     Button("Back", id="treasurer_claim_all_back_button"),
                     Button("Claim", id="treasurer_claim_all_confirm_button"),
@@ -404,8 +410,8 @@ class treasurer_claim_all_page(Screen):
             endpoint = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_endpoint_div").get_child_by_id("treasurer_claim_all_endpoint_input").value
             gas_price = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_gas_div").get_child_by_id("treasurer_claim_all_gas_input").value
             wallet_index = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_index_div").get_child_by_id("treasurer_claim_all_index_input").value
-            quiet = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_quiet_radio").value
-            verbose = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_verbose_radio").value
+            quiet = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_radio_set").get_child_by_id("treasurer_claim_all_quiet_radio").value
+            verbose = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_radio_set").get_child_by_id("treasurer_claim_all_verbose_radio").value
 
             output, errCode = be.treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose)
             popup_output = output
@@ -442,8 +448,11 @@ class treasurer_claim_expr_page(Screen):
                     id="treasurer_claim_expr_index_div",
                     classes="treasurer_claim_expr_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="treasurer_claim_expr_quiet_radio", classes="treasurer_claim_expr_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="treasurer_claim_expr_verbose_radio", classes="treasurer_claim_expr_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="treasurer_claim_expr_quiet_radio", classes="treasurer_claim_expr_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="treasurer_claim_expr_verbose_radio", classes="treasurer_claim_expr_page_radio"),
+                    id="treasurer_claim_expr_radio_set"
+                ),
                 Horizontal(
                     Button("Back", id="treasurer_claim_expr_back_button"),
                     Button("Claim", id="treasurer_claim_expr_confirm_button"),
@@ -478,8 +487,8 @@ class treasurer_claim_expr_page(Screen):
             endpoint = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_endpoint_div").get_child_by_id("treasurer_claim_expr_endpoint_input").value
             gas_price = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_gas_div").get_child_by_id("treasurer_claim_expr_gas_input").value
             wallet_index = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_index_div").get_child_by_id("treasurer_claim_expr_index_input").value
-            quiet = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_quiet_radio").value
-            verbose = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_verbose_radio").value
+            quiet = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_radio_set").get_child_by_id("treasurer_claim_expr_quiet_radio").value
+            verbose = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_radio_set").get_child_by_id("treasurer_claim_expr_verbose_radio").value
 
             output, errCode = be.treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, verbose)
             popup_output = output
@@ -574,8 +583,11 @@ class account_deposit_page(Screen):
                     id="account_deposit_index_div",
                     classes="account_deposit_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="account_deposit_quiet_radio", classes="account_deposit_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="account_deposit_verbose_radio", classes="account_deposit_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="account_deposit_quiet_radio", classes="account_deposit_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="account_deposit_verbose_radio", classes="account_deposit_page_radio"),
+                    id="account_deposit_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="account_deposit_back_button"),
                     Button(label="Deposit", id="account_deposit_confirm_button"),
@@ -611,12 +623,13 @@ class account_deposit_page(Screen):
             mpe_address = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_mpe_div").get_child_by_id("account_deposit_mpe_input").value
             gas_price = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_gas_div").get_child_by_id("account_deposit_gas_input").value
             wallet_index = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_index_div").get_child_by_id("account_deposit_index_input").value
-            quiet = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_quiet_radio").value
-            verbose = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_verbose_radio").value
+            quiet = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_radio_set").get_child_by_id("account_deposit_quiet_radio").value
+            verbose = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_radio_set").get_child_by_id("account_deposit_verbose_radio").value
 
             output, errCode = be.account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose)
             popup_output = output
-            self.app.switch_screen(account_page())
+            if errCode == 0:
+                self.app.switch_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class account_withdraw_page(Screen):
@@ -650,8 +663,11 @@ class account_withdraw_page(Screen):
                     id="account_withdraw_index_div",
                     classes="account_withdraw_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="account_withdraw_quiet_radio", classes="account_withdraw_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="account_withdraw_verbose_radio", classes="account_withdraw_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="account_withdraw_quiet_radio", classes="account_withdraw_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="account_withdraw_verbose_radio", classes="account_withdraw_page_radio"),
+                    id="account_withdraw_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="account_withdraw_back_button"),
                     Button(label="Withdraw", id="account_withdraw_confirm_button"),
@@ -686,12 +702,13 @@ class account_withdraw_page(Screen):
             mpe_address = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_mpe_div").get_child_by_id("account_withdraw_mpe_input").value
             gas_price = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_gas_div").get_child_by_id("account_withdraw_gas_input").value
             wallet_index = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_index_div").get_child_by_id("account_withdraw_index_input").value
-            quiet = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_quiet_radio").value
-            verbose = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_verbose_radio").value
+            quiet = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_radio_set").get_child_by_id("account_withdraw_quiet_radio").value
+            verbose = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_radio_set").get_child_by_id("account_withdraw_verbose_radio").value
 
             output, errCode = be.account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose)
             popup_output = output
-            self.app.switch_screen(account_page())
+            if errCode == 0:
+                self.app.switch_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class account_transfer_page(Screen):
@@ -731,8 +748,11 @@ class account_transfer_page(Screen):
                     id="account_transfer_index_div",
                     classes="account_transfer_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="account_transfer_quiet_radio", classes="account_transfer_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="account_transfer_verbose_radio", classes="account_transfer_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="account_transfer_quiet_radio", classes="account_transfer_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="account_transfer_verbose_radio", classes="account_transfer_page_radio"),
+                    id="account_transfer_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="account_transfer_back_button"),
                     Button(label="Transfer", id="account_transfer_confirm_button"),
@@ -768,11 +788,13 @@ class account_transfer_page(Screen):
             mpe_address = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_mpe_div").get_child_by_id("account_transfer_mpe_input").value
             gas_price = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_gas_div").get_child_by_id("account_transfer_gas_input").value
             wallet_index = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_index_div").get_child_by_id("account_transfer_index_input").value
-            quiet = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_quiet_radio").value
-            verbose = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_verbose_radio").value
+            quiet = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_radio_set").get_child_by_id("account_transfer_quiet_radio").value
+            verbose = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_radio_set").get_child_by_id("account_transfer_verbose_radio").value
 
             output, errCode = be.account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose)
             popup_output = output
+            if errCode == 0:
+                self.app.switch_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class organization_page(Screen):
@@ -1250,8 +1272,11 @@ class update_org_metadata_page(Screen):
                     id="update_org_metadata_index_div",
                     classes="update_org_metadata_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="update_org_metadata_quiet_radio", classes="update_org_metadata_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="update_org_metadata_verbose_radio", classes="update_org_metadata_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="update_org_metadata_quiet_radio", classes="update_org_metadata_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="update_org_metadata_verbose_radio", classes="update_org_metadata_page_radio"),
+                    id="update_org_metadata_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="update_org_metadata_back_button"),
                     Button(label="Update Metadata on Blockchain", id="update_org_metadata_confirm_button"),
@@ -1287,8 +1312,8 @@ class update_org_metadata_page(Screen):
             mem_list = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_mems_div").get_child_by_id("update_org_metadata_mems_input").value
             gas = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_gas_div").get_child_by_id("update_org_metadata_gas_input").value
             index = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_index_div").get_child_by_id("update_org_metadata_index_input").value
-            quiet = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_quiet_radio").value
-            verbose = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_verbose_radio").value
+            quiet = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_radio_set").get_child_by_id("update_org_metadata_quiet_radio").value
+            verbose = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_radio_set").get_child_by_id("update_org_metadata_verbose_radio").value
 
             output, errCode = be.update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose)
             popup_output = output
@@ -1365,25 +1390,25 @@ class add_org_group_page(Screen):
                     classes="add_org_group_div"
                 ),
                 Horizontal(
-                    Label("Payment Expiration Threshold", id="add_org_group_pay_expr_threshold_label", classes="add_org_group_label"),
+                    Label("Expir. Threshold", id="add_org_group_pay_expr_threshold_label", classes="add_org_group_label"),
                     Input(placeholder="[OPTIONAL] Payment Expiration threshold. Default: 100", id="add_org_group_pay_expr_threshold_input", classes="add_org_group_input"),
                     id="add_org_group_pay_expr_threshold_div",
                     classes="add_org_group_div"
                 ),
                 Horizontal(
-                    Label("Payment Channel Storage", id="add_org_group_pay_chann_storage_label", classes="add_org_group_label"),
+                    Label("Channel Storage", id="add_org_group_pay_chann_storage_label", classes="add_org_group_label"),
                     Input(placeholder="[OPTIONAL] Storage channel for payment. Default: 'etcd'", id="add_org_group_pay_chann_storage_input", classes="add_org_group_input"),
                     id="add_org_group_pay_chann_storage_div",
                     classes="add_org_group_div"
                 ),
                 Horizontal(
-                    Label("Payment Channel Connection Timeout", id="add_org_group_pay_chann_conn_to_label", classes="add_org_group_label"),
+                    Label("Connection Timeout", id="add_org_group_pay_chann_conn_to_label", classes="add_org_group_label"),
                     Input(placeholder="[OPTIONAL] Payment channel connection timeout. Default: '100s'", id="add_org_group_pay_chann_conn_to_input", classes="add_org_group_input"),
                     id="add_org_group_pay_chann_conn_to_div",
                     classes="add_org_group_div"
                 ),
                 Horizontal(
-                    Label("Payment Channel Request Timeout", id="add_org_group_pay_chann_req_to_label", classes="add_org_group_label"),
+                    Label("Request Timeout", id="add_org_group_pay_chann_req_to_label", classes="add_org_group_label"),
                     Input(placeholder="[OPTIONAL] Payment channel request timeout. Default: '5s'", id="add_org_group_pay_chann_req_to_input", classes="add_org_group_input"),
                     id="add_org_group_pay_chann_req_to_div",
                     classes="add_org_group_div"
@@ -1473,7 +1498,7 @@ class update_org_group_page(Screen):
                     classes="update_org_group_div"
                 ),
                 Horizontal(
-                    Label("Payment Expiration Threshold", id="update_org_group_pay_expr_threshold_label", classes="update_org_group_label"),
+                    Label("Expir. Threshold", id="update_org_group_pay_expr_threshold_label", classes="update_org_group_label"),
                     Input(placeholder="[OPTIONAL] Payment Expiration threshold. Default: 100", id="update_org_group_pay_expr_threshold_input", classes="update_org_group_input"),
                     id="update_org_group_pay_expr_threshold_div",
                     classes="update_org_group_div"
@@ -1620,8 +1645,11 @@ class manage_members_page(Screen):
                     id="manage_members_index_div",
                     classes="manage_members_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="manage_members_quiet_radio", classes="manage_members_radio"),
-                RadioButton(label="Verbose transaction printing", id="manage_members_verbose_radio", classes="manage_members_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="manage_members_quiet_radio", classes="manage_members_radio"),
+                    RadioButton(label="Verbose transaction printing", id="manage_members_verbose_radio", classes="manage_members_radio"),
+                    id="manage_members_radio_set"
+                ),
                 Horizontal(
                     Button(label="Remove Member(s)", id="manage_members_remove_button"),
                     Button(label="Add Member(s)", id="manage_members_add_button"),
@@ -1642,8 +1670,8 @@ class manage_members_page(Screen):
         mem_list = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_mem_list_div").get_child_by_id("manage_members_mem_list_input").value
         gas = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_gas_div").get_child_by_id("manage_members_gas_input").value
         index = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_index_div").get_child_by_id("manage_members_index_input").value
-        quiet = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_quiet_radio").value
-        verbose = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_verbose_radio").value
+        quiet = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_radio_set").get_child_by_id("manage_members_quiet_radio").value
+        verbose = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_radio_set").get_child_by_id("manage_members_verbose_radio").value
 
         if event.button.id == "account_page_nav":
             self.app.switch_screen(account_page())
@@ -1699,8 +1727,11 @@ class change_org_owner_page(Screen):
                     id="change_org_owner_page_index_div",
                     classes="change_org_owner_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="change_org_owner_quiet_radio"),
-                RadioButton(label="Verbose transaction printing", id="change_org_owner_verbose_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="change_org_owner_quiet_radio"),
+                    RadioButton(label="Verbose transaction printing", id="change_org_owner_verbose_radio"),
+                    id="change_org_owner_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="change_org_owner_back_button"),
                     Button(label="Change Owner", id="change_org_owner_confirm_button"),
@@ -1735,8 +1766,8 @@ class change_org_owner_page(Screen):
             new_addr = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_page_new_addr_div").get_child_by_id("change_org_owner_new_addr_input").value
             gas = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_page_gas_div").get_child_by_id("change_org_owner_gas_input").value
             index = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_page_index_div").get_child_by_id("change_org_owner_index_input").value
-            quiet = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_quiet_radio").value
-            verbose = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_verbose_radio").value
+            quiet = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_radio_set").get_child_by_id("change_org_owner_quiet_radio").value
+            verbose = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_radio_set").get_child_by_id("change_org_owner_verbose_radio").value
 
             output, errCode = be.change_org_owner(org_id, new_addr, gas, index, quiet, verbose)
             popup_output = output
@@ -1824,8 +1855,11 @@ class org_manage_create_page(Screen):
                     id="org_manage_create_index_div",
                     classes="org_manage_create_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="org_manage_create_quiet_radio", classes="org_manage_create_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="org_manage_create_verbose_radio", classes="org_manage_create_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="org_manage_create_quiet_radio", classes="org_manage_create_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="org_manage_create_verbose_radio", classes="org_manage_create_page_radio"),
+                    id="org_manage_create_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="org_manage_create_back_button"),
                     Button(label="Create Organization", id="org_manage_create_confirm_button"),
@@ -1862,8 +1896,8 @@ class org_manage_create_page(Screen):
             mem_list = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_mems_div").get_child_by_id("org_manage_create_mems_input").value
             gas = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_gas_div").get_child_by_id("org_manage_create_gas_input").value
             index = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_index_div").get_child_by_id("org_manage_create_index_input").value
-            quiet = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_quiet_radio").value
-            verbose = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_verbose_radio").value
+            quiet = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_quiet_radio").value
+            verbose = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_verbose_radio").value
 
             output, errCode = be.create_organization(org_id, file_name, mem_list, gas, index, quiet, verbose, reg_addr)
             popup_output = output
@@ -1900,8 +1934,11 @@ class org_manage_delete_page(Screen):
                     id="org_manage_delete_reg_addr_div",
                     classes="org_manage_delete_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="org_manage_delete_quiet_radio", classes="org_manage_delete_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="org_manage_delete_verbose_radio", classes="org_manage_delete_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="org_manage_delete_quiet_radio", classes="org_manage_delete_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="org_manage_delete_verbose_radio", classes="org_manage_delete_page_radio"),
+                    id="org_manage_delete_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="org_manage_delete_back_button"),
                     Button(label="Delete Organization", id="org_manage_delete_confirm_button"),
@@ -1936,8 +1973,8 @@ class org_manage_delete_page(Screen):
             gas = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_gas_div").get_child_by_id("org_manage_delete_gas_input").value
             index = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_index_div").get_child_by_id("org_manage_delete_index_input").value
             reg_addr = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_reg_addr_div").get_child_by_id("org_manage_delete_reg_addr_input").value
-            quiet = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_quiet_radio").value
-            verbose = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_verbose_radio").value
+            quiet = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_radio_set").get_child_by_id("org_manage_delete_quiet_radio").value
+            verbose = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_radio_set").get_child_by_id("org_manage_delete_verbose_radio").value
 
             output, errCode = be.delete_organization(org_id, gas, index, quiet, verbose, reg_addr)
             popup_output = output
@@ -3125,8 +3162,11 @@ class service_metadata_update_metadata_page(Screen):
                     classes="service_metadata_update_metadata_page_div"
                 ),
                 RadioButton(label="Update MPE Address in metadata before publishing service", id="service_metadata_update_metadata_update_mpe_radio", classes="service_metadata_update_metadata_page_radio"),
-                RadioButton(label="Quiet transaction printing", id="service_metadata_update_metadata_quiet_radio", classes="service_metadata_update_metadata_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="service_metadata_update_metadata_verbose_radio", classes="service_metadata_update_metadata_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="service_metadata_update_metadata_quiet_radio", classes="service_metadata_update_metadata_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="service_metadata_update_metadata_verbose_radio", classes="service_metadata_update_metadata_page_radio"),
+                    id="service_metadata_update_metadata_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="service_metadata_update_metadata_back_button"),
                     Button(label="Update Metadata", id="service_metadata_update_metadata_confirm_button"),
@@ -3165,8 +3205,8 @@ class service_metadata_update_metadata_page(Screen):
             update_mpe = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_update_mpe_radio").value
             gas = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_gas_div").get_child_by_id("service_metadata_update_metadata_gas_input").value
             index = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_index_div").get_child_by_id("service_metadata_update_metadata_index_input").value
-            quiet = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_quiet_radio").value
-            verbose = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_verbose_radio").value
+            quiet = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_quiet_radio").value
+            verbose = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_verbose_radio").value
             
             output, errCode = be.service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose)
             popup_output = output
@@ -3501,8 +3541,11 @@ class publish_service_page(Screen):
                     classes="publish_service_page_div"
                 ),
                 RadioButton(label="Update MPE Address in metadata before publishing service", id="publish_service_update_mpe_radio", classes="publish_service_page_radio"),
-                RadioButton(label="Quiet transaction printing", id="publish_service_quiet_radio", classes="publish_service_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="publish_service_verbose_radio", classes="publish_service_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="publish_service_quiet_radio", classes="publish_service_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="publish_service_verbose_radio", classes="publish_service_page_radio"),
+                    id="publish_service_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="publish_service_back_button"),
                     Button(label="Publish Service", id="publish_service_confirm_button"),
@@ -3541,8 +3584,8 @@ class publish_service_page(Screen):
             update_mpe = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_update_mpe_radio").value
             gas = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_gas_div").get_child_by_id("publish_service_gas_input").value
             index = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_index_div").get_child_by_id("publish_service_index_input").value
-            quiet = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_quiet_radio").value
-            verbose = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_verbose_radio").value
+            quiet = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_quiet_radio").value
+            verbose = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_verbose_radio").value
             
             output, errCode = be.publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose)
             popup_output = output
@@ -3585,8 +3628,11 @@ class delete_service_page(Screen):
                     id="delete_service_index_div",
                     classes="delete_service_page_div"
                 ),
-                RadioButton(label="Quiet transaction printing", id="delete_service_quiet_radio", classes="delete_service_page_radio"),
-                RadioButton(label="Verbose transaction printing", id="delete_service_verbose_radio", classes="delete_service_page_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet transaction printing", id="delete_service_quiet_radio", classes="delete_service_page_radio"),
+                    RadioButton(label="Verbose transaction printing", id="delete_service_verbose_radio", classes="delete_service_page_radio"),
+                    id="delete_service_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="delete_service_back_button"),
                     Button(label="Delete Service", id="delete_service_confirm_button"),
@@ -3622,8 +3668,8 @@ class delete_service_page(Screen):
             reg_addr = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_reg_contract_div").get_child_by_id("delete_service_reg_contract_input").value
             gas = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_gas_div").get_child_by_id("delete_service_gas_input").value
             index = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_index_div").get_child_by_id("delete_service_index_input").value
-            quiet = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_quiet_radio").value
-            verbose = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_verbose_radio").value
+            quiet = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_radio_set").get_child_by_id("delete_service_quiet_radio").value
+            verbose = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_radio_set").get_child_by_id("delete_service_verbose_radio").value
             
             output, errCode = be.delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose)
             popup_output = output
@@ -5641,34 +5687,34 @@ class custom_command_page(Screen):
             ScrollableContainer(
                 Label("Custom CLI Command Page", id="custom_command_page_title"),
                 Horizontal(
-                    Label("Root Command", id="custom_command_root_label"),
-                    Input(placeholder="Eg: account, channel, client, contract, sdk, etc.", id="custom_command_root_input"),
+                    Label("Root Command", id="custom_command_root_label", classes="custom_command_page_label"),
+                    Input(placeholder="Eg: account, channel, client, contract, sdk, etc.", id="custom_command_root_input", classes="custom_command_page_input"),
                     id="custom_command_root_div",
-                    classes="custom_command_div"
+                    classes="custom_command_page_div"
                 ),
                 Horizontal(
-                    Label("Sub-command", id="custom_command_sub_label"),
-                    Input(placeholder="Eg: deposit, withdraw, MultiPartyEscrow balances, etc.", id="custom_command_sub_input"),
+                    Label("Sub-command", id="custom_command_sub_label", classes="custom_command_page_label"),
+                    Input(placeholder="Eg: deposit, withdraw, MultiPartyEscrow balances, etc.", id="custom_command_sub_input", classes="custom_command_page_input"),
                     id="custom_command_sub_div",
-                    classes="custom_command_div"
+                    classes="custom_command_page_div"
                 ),
                 Horizontal(
-                    Label("Command Arguments", id="custom_command_args_label"),
-                    Input(placeholder="Seperated by spaces (In the order of: [POSITIONAL] [NAMED] [OPTIONAL])", id="custom_command_args_input"),
+                    Label("Command Arguments", id="custom_command_args_label", classes="custom_command_page_label"),
+                    Input(placeholder="Separated by spaces (In the order of: [POSITIONAL] [NAMED] [OPTIONAL])", id="custom_command_args_input", classes="custom_command_page_input"),
                     id="custom_command_args_div",
-                    classes="custom_command_div"
+                    classes="custom_command_page_div"
                 ),
                 Horizontal(
-                    Label("Working Directory", id="custom_command_dir_label"),
-                    Input(placeholder="[OPTIONAL] (default: sNET-TUI directory)", id="custom_cwd_input"),
+                    Label("Working Directory", id="custom_command_dir_label", classes="custom_command_page_label"),
+                    Input(placeholder="[OPTIONAL] (default: sNET-TUI directory)", id="custom_cwd_input", classes="custom_command_page_input"),
                     id="custom_command_dir_div",
-                    classes="custom_command_div"
+                    classes="custom_command_page_div"
                 ),
                 RadioButton(label="Print Traceback", id="custom_command_traceback_radio"),
                 Horizontal(
                     Button("Run Custom Command", id="custom_command_confirm_button"),
                     id="custom_command_run_div",
-                    classes="custom_command_div"
+                    classes="custom_command_page_div"
                 ),
                 id="custom_command_page_content",
                 classes="content_page"
