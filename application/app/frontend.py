@@ -1,7 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal, ScrollableContainer
 from textual.screen import Screen
-from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator, Log
+from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator, Log, RadioSet
 import back.backend as be
 import sys
 import os
@@ -419,15 +419,15 @@ class treasurer_claim_expr_page(Screen):
             ScrollableContainer(
                 Label("Claim expired payments Page", id="treasurer_claim_expr_page_title"),
                 Horizontal(
-                    Label("Expir. Threshold", id="treasurer_claim_expr_threshold_label", classes="treasurer_claim_expr_page_label"),
-                    Input(placeholder="[OPTIONAL] Service expiration threshold in blocks (default is 34560 ~ 6 days with 15s/block)", id="treasurer_claim_expr_threshold_input", classes="treasurer_claim_expr_page_input"),
-                    id="treasurer_claim_expr_threshold_div",
-                    classes="treasurer_claim_expr_page_div"
-                ),
-                Horizontal(
                     Label("Daemon Endpoint", id="treasurer_claim_expr_endpoint_label", classes="treasurer_claim_expr_page_label"),
                     Input(placeholder="Daemon Endpoint", id="treasurer_claim_expr_endpoint_input", classes="treasurer_claim_expr_page_input"),
                     id="treasurer_claim_expr_endpoint_div",
+                    classes="treasurer_claim_expr_page_div"
+                ),
+                Horizontal(
+                    Label("Expir. Threshold", id="treasurer_claim_expr_threshold_label", classes="treasurer_claim_expr_page_label"),
+                    Input(placeholder="[OPTIONAL] Service expiration threshold in blocks (default is 34560 ~ 6 days with 15s/block)", id="treasurer_claim_expr_threshold_input", classes="treasurer_claim_expr_page_input"),
+                    id="treasurer_claim_expr_threshold_div",
                     classes="treasurer_claim_expr_page_div"
                 ),
                 Horizontal(
@@ -1327,11 +1327,11 @@ class org_groups_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_groups_back_button":
-            self.app.switch_screen(organization_page())
+            self.app.push_screen(organization_page())
         elif event.button.id == "org_groups_add_button":
-            self.app.switch_screen(add_org_group_page())
+            self.app.push_screen(add_org_group_page())
         elif event.button.id == "org_groups_update_button":
-            self.app.switch_screen(update_org_group_page())
+            self.app.push_screen(update_org_group_page())
 
 class add_org_group_page(Screen):
     def compose(self) -> ComposeResult:
@@ -1356,6 +1356,12 @@ class add_org_group_page(Screen):
                     Label("Endpoints", id="add_org_group_endpoint_label", classes="add_org_group_label"),
                     Input(placeholder="Endpoints (space separated if multiple, DO NOT add brackets '[]')", id="add_org_group_endpoint_input", classes="add_org_group_input"),
                     id="add_org_group_endpoint_div",
+                    classes="add_org_group_div"
+                ),
+                Horizontal(
+                    Label("Metadata File", id="add_org_group_metadata_file_label", classes="add_org_group_label"),
+                    Input(placeholder="Service metadata json file", id="add_org_group_metadata_file_input", classes="add_org_group_input"),
+                    id="add_org_group_metadata_file_div",
                     classes="add_org_group_div"
                 ),
                 Horizontal(
@@ -1386,12 +1392,6 @@ class add_org_group_page(Screen):
                     Label("Registry Address", id="add_org_group_registry_label", classes="add_org_group_label"),
                     Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="add_org_group_registry_input", classes="add_org_group_input"),
                     id="add_org_group_registry_div",
-                    classes="add_org_group_div"
-                ),
-                Horizontal(
-                    Label("Metadata File", id="add_org_group_metadata_file_label", classes="add_org_group_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="add_org_group_metadata_file_input", classes="add_org_group_input"),
-                    id="add_org_group_metadata_file_div",
                     classes="add_org_group_div"
                 ),
                 Horizontal(
@@ -1436,7 +1436,8 @@ class add_org_group_page(Screen):
 
             output, errCode = be.add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
             popup_output = output
-            self.app.switch_screen(organization_page())
+            if errCode == 0:
+                self.app.switch_screen(organization_page())
             self.app.push_screen(popup_output_page())
         
 
@@ -1448,57 +1449,57 @@ class update_org_group_page(Screen):
             ScrollableContainer(
                 Label("Update Organization Group Page", id="update_org_group_title"),
                 Horizontal(
-                    Label("Group Name", id="update_org_group_name_label", classes="update_org_group_label"),
-                    Input(placeholder="Group Name", id="update_org_group_name_input", classes="update_org_group_input"),
+                    Label("Group Id  ", id="update_org_group_name_label", classes="update_org_group_label"),
+                    Input(placeholder="Group ID", id="update_org_group_name_input", classes="update_org_group_input"),
                     id="update_org_group_name_div",
-                    classes="update_org_group_div"
-                ),
-                Horizontal(
-                    Label("Payment Address", id="update_org_group_pay_addr_label", classes="update_org_group_label"),
-                    Input(placeholder="Payment Address", id="update_org_group_pay_addr_input", classes="update_org_group_input"),
-                    id="update_org_group_pay_addr_div",
-                    classes="update_org_group_div"
-                ),
-                Horizontal(
-                    Label("Endpoints", id="update_org_group_endpoint_label", classes="update_org_group_label"),
-                    Input(placeholder="Endpoints (space separated if multiple, DO NOT add brackets '[]')", id="update_org_group_endpoint_input", classes="update_org_group_input"),
-                    id="update_org_group_endpoint_div",
-                    classes="update_org_group_div"
-                ),
-                Horizontal(
-                    Label("Payment Expiration Threshold", id="update_org_group_pay_expr_threshold_label", classes="update_org_group_label"),
-                    Input(placeholder="Payment Expiration threshold. Default: 100", id="update_org_group_pay_expr_threshold_input", classes="update_org_group_input"),
-                    id="update_org_group_pay_expr_threshold_div",
-                    classes="update_org_group_div"
-                ),
-                Horizontal(
-                    Label("Storage Channel", id="update_org_group_pay_chann_storage_label", classes="update_org_group_label"),
-                    Input(placeholder="Storage channel for payment. Default: 'etcd'", id="update_org_group_pay_chann_storage_input", classes="update_org_group_input"),
-                    id="update_org_group_pay_chann_storage_div",
-                    classes="update_org_group_div"
-                ),
-                Horizontal(
-                    Label("Connection Timeout", id="update_org_group_pay_chann_conn_to_label", classes="update_org_group_label"),
-                    Input(placeholder="Payment channel connection timeout. Default: '100s'", id="update_org_group_pay_chann_conn_to_input", classes="update_org_group_input"),
-                    id="update_org_group_pay_chann_conn_to_div",
-                    classes="update_org_group_div"
-                ),
-                Horizontal(
-                    Label("Request Timeout", id="update_org_group_pay_chann_req_to_label", classes="update_org_group_label"),
-                    Input(placeholder="Payment channel request timeout. Default: '5s'", id="update_org_group_pay_chann_req_to_input", classes="update_org_group_input"),
-                    id="update_org_group_pay_chann_req_to_div",
-                    classes="update_org_group_div"
-                ),
-                Horizontal(
-                    Label("Registry Address", id="update_org_group_registry_label", classes="update_org_group_label"),
-                    Input(placeholder="Address of Registry contract, if not specified we read address from 'networks'", id="update_org_group_registry_input", classes="update_org_group_input"),
-                    id="update_org_group_registry_div",
                     classes="update_org_group_div"
                 ),
                 Horizontal(
                     Label("Metadata File", id="update_org_group_metadata_file_label", classes="update_org_group_label"),
                     Input(placeholder="Service metadata json file (default service_metadata.json) Default: 'organization_metadata.json'", id="update_org_group_metadata_file_input", classes="update_org_group_input"),
                     id="update_org_group_metadata_file_div",
+                    classes="update_org_group_div"
+                ),
+                Horizontal(
+                    Label("Payment Address", id="update_org_group_pay_addr_label", classes="update_org_group_label"),
+                    Input(placeholder="[OPTIONAL] Payment Address", id="update_org_group_pay_addr_input", classes="update_org_group_input"),
+                    id="update_org_group_pay_addr_div",
+                    classes="update_org_group_div"
+                ),
+                Horizontal(
+                    Label("Endpoints", id="update_org_group_endpoint_label", classes="update_org_group_label"),
+                    Input(placeholder="[OPTIONAL] Endpoints (space separated if multiple, DO NOT add brackets '[]')", id="update_org_group_endpoint_input", classes="update_org_group_input"),
+                    id="update_org_group_endpoint_div",
+                    classes="update_org_group_div"
+                ),
+                Horizontal(
+                    Label("Payment Expiration Threshold", id="update_org_group_pay_expr_threshold_label", classes="update_org_group_label"),
+                    Input(placeholder="[OPTIONAL] Payment Expiration threshold. Default: 100", id="update_org_group_pay_expr_threshold_input", classes="update_org_group_input"),
+                    id="update_org_group_pay_expr_threshold_div",
+                    classes="update_org_group_div"
+                ),
+                Horizontal(
+                    Label("Storage Channel", id="update_org_group_pay_chann_storage_label", classes="update_org_group_label"),
+                    Input(placeholder="[OPTIONAL] Storage channel for payment. Default: 'etcd'", id="update_org_group_pay_chann_storage_input", classes="update_org_group_input"),
+                    id="update_org_group_pay_chann_storage_div",
+                    classes="update_org_group_div"
+                ),
+                Horizontal(
+                    Label("Connection Timeout", id="update_org_group_pay_chann_conn_to_label", classes="update_org_group_label"),
+                    Input(placeholder="[OPTIONAL] Payment channel connection timeout. Default: '100s'", id="update_org_group_pay_chann_conn_to_input", classes="update_org_group_input"),
+                    id="update_org_group_pay_chann_conn_to_div",
+                    classes="update_org_group_div"
+                ),
+                Horizontal(
+                    Label("Request Timeout", id="update_org_group_pay_chann_req_to_label", classes="update_org_group_label"),
+                    Input(placeholder="[OPTIONAL] Payment channel request timeout. Default: '5s'", id="update_org_group_pay_chann_req_to_input", classes="update_org_group_input"),
+                    id="update_org_group_pay_chann_req_to_div",
+                    classes="update_org_group_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="update_org_group_registry_label", classes="update_org_group_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="update_org_group_registry_input", classes="update_org_group_input"),
+                    id="update_org_group_registry_div",
                     classes="update_org_group_div"
                 ),
                 Horizontal(
@@ -1543,7 +1544,8 @@ class update_org_group_page(Screen):
 
             output, errCode = be.update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
             popup_output = output
-            self.app.switch_screen(organization_page())
+            if errCode == 0:
+                self.app.switch_screen(organization_page())
             self.app.push_screen(popup_output_page())
 
 class members_page(Screen):
@@ -3223,13 +3225,13 @@ class service_metadata_get_service_status_page(Screen):
                 Label("Service Status Page", id="service_metadata_get_service_status_page_title"),
                 Horizontal(
                     Label("Organization ID", id="service_metadata_get_service_status_org_id_label", classes="service_metadata_get_service_status_page_label"),
-                    Input(placeholder="Your Organization ID", id="service_metadata_get_service_status_org_id_input", classes="service_metadata_get_service_status_page_input"),
+                    Input(placeholder="Organization ID", id="service_metadata_get_service_status_org_id_input", classes="service_metadata_get_service_status_page_input"),
                     id="service_metadata_get_service_status_org_id_div",
                     classes="service_metadata_get_service_status_page_div"
                 ),
                 Horizontal(
                     Label("Service ID", id="service_metadata_get_service_status_service_id_label", classes="service_metadata_get_service_status_page_label"),
-                    Input(placeholder="Your Service ID", id="service_metadata_get_service_status_service_id_input", classes="service_metadata_get_service_status_page_input"),
+                    Input(placeholder="Service ID", id="service_metadata_get_service_status_service_id_input", classes="service_metadata_get_service_status_page_input"),
                     id="service_metadata_get_service_status_service_id_div",
                     classes="service_metadata_get_service_status_page_div"
                 ),
@@ -3305,7 +3307,7 @@ class service_metadata_get_api_metadata_page(Screen):
                 ),
                 Horizontal(
                     Button("Back", id="service_metadata_get_api_metadata_back_button"),
-                    Button("Set Model", id="service_metadata_get_api_metadata_confirm_button"),
+                    Button("Get API Metadata", id="service_metadata_get_api_metadata_confirm_button"),
                     id="service_metadata_get_api_metadata_button_div",
                     classes="service_metadata_get_api_metadata_page_div"
                 ),
@@ -3373,7 +3375,7 @@ class service_metadata_get_api_registry_page(Screen):
                 ),
                 Horizontal(
                     Button(label="Back", id="service_metadata_get_api_registry_back_button"),
-                    Button(label="Get Service Status", id="service_metadata_get_api_registry_confirm_button"),
+                    Button(label="Get API Registry", id="service_metadata_get_api_registry_confirm_button"),
                     id="service_metadata_get_api_registry_button_div",
                     classes="service_metadata_get_api_registry_page_div"
                 ),
@@ -3632,14 +3634,20 @@ class client_page(Screen):
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert("client"),
-            Grid(
+            ScrollableContainer(
                 Label("Client Page", id="client_page_title"),
                 Horizontal(
-                    Button(label="Call", id="client_page_call_button"),
-                    Button(label="Call low level", id="client_page_call_low_button"),
-                    id="client_page_button_div"
+                    Button(label="Call", id="client_page_call_button", classes="client_page_button"),
+                    Button(label="Call low level", id="client_page_call_low_button", classes="client_page_button"),
+                    id="client_page_upper_button_div",
+                    classes="client_page_div"
                 ),
-                Button(label="Get channel state", id="client_page_channel_state_button"),
+                Horizontal(
+                    Button(label="Channels", id="client_page_channel_button", classes="client_page_button"),
+                    Button(label="Get channel state", id="client_page_channel_state_button", classes="client_page_button"),
+                    id="client_page_lower_button_div",
+                    classes="client_page_div"
+                ),
                 id="client_page_content",
                 classes="content_page"
             ),
@@ -3667,6 +3675,8 @@ class client_page(Screen):
             self.app.push_screen(client_call_low_page())
         elif event.button.id == "client_page_channel_state_button":
             self.app.push_screen(client_channel_state_page())
+        elif event.button.id == "client_page_channel_button":
+            self.app.push_screen(channel_page())
 
 class client_call_page(Screen):
     def compose(self) -> ComposeResult:
@@ -3935,15 +3945,9 @@ class client_call_low_page(Screen):
             endpoint = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_page_endpoint_div").get_child_by_id("client_call_low_endpoint_input").value
             wallet_index = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_page_wallet_index_div").get_child_by_id("client_call_low_wallet_index_input").value
 
-            output, errCode, command = be.client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index, True)
-
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                self.app.push_screen(popup_output_page())
+            output, errCode = be.client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
 
 class client_channel_state_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4017,13 +4021,1616 @@ class client_channel_state_page(Screen):
             wallet_index = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_wallet_index_div").get_child_by_id("client_channel_state_wallet_index_input").value
 
             output, errCode, command = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet_index, True)
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
+# TODO Subpages
+class channel_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Page", id="channel_page_title"),
+                Horizontal(
+                    Button(label="Initialize/Open", id="channel_page_init_open_button", classes="channel_page_button"),
+                    Button(label="Extend", id="channel_page_extend_button", classes="channel_page_button"),
+                    id="channel_page_upper_button_div",
+                    classes="channel_page_div"
+                ),
+                
+                Horizontal(
+                    Button(label="Print", id="channel_page_print_button", classes="channel_page_button"),
+                    Button(label="Claim", id="channel_page_claim_button", classes="channel_page_button"),
+                    id="channel_page_lower_button_div",
+                    classes="channel_page_div"
+                ),
+                Button(label="Back", id="channel_page_back_button"),
+                id="channel_page_content",
+                classes="content_page"
+            ),
+            id="channel_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_page_init_open_button":
+            self.app.push_screen(channel_init_open_page())
+        elif event.button.id == "channel_page_extend_button":
+            self.app.push_screen(channel_extend_page())
+        elif event.button.id == "channel_page_print_button":
+            self.app.push_screen(channel_print_page())
+        elif event.button.id == "channel_page_claim_button":
+            self.app.push_screen(channel_claim_page())
+    
+class channel_init_open_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Initialize/Open Page", id="channel_init_open_page_title"),
+                Horizontal(
+                    Button(label="Initialize", id="channel_init_open_page_init_button", classes="channel_init_open_page_button"),
+                    Button(label="Initialize Metadata", id="channel_init_open_page_init_meta_button", classes="channel_init_open_page_button"),
+                    id="channel_init_open_page_upper_button_div",
+                    classes="channel_init_open_page_div"
+                ),
+                Horizontal(
+                    Button(label="Open Initialize", id="channel_init_open_page_open_init_button", classes="channel_init_open_page_button"),
+                    Button(label="Open Initialize Metadata", id="channel_init_open_page_open_init_meta_button", classes="channel_init_open_page_button"),
+                    id="channel_init_open_page_lower_button_div",
+                    classes="channel_init_open_page_div"
+                ),
+                Button(label="Back", id="channel_init_open_page_back_button"),
+                id="channel_init_open_page_content",
+                classes="content_page"
+            ),
+            id="channel_init_open_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_init_open_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_init_open_page_init_button":
+            self.app.push_screen(channel_init_page())
+        elif event.button.id == "channel_init_open_page_init_meta_button":
+            self.app.push_screen(channel_init_metadata_page())
+        elif event.button.id == "channel_init_open_page_open_init_button":
+            self.app.push_screen(channel_open_init_page())
+        elif event.button.id == "channel_init_open_page_open_init_meta_button":
+            self.app.push_screen(channel_open_init_meta_page())
+
+class channel_init_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Initialize Page", id="channel_init_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_init_page_org_id_label", classes="channel_init_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_init_page_org_id_input", classes="channel_init_page_input"),
+                    id="channel_init_page_org_id_div",
+                    classes="channel_init_page_div"
+                ),
+                Horizontal(
+                    Label("Channel ID", id="channel_init_page_channel_id_label", classes="channel_init_page_label"),
+                    Input(placeholder="The Channel Id", id="channel_init_page_channel_id_input", classes="channel_init_page_input"),
+                    id="channel_init_page_channel_id_div",
+                    classes="channel_init_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group", id="channel_init_page_group_label", classes="channel_init_page_label"),
+                    Input(placeholder="Name of the payment group", id="channel_init_page_group_input", classes="channel_init_page_input"),
+                    id="channel_init_page_group_div",
+                    classes="channel_init_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_init_page_registry_label", classes="channel_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from “networks”", id="channel_init_page_registry_input", classes="channel_init_page_input"),
+                    id="channel_init_page_registry_div",
+                    classes="channel_init_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_init_page_mpe_addr_label", classes="channel_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="channel_init_page_mpe_addr_input", classes="channel_init_page_input"),
+                    id="channel_init_page_mpe_addr_div",
+                    classes="channel_init_page_div"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_init_page_back_button"),
+                    Button(label="Initialize", id="channel_init_print_confirm_button"),
+                    id="channel_init_page_button_div",
+                    classes="channel_init_page_div"
+                ),
+                id="channel_init_content_page",
+                classes="content_page"
+            ),
+            id="channel_init_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_init_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_init_print_confirm_button":
+            org_id = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_org_id_div").get_child_by_id("channel_init_page_org_id_input").value
+            group = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_group_div").get_child_by_id("channel_init_page_group_input").value
+            channel_id = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_channel_id_div").get_child_by_id("channel_init_page_channel_id_input").value
+            registry = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_registry_div").get_child_by_id("channel_init_page_registry_input").value
+            mpe_addr = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_mpe_addr_div").get_child_by_id("channel_init_page_mpe_addr_input").value
+
+            client_nav_button = self.get_child_by_id("channel_init_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_init(org_id, group, channel_id, registry, mpe_addr)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_init_metadata_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Initialize Metadata Page", id="channel_init_metadata_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_init_metadata_page_org_id_label", classes="channel_init_metadata_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_init_metadata_page_org_id_input", classes="channel_init_metadata_page_input"),
+                    id="channel_init_metadata_page_org_id_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                Horizontal(
+                    Label("Channel ID", id="channel_init_metadata_page_channel_id_label", classes="channel_init_metadata_page_label"),
+                    Input(placeholder="The Channel Id", id="channel_init_metadata_page_channel_id_input", classes="channel_init_metadata_page_input"),
+                    id="channel_init_metadata_page_channel_id_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                Horizontal(
+                    Label("Metadata Path", id="channel_init_metadata_page_file_path_label", classes="channel_init_metadata_page_label"),
+                    Input(placeholder="Service metadata json file path", id="channel_init_metadata_page_file_path_input", classes="channel_init_metadata_page_input"),
+                    id="channel_init_metadata_page_file_path_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group", id="channel_init_metadata_page_group_label", classes="channel_init_metadata_page_label"),
+                    Input(placeholder="Name of the payment group", id="channel_init_metadata_page_group_input", classes="channel_init_metadata_page_input"),
+                    id="channel_init_metadata_page_group_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_init_metadata_page_registry_label", classes="channel_init_metadata_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from “networks”", id="channel_init_metadata_page_registry_input", classes="channel_init_metadata_page_input"),
+                    id="channel_init_metadata_page_registry_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_init_metadata_page_mpe_addr_label", classes="channel_init_metadata_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="channel_init_metadata_page_mpe_addr_input", classes="channel_init_metadata_page_input"),
+                    id="channel_init_metadata_page_mpe_addr_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_init_metadata_page_wallet_index_label", classes="channel_init_metadata_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for calling (defaults to session.identity.default_wallet_index)", id="channel_init_metadata_page_wallet_index_input", classes="channel_init_metadata_page_input"),
+                    id="channel_init_metadata_page_wallet_index_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_init_metadata_page_back_button"),
+                    Button(label="Initialize", id="channel_init_metadata_print_confirm_button"),
+                    id="channel_init_metadata_page_button_div",
+                    classes="channel_init_metadata_page_div"
+                ),
+                id="channel_init_metadata_content_page",
+                classes="content_page"
+            ),
+            id="channel_init_metadata_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_init_metadata_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_init_metadata_print_confirm_button":
+            org_id = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_org_id_div").get_child_by_id("channel_init_metadata_page_org_id_input").value
+            group = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_group_div").get_child_by_id("channel_init_metadata_page_group_input").value
+            channel_id = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_channel_id_div").get_child_by_id("channel_init_metadata_page_channel_id_input").value
+            registry = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_registry_div").get_child_by_id("channel_init_metadata_page_registry_input").value
+            meta_file = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_file_path_div").get_child_by_id("channel_init_metadata_page_file_path_input").value
+            mpe_addr = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_mpe_addr_div").get_child_by_id("channel_init_metadata_page_mpe_addr_input").value
+            wallet_index = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_wallet_index_div").get_child_by_id("channel_init_metadata_page_wallet_index_input").value
+
+            client_nav_button = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_init_metadata(org_id, group, channel_id, registry, mpe_addr, meta_file, wallet_index)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_open_init_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Open Initialize Page", id="channel_open_init_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_open_init_page_org_id_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_open_init_page_org_id_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_org_id_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group", id="channel_open_init_page_group_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="Name of the payment group", id="channel_open_init_page_group_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_group_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("AGI Amount", id="channel_open_init_page_agi_amount_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="Amount of AGI tokens to put in the new channel", id="channel_open_init_page_agi_amount_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_agi_amount_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("Expiration Time", id="channel_open_init_page_expr_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="Expiration time in blocks (<int>), or in blocks related to the current_block (+<int>blocks), or in days related to the current_block and assuming 15 sec/block (+<int>days)", id="channel_open_init_page_expr_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_expr_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_open_init_page_registry_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from “networks”", id="channel_open_init_page_registry_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_registry_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("Signer Address", id="channel_open_init_page_signer_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Signer for the channel (by default is equal to the sender)", id="channel_open_init_page_signer_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_signer_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_open_init_page_mpe_addr_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="channel_open_init_page_mpe_addr_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_mpe_addr_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("Block Number", id="channel_open_init_page_block_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block (for channel searching)", id="channel_open_init_page_block_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_block_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("Gas Price", id="channel_open_init_page_gas_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy (‘fast’ ~1min, ‘medium’ ~5min or ‘slow’ ~60min) (defaults to session.default_gas_price)", id="channel_open_init_page_gas_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_gas_div",
+                    classes="channel_open_init_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_open_init_page_wallet_index_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="channel_open_init_page_wallet_index_input", classes="channel_open_init_page_input"),
+                    id="channel_open_init_page_wallet_index_div",
+                    classes="channel_open_init_page_div"
+                ),
+                RadioButton(label="Force", id="channel_open_init_page_force_radio"),
+                RadioButton(label="Open New Anyway", id="channel_open_init_page_new_anyway_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet Print", id="channel_open_init_page_quiet_radio"),
+                    RadioButton(label="Verbose Print", id="channel_open_init_page_verbose_radio"),
+                    id="channel_open_init_page_quiet_verbose_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_open_init_page_back_button"),
+                    Button(label="Open and Initialize", id="channel_open_init_page_confirm_button"),
+                    id="channel_open_init_page_button_div",
+                    classes="channel_open_init_page_div"
+                ),
+                id="channel_open_init_content_page",
+                classes="content_page"
+            ),
+            id="channel_open_init_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_open_init_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_open_init_page_confirm_button":
+            global conditional_command
+            global conditional_output
+            global popup_output
+
+            org_id = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_org_id_div").get_child_by_id("channel_open_init_page_org_id_input").value
+            group = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_group_div").get_child_by_id("channel_open_init_page_group_input").value
+            agi_amount = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_agi_amount_div").get_child_by_id("channel_open_init_page_agi_amount_input").value
+            expr = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_expr_div").get_child_by_id("channel_open_init_page_expr_input").value
+            registry = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_registry_div").get_child_by_id("channel_open_init_page_registry_input").value
+            mpe_addr = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_mpe_addr_div").get_child_by_id("channel_open_init_page_mpe_addr_input").value
+            signer = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_signer_div").get_child_by_id("channel_open_init_page_signer_input").value
+            block = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_block_div").get_child_by_id("channel_open_init_page_block_input").value
+            gas = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_gas_div").get_child_by_id("channel_open_init_page_gas_input").value
+            wallet_index = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_wallet_index_div").get_child_by_id("channel_open_init_page_wallet_index_input").value
+            force = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_force_radio").value
+            open_anyway = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_new_anyway_radio").value
+            quiet = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_quiet_verbose_set").get_child_by_id("channel_open_init_page_quiet_radio").value
+            verbose = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_quiet_verbose_set").get_child_by_id("channel_open_init_page_verbose_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_open_init_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode, command = be.channel_open_init(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, gas, wallet_index, quiet, verbose, True)
 
             if errCode == 0:
                 conditional_output = output
                 conditional_command = command
+                client_nav_button.focus()
                 self.app.push_screen(conditional_input_page())
             else:
                 popup_output = output
+                client_nav_button.focus()
+                self.app.push_screen(popup_output_page())
+
+class channel_open_init_meta_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Open Initialize Metadata Page", id="channel_open_init_meta_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_open_init_meta_page_org_id_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_open_init_meta_page_org_id_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_org_id_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group", id="channel_open_init_meta_page_group_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="Name of the payment group.", id="channel_open_init_meta_page_group_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_group_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("AGI Amount", id="channel_open_init_meta_page_agi_amount_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="Amount of AGI tokens to put in the new channel", id="channel_open_init_meta_page_agi_amount_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_agi_amount_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Expiration Time", id="channel_open_init_meta_page_expr_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="Expiration time in blocks (<int>), or in blocks related to the current_block (+<int>blocks), or in days related to the current_block and assuming 15 sec/block (+<int>days)", id="channel_open_init_meta_page_expr_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_expr_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Metadata Path", id="channel_open_init_meta_page_meta_path_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="Service metadata json file path", id="channel_open_init_meta_page_meta_path_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_meta_path_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_open_init_meta_page_registry_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from “networks”", id="channel_open_init_meta_page_registry_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_registry_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Signer Address", id="channel_open_init_meta_page_signer_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="[OPTIONAL] Signer for the channel (by default is equal to the sender)", id="channel_open_init_meta_page_signer_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_signer_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_open_init_meta_page_mpe_addr_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="channel_open_init_meta_page_mpe_addr_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_mpe_addr_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Start Block", id="channel_open_init_meta_page_block_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block (for channel searching)", id="channel_open_init_meta_page_block_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_block_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Gas Price", id="channel_open_init_meta_page_gas_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy (‘fast’ ~1min, ‘medium’ ~5min or ‘slow’ ~60min) (defaults to session.default_gas_price)", id="channel_open_init_meta_page_gas_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_gas_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_open_init_meta_page_wallet_index_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="channel_open_init_meta_page_wallet_index_input", classes="channel_open_init_meta_page_input"),
+                    id="channel_open_init_meta_page_wallet_index_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                RadioButton(label="Force", id="channel_open_init_meta_page_force_radio"),
+                RadioButton(label="Open New Anyway", id="channel_open_init_meta_page_new_anyway_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet Print", id="channel_open_init_meta_page_quiet_radio"),
+                    RadioButton(label="Verbose Print", id="channel_open_init_meta_page_verbose_radio"),
+                    id="channel_open_init_meta_page_quiet_verbose_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_open_init_meta_page_back_button"),
+                    Button(label="Open and Initialize", id="channel_open_init_meta_page_confirm_button"),
+                    id="channel_open_init_meta_page_button_div",
+                    classes="channel_open_init_meta_page_div"
+                ),
+                id="channel_open_init_meta_content_page",
+                classes="content_page"
+            ),
+            id="channel_open_init_meta_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_open_init_meta_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_open_init_meta_page_confirm_button":
+            global conditional_command
+            global conditional_output
+            global popup_output
+
+            org_id = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_org_id_div").get_child_by_id("channel_open_init_meta_page_org_id_input").value
+            group = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_group_div").get_child_by_id("channel_open_init_meta_page_group_input").value
+            agi_amount = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_agi_amount_div").get_child_by_id("channel_open_init_meta_page_agi_amount_input").value
+            expr = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_expr_div").get_child_by_id("channel_open_init_meta_page_expr_input").value
+            meta_path = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_meta_path_div").get_child_by_id("channel_open_init_meta_page_meta_path_input").value
+            registry = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_registry_div").get_child_by_id("channel_open_init_meta_page_registry_input").value
+            mpe_addr = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_mpe_addr_div").get_child_by_id("channel_open_init_meta_page_mpe_addr_input").value
+            signer = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_signer_div").get_child_by_id("channel_open_init_meta_page_signer_input").value
+            block = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_block_div").get_child_by_id("channel_open_init_meta_page_block_input").value
+            gas = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_gas_div").get_child_by_id("channel_open_init_meta_page_gas_input").value
+            wallet_index = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_wallet_index_div").get_child_by_id("channel_open_init_meta_page_wallet_index_input").value
+            force = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_force_radio").value
+            open_anyway = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_new_anyway_radio").value
+            quiet = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_quiet_verbose_set").get_child_by_id("channel_open_init_meta_page_quiet_radio").value
+            verbose = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_quiet_verbose_set").get_child_by_id("channel_open_init_meta_page_verbose_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode, command = be.channel_open_init_metadata(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, meta_path, gas, wallet_index, quiet, verbose, True)
+
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                client_nav_button.focus()
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                client_nav_button.focus()
+                self.app.push_screen(popup_output_page())
+
+# TODO Subpages
+class channel_extend_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Extend Page", id="channel_extend_page_title"),
+                Horizontal(
+                    Button(label="Extend Add", id="channel_extend_page_extend_add_button", classes="channel_extend_page_button"),
+                    Button(label="Extend Add Org", id="channel_extend_page_extend_add_org_button", classes="channel_extend_page_button"),
+                    id="channel_extend_page_button_div",
+                    classes="channel_extend_page_div"
+                ),
+                Button(label="Back", id="channel_extend_page_back_button"),
+                id="channel_extend_page_content",
+                classes="content_page"
+            ),
+            id="channel_extend_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_extend_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_extend_page_extend_add_button":
+            self.app.push_screen(channel_extend_add_page())
+        elif event.button.id == "channel_extend_page_extend_add_org_button":
+            self.app.push_screen(channel_extend_add_org_page())
+
+class channel_extend_add_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Extend Add Page", id="channel_extend_add_page_title"),
+                Horizontal(
+                    Label("Channel ID", id="channel_extend_add_page_channel_id_label", classes="channel_extend_add_page_label"),
+                    Input(placeholder="The Channel Id", id="channel_extend_add_page_channel_id_input", classes="channel_extend_add_page_input"),
+                    id="channel_extend_add_page_channel_id_div",
+                    classes="channel_extend_add_page_div"
+                ),
+                Horizontal(
+                    Label("Expiration Time", id="channel_extend_add_page_expr_label", classes="channel_extend_add_page_label"),
+                    Input(placeholder="[OPTIONAL] Expiration time in blocks or days", id="channel_extend_add_page_expr_input", classes="channel_extend_add_page_input"),
+                    id="channel_extend_add_page_expr_div",
+                    classes="channel_extend_add_page_div"
+                ),
+                Horizontal(
+                    Label("AGI Amount", id="channel_extend_add_page_agi_amount_label", classes="channel_extend_add_page_label"),
+                    Input(placeholder="[OPTIONAL] Amount of AGI tokens to add", id="channel_extend_add_page_agi_amount_input", classes="channel_extend_add_page_input"),
+                    id="channel_extend_add_page_agi_amount_div",
+                    classes="channel_extend_add_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_extend_add_page_mpe_addr_label", classes="channel_extend_add_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_extend_add_page_mpe_addr_input", classes="channel_extend_add_page_input"),
+                    id="channel_extend_add_page_mpe_addr_div",
+                    classes="channel_extend_add_page_div"
+                ),
+                Horizontal(
+                    Label("Gas Price", id="channel_extend_add_page_gas_label", classes="channel_extend_add_page_label"),
+                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_extend_add_page_gas_input", classes="channel_extend_add_page_input"),
+                    id="channel_extend_add_page_gas_div",
+                    classes="channel_extend_add_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_extend_add_page_wallet_index_label", classes="channel_extend_add_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing", id="channel_extend_add_page_wallet_index_input", classes="channel_extend_add_page_input"),
+                    id="channel_extend_add_page_wallet_index_div",
+                    classes="channel_extend_add_page_div"
+                ),
+                RadioButton(label="Force", id="channel_extend_add_page_force_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet Print", id="channel_extend_add_page_quiet_radio"),
+                    RadioButton(label="Verbose Print", id="channel_extend_add_page_verbose_radio"),
+                    id="channel_extend_add_page_quiet_verbose_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_extend_add_page_back_button"),
+                    Button(label="Extend and Add", id="channel_extend_add_page_confirm_button"),
+                    id="channel_extend_add_page_button_div",
+                    classes="channel_extend_add_page_div"
+                ),
+                id="channel_extend_add_content_page",
+                classes="content_page"
+            ),
+            id="channel_extend_add_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_extend_add_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_extend_add_page_confirm_button":
+            channel_id = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_channel_id_div").get_child_by_id("channel_extend_add_page_channel_id_input").value
+            expr = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_expr_div").get_child_by_id("channel_extend_add_page_expr_input").value
+            agi_amount = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_agi_amount_div").get_child_by_id("channel_extend_add_page_agi_amount_input").value
+            mpe_addr = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_mpe_addr_div").get_child_by_id("channel_extend_add_page_mpe_addr_input").value
+            gas = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_gas_div").get_child_by_id("channel_extend_add_page_gas_input").value
+            wallet_index = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_wallet_index_div").get_child_by_id("channel_extend_add_page_wallet_index_input").value
+            force = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_force_radio").value
+            quiet = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_quiet_verbose_set").get_child_by_id("channel_extend_add_page_quiet_radio").value
+            verbose = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_quiet_verbose_set").get_child_by_id("channel_extend_add_page_verbose_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_extend_add_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode, command = be.channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, wallet_index, quiet, verbose, True)
+            
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                client_nav_button.focus()
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                client_nav_button.focus()
+                self.app.push_screen(popup_output_page())
+
+class channel_extend_add_org_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Extend Add For Organization Page", id="channel_extend_add_org_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_extend_add_org_page_org_id_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_extend_add_org_page_org_id_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_org_id_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group Name", id="channel_extend_add_org_page_group_name_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="Name of the payment group", id="channel_extend_add_org_page_group_name_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_group_name_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_extend_add_org_page_registry_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract", id="channel_extend_add_org_page_registry_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_registry_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_extend_add_org_page_mpe_addr_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_extend_add_org_page_mpe_addr_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_mpe_addr_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("Channel ID", id="channel_extend_add_org_page_channel_id_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] The Channel Id", id="channel_extend_add_org_page_channel_id_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_channel_id_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("Start Block", id="channel_extend_add_org_page_from_block_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block", id="channel_extend_add_org_page_from_block_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_from_block_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("Expiration Time", id="channel_extend_add_org_page_expr_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Expiration time in blocks or days", id="channel_extend_add_org_page_expr_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_expr_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("AGI Tokens Amount", id="channel_extend_add_org_page_agi_amount_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Amount of AGI tokens to add", id="channel_extend_add_org_page_agi_amount_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_agi_amount_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("Gas Price", id="channel_extend_add_org_page_gas_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_extend_add_org_page_gas_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_gas_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_extend_add_org_page_wallet_index_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing", id="channel_extend_add_org_page_wallet_index_input", classes="channel_extend_add_org_page_input"),
+                    id="channel_extend_add_org_page_wallet_index_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                RadioButton(label="Force", id="channel_extend_add_org_page_force_radio"),
+                RadioSet(
+                    RadioButton(label="Quiet Print", id="channel_extend_add_org_page_quiet_radio"),
+                    RadioButton(label="Verbose Print", id="channel_extend_add_org_page_verbose_radio"),
+                    id="channel_extend_add_org_page_quiet_verbose_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_extend_add_org_page_back_button"),
+                    Button(label="Extend and Add", id="channel_extend_add_org_page_confirm_button"),
+                    id="channel_extend_add_org_page_button_div",
+                    classes="channel_extend_add_org_page_div"
+                ),
+                id="channel_extend_add_org_content_page",
+                classes="content_page"
+            ),
+            id="channel_extend_add_org_page"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_extend_add_org_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_extend_add_org_page_confirm_button":
+            org_id = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_org_id_div").get_child_by_id("channel_extend_add_org_page_org_id_input").value
+            group_name = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_group_name_div").get_child_by_id("channel_extend_add_org_page_group_name_input").value
+            registry = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_registry_div").get_child_by_id("channel_extend_add_org_page_registry_input").value
+            mpe_addr = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_mpe_addr_div").get_child_by_id("channel_extend_add_org_page_mpe_addr_input").value
+            channel_id = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_channel_id_div").get_child_by_id("channel_extend_add_org_page_channel_id_input").value
+            from_block = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_from_block_div").get_child_by_id("channel_extend_add_org_page_from_block_input").value
+            expr = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_expr_div").get_child_by_id("channel_extend_add_org_page_expr_input").value
+            agi_amount = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_agi_amount_div").get_child_by_id("channel_extend_add_org_page_agi_amount_input").value
+            gas = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_gas_div").get_child_by_id("channel_extend_add_org_page_gas_input").value
+            wallet_index = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_wallet_index_div").get_child_by_id("channel_extend_add_org_page_wallet_index_input").value
+            force = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_force_radio").value
+            quiet = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_quiet_verbose_set").get_child_by_id("channel_extend_add_org_page_quiet_radio").value
+            verbose = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_quiet_verbose_set").get_child_by_id("channel_extend_add_org_page_verbose_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode, command = be.channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, gas, wallet_index, quiet, verbose, True)
+
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                client_nav_button.focus()
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                client_nav_button.focus()
+                self.app.push_screen(popup_output_page())
+
+class channel_print_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Print Page", id="channel_print_page_title"),
+                Horizontal(
+                    Button(label="Print Initialized", id="channel_print_page_print_init_button", classes="channel_print_page_button"),
+                    Button(label="Print Initialized Filter Org", id="channel_print_page_print_init_filter_org_button", classes="channel_print_page_button"),
+                    Button(label="Print All Filter Sender", id="channel_print_page_print_all_filt_send_button", classes="channel_print_page_button"),
+                    id="channel_print_page_upper_button_div",
+                    classes="channel_print_page_div"
+                ),
+                Horizontal(
+                    Button(label="Print All Filter Recipient", id="channel_print_page_print_all_filt_reci_button", classes="channel_print_page_button"),
+                    Button(label="Print All Filter Group", id="channel_print_page_print_all_filt_group_button", classes="channel_print_page_button"),
+                    Button(label="Print All Filter Group Sender", id="channel_print_page_print_all_filt_group_sender_button", classes="channel_print_page_button"),
+                    id="channel_print_page_lower_button_div",
+                    classes="channel_print_page_div"
+                ),
+                Button(label="Back", id="channel_print_page_back_button"),
+                id="channel_print_page_content",
+                classes="content_page"
+            ),
+            id="channel_ _page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_print_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_print_page_print_init_button":
+            self.app.push_screen(channel_print_init_page())
+        elif event.button.id == "channel_print_page_print_init_filter_org_button":
+            self.app.push_screen(channel_print_init_filter_org_page())
+        elif event.button.id == "channel_print_page_print_all_filt_send_button":
+            self.app.push_screen(channel_print_all_filter_sender_page())
+        elif event.button.id == "channel_print_page_print_all_filt_reci_button":
+            self.app.push_screen(channel_print_all_filter_recipient_page())
+        elif event.button.id == "channel_print_page_print_all_filt_group_button":
+            self.app.push_screen(channel_print_all_filter_group_page())
+        elif event.button.id == "channel_print_page_print_all_filt_group_sender_button":
+            self.app.push_screen(channel_print_all_filter_group_sender_page())
+
+class channel_print_init_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Print Initialized Page", id="channel_print_initialized_page_title"),
+                Horizontal(
+                    Label("MPE Address", id="channel_print_initialized_page_mpe_addr_label", classes="channel_print_initialized_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_print_initialized_page_mpe_addr_input", classes="channel_print_initialized_page_input"),
+                    id="channel_print_initialized_page_mpe_addr_div",
+                    classes="channel_print_initialized_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_print_initialized_page_registry_label", classes="channel_print_initialized_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract", id="channel_print_initialized_page_registry_input", classes="channel_print_initialized_page_input"),
+                    id="channel_print_initialized_page_registry_div",
+                    classes="channel_print_initialized_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_print_initialized_page_wallet_index_label", classes="channel_print_initialized_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use", id="channel_print_initialized_page_wallet_index_input", classes="channel_print_initialized_page_input"),
+                    id="channel_print_initialized_page_wallet_index_div",
+                    classes="channel_print_initialized_page_div"
+                ),
+                RadioButton(label="Only Print Ids", id="channel_print_initialized_page_only_id_radio"),
+                RadioSet(
+                    RadioButton(label="Filter by Sender", id="channel_print_initialized_page_filter_sender_radio"),
+                    RadioButton(label="Filter by Signer", id="channel_print_initialized_page_filter_signer_radio"),
+                    RadioButton(label="Filter by My Channels", id="channel_print_initialized_page_filter_my_radio"),
+                    id="channel_print_initialized_page_filter_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_print_initialized_page_back_button"),
+                    Button(label="Print", id="channel_print_initialized_page_confirm_button"),
+                    id="channel_print_initialized_page_button_div",
+                    classes="channel_print_initialized_page_div"
+                ),
+                id="channel_print_initialized_content_page",
+                classes="content_page"
+            ),
+            id="channel_print_initialized_page"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_print_initialized_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_print_initialized_page_confirm_button":
+            only_id = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_only_id_radio").value
+            filter_sender = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_filter_set").get_child_by_id("channel_print_initialized_page_filter_sender_radio").value
+            filter_signer = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_filter_set").get_child_by_id("channel_print_initialized_page_filter_signer_radio").value
+            filter_my = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_filter_set").get_child_by_id("channel_print_initialized_page_filter_my_radio").value
+            mpe_addr = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_mpe_addr_div").get_child_by_id("channel_print_initialized_page_mpe_addr_input").value
+            registry = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_registry_div").get_child_by_id("channel_print_initialized_page_registry_input").value
+            wallet_index = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_wallet_index_div").get_child_by_id("channel_print_initialized_page_wallet_index_input").value
+
+            client_nav_button = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_print_initialized(only_id, filter_sender, filter_signer, filter_my, mpe_addr, registry, wallet_index)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_print_init_filter_org_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Print Initialized Channels for Organization Page", id="channel_print_initialized_filter_org_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_print_initialized_filter_org_page_org_id_label", classes="channel_print_initialized_filter_org_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_print_initialized_filter_org_page_org_id_input", classes="channel_print_initialized_filter_org_page_input"),
+                    id="channel_print_initialized_filter_org_page_org_id_div",
+                    classes="channel_print_initialized_filter_org_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group", id="channel_print_initialized_filter_org_page_group_label", classes="channel_print_initialized_filter_org_page_label"),
+                    Input(placeholder="Name of the payment group", id="channel_print_initialized_filter_org_page_group_input", classes="channel_print_initialized_filter_org_page_input"),
+                    id="channel_print_initialized_filter_org_page_group_div",
+                    classes="channel_print_initialized_filter_org_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_print_initialized_filter_org_page_registry_label", classes="channel_print_initialized_filter_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract", id="channel_print_initialized_filter_org_page_registry_input", classes="channel_print_initialized_filter_org_page_input"),
+                    id="channel_print_initialized_filter_org_page_registry_div",
+                    classes="channel_print_initialized_filter_org_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_print_initialized_filter_org_page_mpe_addr_label", classes="channel_print_initialized_filter_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_print_initialized_filter_org_page_mpe_addr_input", classes="channel_print_initialized_filter_org_page_input"),
+                    id="channel_print_initialized_filter_org_page_mpe_addr_div",
+                    classes="channel_print_initialized_filter_org_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_print_initialized_filter_org_page_wallet_index_label", classes="channel_print_initialized_filter_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for calling", id="channel_print_initialized_filter_org_page_wallet_index_input", classes="channel_print_initialized_filter_org_page_input"),
+                    id="channel_print_initialized_filter_org_page_wallet_index_div",
+                    classes="channel_print_initialized_filter_org_page_div"
+                ),
+                RadioButton(label="Only Print Ids", id="channel_print_initialized_filter_org_page_only_id_radio"),
+                RadioSet(
+                    RadioButton(label="Filter by Sender", id="channel_print_initialized_filter_org_page_filter_sender_radio"),
+                    RadioButton(label="Filter by Signer", id="channel_print_initialized_filter_org_page_filter_signer_radio"),
+                    RadioButton(label="Filter by My Channels", id="channel_print_initialized_filter_org_page_filter_my_radio"),
+                    id="channel_print_initialized_filter_org_page_filter_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_print_initialized_filter_org_page_back_button"),
+                    Button(label="Print", id="channel_print_initialized_filter_org_page_confirm_button"),
+                    id="channel_print_initialized_filter_org_page_button_div",
+                    classes="channel_print_initialized_filter_org_page_div"
+                ),
+                id="channel_print_initialized_filter_org_content_page",
+                classes="content_page"
+            ),
+            id="channel_print_initialized_filter_org_page"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_print_initialized_filter_org_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_print_initialized_filter_org_page_confirm_button":
+            org_id = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_org_id_div").get_child_by_id("channel_print_initialized_filter_org_page_org_id_input").value
+            group = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_group_div").get_child_by_id("channel_print_initialized_filter_org_page_group_input").value
+            registry = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_registry_div").get_child_by_id("channel_print_initialized_filter_org_page_registry_input").value
+            mpe_addr = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_mpe_addr_div").get_child_by_id("channel_print_initialized_filter_org_page_mpe_addr_input").value
+            wallet_index = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_wallet_index_div").get_child_by_id("channel_print_initialized_filter_org_page_wallet_index_input").value
+            only_id = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_only_id_radio").value
+            filter_sender = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_filter_set").get_child_by_id("channel_print_initialized_filter_org_page_filter_sender_radio").value
+            filter_signer = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_filter_set").get_child_by_id("channel_print_initialized_filter_org_page_filter_signer_radio").value
+            filter_my = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_filter_set").get_child_by_id("channel_print_initialized_filter_org_page_filter_my_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_print_initialized_filter_org(org_id, group, registry, only_id, filter_sender, filter_signer, filter_my, mpe_addr, wallet_index)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_print_all_filter_sender_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Print All Channels for Sender Page", id="channel_print_all_filter_sender_page_title"),
+                Horizontal(
+                    Label("MPE Address", id="channel_print_all_filter_sender_page_mpe_addr_label", classes="channel_print_all_filter_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_print_all_filter_sender_page_mpe_addr_input", classes="channel_print_all_filter_sender_page_input"),
+                    id="channel_print_all_filter_sender_page_mpe_addr_div",
+                    classes="channel_print_all_filter_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Start Block", id="channel_print_all_filter_sender_page_block_label", classes="channel_print_all_filter_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block", id="channel_print_all_filter_sender_page_block_input", classes="channel_print_all_filter_sender_page_input"),
+                    id="channel_print_all_filter_sender_page_block_div",
+                    classes="channel_print_all_filter_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Sender Account", id="channel_print_all_filter_sender_page_sender_label", classes="channel_print_all_filter_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Account to set as sender", id="channel_print_all_filter_sender_page_sender_input", classes="channel_print_all_filter_sender_page_input"),
+                    id="channel_print_all_filter_sender_page_sender_div",
+                    classes="channel_print_all_filter_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_print_all_filter_sender_page_wallet_index_label", classes="channel_print_all_filter_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for calling", id="channel_print_all_filter_sender_page_wallet_index_input", classes="channel_print_all_filter_sender_page_input"),
+                    id="channel_print_all_filter_sender_page_wallet_index_div",
+                    classes="channel_print_all_filter_sender_page_div"
+                ),
+                RadioButton(label="Only Print Ids", id="channel_print_all_filter_sender_page_only_id_radio"),
+                Horizontal(
+                    Button(label="Back", id="channel_print_all_filter_sender_page_back_button"),
+                    Button(label="Print", id="channel_print_all_filter_sender_page_confirm_button"),
+                    id="channel_print_all_filter_sender_page_button_div",
+                    classes="channel_print_all_filter_sender_page_div"
+                ),
+                id="channel_print_all_filter_sender_content_page",
+                classes="content_page"
+            ),
+            id="channel_print_all_filter_sender_page"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_print_all_filter_sender_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_print_all_filter_sender_page_confirm_button":
+            only_id = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_only_id_radio").value
+            mpe_addr = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_mpe_addr_div").get_child_by_id("channel_print_all_filter_sender_page_mpe_addr_input").value
+            from_block = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_block_div").get_child_by_id("channel_print_all_filter_sender_page_block_input").value
+            sender = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_sender_div").get_child_by_id("channel_print_all_filter_sender_page_sender_input").value
+            wallet_index = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_wallet_index_div").get_child_by_id("channel_print_all_filter_sender_page_wallet_index_input").value
+
+            client_nav_button = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_print_all_filter_sender(only_id, mpe_addr, from_block, sender, wallet_index)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_print_all_filter_recipient_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Print All Channels for Recipient Page", id="channel_print_all_filter_recipient_page_title"),
+                Horizontal(
+                    Label("MPE Address", id="channel_print_all_filter_recipient_page_mpe_addr_label", classes="channel_print_all_filter_recipient_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_print_all_filter_recipient_page_mpe_addr_input", classes="channel_print_all_filter_recipient_page_input"),
+                    id="channel_print_all_filter_recipient_page_mpe_addr_div",
+                    classes="channel_print_all_filter_recipient_page_div"
+                ),
+                Horizontal(
+                    Label("Block Number", id="channel_print_all_filter_recipient_page_block_label", classes="channel_print_all_filter_recipient_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block", id="channel_print_all_filter_recipient_page_block_input", classes="channel_print_all_filter_recipient_page_input"),
+                    id="channel_print_all_filter_recipient_page_block_div",
+                    classes="channel_print_all_filter_recipient_page_div"
+                ),
+                Horizontal(
+                    Label("Recipient", id="channel_print_all_filter_recipient_page_recipient_label", classes="channel_print_all_filter_recipient_page_label"),
+                    Input(placeholder="[OPTIONAL] Account to set as recipient", id="channel_print_all_filter_recipient_page_recipient_input", classes="channel_print_all_filter_recipient_page_input"),
+                    id="channel_print_all_filter_recipient_page_recipient_div",
+                    classes="channel_print_all_filter_recipient_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_print_all_filter_recipient_page_wallet_index_label", classes="channel_print_all_filter_recipient_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for calling", id="channel_print_all_filter_recipient_page_wallet_index_input", classes="channel_print_all_filter_recipient_page_input"),
+                    id="channel_print_all_filter_recipient_page_wallet_index_div",
+                    classes="channel_print_all_filter_recipient_page_div"
+                ),
+                RadioButton(label="Only Print Ids", id="channel_print_all_filter_recipient_page_only_id_radio"),
+                Horizontal(
+                    Button(label="Back", id="channel_print_all_filter_recipient_page_back_button"),
+                    Button(label="Print", id="channel_print_all_filter_recipient_page_confirm_button"),
+                    id="channel_print_all_filter_recipient_page_button_div",
+                    classes="channel_print_all_filter_recipient_page_div"
+                ),
+                id="channel_print_all_filter_recipient_content_page",
+                classes="content_page"
+            ),
+            id="channel_print_all_filter_recipient_page"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_print_all_filter_recipient_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_print_all_filter_recipient_page_confirm_button":
+            only_id = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_only_id_radio").value
+            mpe_addr = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_mpe_addr_div").get_child_by_id("channel_print_all_filter_recipient_page_mpe_addr_input").value
+            from_block = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_block_div").get_child_by_id("channel_print_all_filter_recipient_page_block_input").value
+            recipient = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_recipient_div").get_child_by_id("channel_print_all_filter_recipient_page_recipient_input").value
+            wallet_index = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_wallet_index_div").get_child_by_id("channel_print_all_filter_recipient_page_wallet_index_input").value
+
+            client_nav_button = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_print_all_filter_recipient(only_id, mpe_addr, from_block, recipient, wallet_index)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_print_all_filter_group_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Print All Channels for Group Page", id="channel_print_all_filter_group_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_print_all_filter_group_page_org_id_label", classes="channel_print_all_filter_group_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_print_all_filter_group_page_org_id_input", classes="channel_print_all_filter_group_page_input"),
+                    id="channel_print_all_filter_group_page_org_id_div",
+                    classes="channel_print_all_filter_group_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group", id="channel_print_all_filter_group_page_group_label", classes="channel_print_all_filter_group_page_label"),
+                    Input(placeholder="Name of the payment group", id="channel_print_all_filter_group_page_group_input", classes="channel_print_all_filter_group_page_input"),
+                    id="channel_print_all_filter_group_page_group_div",
+                    classes="channel_print_all_filter_group_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_print_all_filter_group_page_registry_label", classes="channel_print_all_filter_group_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract", id="channel_print_all_filter_group_page_registry_input", classes="channel_print_all_filter_group_page_input"),
+                    id="channel_print_all_filter_group_page_registry_div",
+                    classes="channel_print_all_filter_group_page_div"
+                ),
+                Horizontal(
+                    Label("Start Block", id="channel_print_all_filter_group_page_block_label", classes="channel_print_all_filter_group_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block", id="channel_print_all_filter_group_page_block_input", classes="channel_print_all_filter_group_page_input"),
+                    id="channel_print_all_filter_group_page_block_div",
+                    classes="channel_print_all_filter_group_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_print_all_filter_group_page_mpe_addr_label", classes="channel_print_all_filter_group_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from “networks”", id="channel_print_all_filter_group_page_mpe_addr_input", classes="channel_print_all_filter_group_page_input"),
+                    id="channel_print_all_filter_group_page_mpe_addr_div",
+                    classes="channel_print_all_filter_group_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_print_all_filter_group_page_wallet_index_label", classes="channel_print_all_filter_group_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for calling", id="channel_print_all_filter_group_page_wallet_index_input", classes="channel_print_all_filter_group_page_input"),
+                    id="channel_print_all_filter_group_page_wallet_index_div",
+                    classes="channel_print_all_filter_group_page_div"
+                ),
+                RadioButton(label="Only Print Ids", id="channel_print_all_filter_group_page_only_id_radio"),
+                Horizontal(
+                    Button(label="Back", id="channel_print_all_filter_group_page_back_button"),
+                    Button(label="Print", id="channel_print_all_filter_group_page_confirm_button"),
+                    id="channel_print_all_filter_group_page_button_div",
+                    classes="channel_print_all_filter_group_page_div"
+                ),
+                id="channel_print_all_filter_group_content_page",
+                classes="content_page"
+            ),
+            id="channel_print_all_filter_group_page"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_print_all_filter_group_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_print_all_filter_group_page_confirm_button":
+            org_id = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_org_id_div").get_child_by_id("channel_print_all_filter_group_page_org_id_input").value
+            group = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_group_div").get_child_by_id("channel_print_all_filter_group_page_group_input").value
+            registry = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_registry_div").get_child_by_id("channel_print_all_filter_group_page_registry_input").value
+            from_block = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_block_div").get_child_by_id("channel_print_all_filter_group_page_block_input").value
+            wallet_index = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_wallet_index_div").get_child_by_id("channel_print_all_filter_group_page_wallet_index_input").value
+            mpe_addr = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_mpe_addr_div").get_child_by_id("channel_print_all_filter_group_page_mpe_addr_input").value
+            only_id = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_only_id_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_print_all_filter_group(org_id, group, registry, only_id, mpe_addr, from_block, wallet_index)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_print_all_filter_group_sender_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Print All Channels for Group and Sender Page", id="channel_print_all_filter_group_sender_page_title"),
+                Horizontal(
+                    Label("Organization ID", id="channel_print_all_filter_group_sender_page_org_id_label", classes="channel_print_all_filter_group_sender_page_label"),
+                    Input(placeholder="Id of the Organization", id="channel_print_all_filter_group_sender_page_org_id_input", classes="channel_print_all_filter_group_sender_page_input"),
+                    id="channel_print_all_filter_group_sender_page_org_id_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Payment Group", id="channel_print_all_filter_group_sender_page_group_label", classes="channel_print_all_filter_group_sender_page_label"),
+                    Input(placeholder="Name of the payment group", id="channel_print_all_filter_group_sender_page_group_input", classes="channel_print_all_filter_group_sender_page_input"),
+                    id="channel_print_all_filter_group_sender_page_group_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Registry Address", id="channel_print_all_filter_group_sender_page_registry_label", classes="channel_print_all_filter_group_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of Registry contract", id="channel_print_all_filter_group_sender_page_registry_input", classes="channel_print_all_filter_group_sender_page_input"),
+                    id="channel_print_all_filter_group_sender_page_registry_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_print_all_filter_group_sender_page_mpe_addr_label", classes="channel_print_all_filter_group_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_print_all_filter_group_sender_page_mpe_addr_input", classes="channel_print_all_filter_group_sender_page_input"),
+                    id="channel_print_all_filter_group_sender_page_mpe_addr_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Start Block", id="channel_print_all_filter_group_sender_page_block_label", classes="channel_print_all_filter_group_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block", id="channel_print_all_filter_group_sender_page_block_input", classes="channel_print_all_filter_group_sender_page_input"),
+                    id="channel_print_all_filter_group_sender_page_block_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Sender", id="channel_print_all_filter_group_sender_page_sender_label", classes="channel_print_all_filter_group_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Account to set as sender", id="channel_print_all_filter_group_sender_page_sender_input", classes="channel_print_all_filter_group_sender_page_input"),
+                    id="channel_print_all_filter_group_sender_page_sender_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_print_all_filter_group_sender_page_wallet_index_label", classes="channel_print_all_filter_group_sender_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for calling", id="channel_print_all_filter_group_sender_page_wallet_index_input", classes="channel_print_all_filter_group_sender_page_input"),
+                    id="channel_print_all_filter_group_sender_page_wallet_index_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                RadioButton(label="Only Print Ids", id="channel_print_all_filter_group_sender_page_only_id_radio"),
+                Horizontal(
+                    Button(label="Back", id="channel_print_all_filter_group_sender_page_back_button"),
+                    Button(label="Print", id="channel_print_all_filter_group_sender_page_confirm_button"),
+                    id="channel_print_all_filter_group_sender_page_button_div",
+                    classes="channel_print_all_filter_group_sender_page_div"
+                ),
+                id="channel_print_all_filter_group_sender_content_page",
+                classes="content_page"
+            ),
+            id="channel_print_all_filter_group_sender_page"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_print_all_filter_group_sender_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_print_all_filter_group_sender_page_confirm_button":
+            org_id = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_org_id_div").get_child_by_id("channel_print_all_filter_group_sender_page_org_id_input").value
+            group = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_group_div").get_child_by_id("channel_print_all_filter_group_sender_page_group_input").value
+            registry = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_registry_div").get_child_by_id("channel_print_all_filter_group_sender_page_registry_input").value
+            mpe_addr = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_mpe_addr_div").get_child_by_id("channel_print_all_filter_group_sender_page_mpe_addr_input").value
+            from_block = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_block_div").get_child_by_id("channel_print_all_filter_group_sender_page_block_input").value
+            sender = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_sender_div").get_child_by_id("channel_print_all_filter_group_sender_page_sender_input").value
+            wallet_index = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_wallet_index_div").get_child_by_id("channel_print_all_filter_group_sender_page_wallet_index_input").value
+            only_id = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_only_id_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode = be.channel_print_all_filter_group_sender(org_id, group, registry, only_id, mpe_addr, from_block, sender, wallet_index)
+            popup_output = output
+            client_nav_button.focus()
+            self.app.push_screen(popup_output_page())
+
+class channel_claim_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Claim Page", id="channel_claim_page_title"),
+                Horizontal(
+                    Button(label="Claim Timeout", id="channel_claim_page_to_button", classes="channel_claim_page_button"),
+                    Button(label="Claim ALL Timeout", id="channel_claim_page_to_all_button", classes="channel_claim_page_button"),
+                    id="channel_claim_page_button_div",
+                    classes="channel_claim_page_div"
+                ),
+                Button(label="Back", id="channel_claim_page_back_button"),
+                id="channel_claim_page_content",
+                classes="content_page"
+            ),
+            id="channel_claim_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_claim_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_claim_page_to_button":
+            self.app.push_screen(channel_claim_to_page())
+        elif event.button.id == "channel_claim_page_to_all_button":
+            self.app.push_screen(channel_claim_to_all_page())
+
+class channel_claim_to_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Claim Timeout Page", id="channel_claim_timeout_page_title"),
+                Horizontal(
+                    Label("Channel ID", id="channel_claim_timeout_page_channel_id_label", classes="channel_claim_timeout_page_label"),
+                    Input(placeholder="The Channel Id", id="channel_claim_timeout_page_channel_id_input", classes="channel_claim_timeout_page_input"),
+                    id="channel_claim_timeout_page_channel_id_div",
+                    classes="channel_claim_timeout_page_div"
+                ),
+                Horizontal(
+                    Label("MPE Address", id="channel_claim_timeout_page_mpe_addr_label", classes="channel_claim_timeout_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_claim_timeout_page_mpe_addr_input", classes="channel_claim_timeout_page_input"),
+                    id="channel_claim_timeout_page_mpe_addr_div",
+                    classes="channel_claim_timeout_page_div"
+                ),
+                Horizontal(
+                    Label("Gas Price", id="channel_claim_timeout_page_gas_label", classes="channel_claim_timeout_page_label"),
+                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_claim_timeout_page_gas_input", classes="channel_claim_timeout_page_input"),
+                    id="channel_claim_timeout_page_gas_div",
+                    classes="channel_claim_timeout_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_claim_timeout_page_wallet_index_label", classes="channel_claim_timeout_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing", id="channel_claim_timeout_page_wallet_index_input", classes="channel_claim_timeout_page_input"),
+                    id="channel_claim_timeout_page_wallet_index_div",
+                    classes="channel_claim_timeout_page_div"
+                ),
+                RadioSet(
+                    RadioButton(label="Quiet Print", id="channel_claim_timeout_page_quiet_radio"),
+                    RadioButton(label="Verbose Print", id="channel_claim_timeout_page_verbose_radio"),
+                    id="channel_claim_timeout_page_quiet_verbose_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_claim_timeout_page_back_button"),
+                    Button(label="Claim", id="channel_claim_timeout_page_confirm_button"),
+                    id="channel_claim_timeout_page_button_div",
+                    classes="channel_claim_timeout_page_div"
+                ),
+                id="channel_claim_timeout_content_page",
+                classes="content_page"
+            ),
+            id="channel_claim_timeout_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_claim_timeout_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_claim_timeout_page_confirm_button":
+            channel_id = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_channel_id_div").get_child_by_id("channel_claim_timeout_page_channel_id_input").value
+            mpe_addr = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_mpe_addr_div").get_child_by_id("channel_claim_timeout_page_mpe_addr_input").value
+            gas = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_gas_div").get_child_by_id("channel_claim_timeout_page_gas_input").value
+            wallet_index = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_wallet_index_div").get_child_by_id("channel_claim_timeout_page_wallet_index_input").value
+            quiet = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_page_quiet_radio").value
+            verbose = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_page_verbose_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode, command = be.channel_claim_timeout(channel_id, mpe_addr, gas, wallet_index, quiet, verbose, True)
+            
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                client_nav_button.focus()
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                client_nav_button.focus()
+                self.app.push_screen(popup_output_page())
+
+class channel_claim_to_all_page(Screen):
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("client"),
+            ScrollableContainer(
+                Label("Channel Claim Timeout All Page", id="channel_claim_timeout_all_page_title"),
+                Horizontal(
+                    Label("MPE Address", id="channel_claim_timeout_all_page_mpe_addr_label", classes="channel_claim_timeout_all_page_label"),
+                    Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract", id="channel_claim_timeout_all_page_mpe_addr_input", classes="channel_claim_timeout_all_page_input"),
+                    id="channel_claim_timeout_all_page_mpe_addr_div",
+                    classes="channel_claim_timeout_all_page_div"
+                ),
+                Horizontal(
+                    Label("From Block", id="channel_claim_timeout_all_page_from_block_label", classes="channel_claim_timeout_all_page_label"),
+                    Input(placeholder="[OPTIONAL] Start searching from this block", id="channel_claim_timeout_all_page_from_block_input", classes="channel_claim_timeout_all_page_input"),
+                    id="channel_claim_timeout_all_page_from_block_div",
+                    classes="channel_claim_timeout_all_page_div"
+                ),
+                Horizontal(
+                    Label("Gas Price", id="channel_claim_timeout_all_page_gas_label", classes="channel_claim_timeout_all_page_label"),
+                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_claim_timeout_all_page_gas_input", classes="channel_claim_timeout_all_page_input"),
+                    id="channel_claim_timeout_all_page_gas_div",
+                    classes="channel_claim_timeout_all_page_div"
+                ),
+                Horizontal(
+                    Label("Wallet Index", id="channel_claim_timeout_all_page_wallet_index_label", classes="channel_claim_timeout_all_page_label"),
+                    Input(placeholder="[OPTIONAL] Wallet index of account to use for signing", id="channel_claim_timeout_all_page_wallet_index_input", classes="channel_claim_timeout_all_page_input"),
+                    id="channel_claim_timeout_all_page_wallet_index_div",
+                    classes="channel_claim_timeout_all_page_div"
+                ),
+                RadioSet(
+                    RadioButton(label="Quiet Print", id="channel_claim_timeout_all_page_quiet_radio"),
+                    RadioButton(label="Verbose Print", id="channel_claim_timeout_all_page_verbose_radio"),
+                    id="channel_claim_timeout_all_page_quiet_verbose_set"
+                ),
+                Horizontal(
+                    Button(label="Back", id="channel_claim_timeout_all_page_back_button"),
+                    Button(label="Claim", id="channel_claim_timeout_all_page_confirm_button"),
+                    id="channel_claim_timeout_all_page_button_div",
+                    classes="channel_claim_timeout_all_page_div"
+                ),
+                id="channel_claim_timeout_all_content_page",
+                classes="content_page"
+            ),
+            id="channel_claim_timeout_all_page"
+        )
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+
+        if event.button.id == "account_page_nav":
+            self.app.switch_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.switch_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.switch_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "channel_claim_timeout_all_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "channel_claim_timeout_all_page_confirm_button":
+            mpe_addr = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_mpe_addr_div").get_child_by_id("channel_claim_timeout_all_page_mpe_addr_input").value
+            from_block = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_from_block_div").get_child_by_id("channel_claim_timeout_all_page_from_block_input").value
+            gas = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_gas_div").get_child_by_id("channel_claim_timeout_all_page_gas_input").value
+            wallet_index = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_wallet_index_div").get_child_by_id("channel_claim_timeout_all_page_wallet_index_input").value
+            quiet = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_all_page_quiet_radio").value
+            verbose = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_all_page_verbose_radio").value
+
+            client_nav_button = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
+
+            output, errCode, command = be.channel_claim_timeout_all(mpe_addr, from_block, gas, wallet_index, quiet, verbose, True)
+            
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                client_nav_button.focus()
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                client_nav_button.focus()
                 self.app.push_screen(popup_output_page())
 
 class custom_command_page(Screen):

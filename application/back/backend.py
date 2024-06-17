@@ -968,15 +968,19 @@ def treasurer_claim_expr(threshold: str, endpoint, gas_price, wallet_index, quie
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
 
-    try:
-        if threshold is None or float(threshold) <= 0:
-            return "ERROR: Invalid expiration threshold, must be a number > 0", 42
-    except ValueError:
-        return "ERROR: Invalid expiration threshold, must be a number > 0", 42
     if endpoint is None or len(endpoint) <= 0:
         return "ERROR: Endpoint is required", 42
 
-    command = f"snet --print-traceback treasurer claim-expired --expiration-threshold {threshold} --endpoint {endpoint}"
+    command = f"snet --print-traceback treasurer claim-expired  --endpoint {endpoint}"
+
+    if threshold and len(threshold) > 0:
+        try:
+            if float(threshold) <= 0:
+                return "ERROR: Invalid expiration threshold, must be a number > 0", 42
+        except ValueError:
+            return "ERROR: Invalid expiration threshold, must be a number > 0", 42
+        
+        command += f" --expiration-threshold {threshold}"
     if gas_price and len(gas_price) > 0:
         command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
@@ -1473,7 +1477,7 @@ def client_call(org_id, serv_id, group_name, method, params, proto_serv=None, mp
 
     return output, errCode, command
 
-def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index, view):
+def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index):
     # snet client call-lowlevel [-h] [--service SERVICE]
     #                       [--wallet-index WALLET_INDEX]
     #                       [--multipartyescrow-at MULTIPARTYESCROW_AT]
@@ -1485,22 +1489,22 @@ def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, met
 
     # Check for required parameters
     if not org_id or len(org_id) == 0:
-        return "ERROR: Organization ID is required", 42, None
+        return "ERROR: Organization ID is required", 42
     if not serv_id or len(serv_id) == 0:
-        return "ERROR: Service ID is required", 42, None
+        return "ERROR: Service ID is required", 42
     if not channel_id or len(channel_id) == 0:
-        return "ERROR: Channel ID is required", 42, None
+        return "ERROR: Channel ID is required", 42
     if not nonce or len(nonce) == 0:
-        return "ERROR: Nonce is required", 42, None
+        return "ERROR: Nonce is required", 42
     try:
         if not cog_amt or float(cog_amt) < 0:
-            return "ERROR: Amount of cogs > 0 is required", 42, None
+            return "ERROR: Amount of cogs > 0 is required", 42
     except ValueError:
-        return "ERROR: Amount of cogs > 0 is required", 42, None
+        return "ERROR: Amount of cogs > 0 is required", 42
     if not method or len(method) == 0:
-        return "ERROR: Method name of target service is required", 42, None
+        return "ERROR: Method name of target service is required", 42
     if not params or len(params) == 0:
-        return "ERROR: Params file path is required", 42, None
+        return "ERROR: Params file path is required", 42
 
     # Construct command
     command = f"snet --print-traceback client call-lowlevel {org_id} {serv_id}"
@@ -1523,23 +1527,19 @@ def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, met
         command += f" --wallet-index {wallet_index}"
 
     # Run command
-    if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
-    else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+    output, errCode = run_shell_command(command)
+    return output, errCode
 
-    return output, errCode, command
-
-def get_channel_state(channel_id, endpoint, mpe_addr, wallet_index, view):
+def get_channel_state(channel_id, endpoint, mpe_addr, wallet_index):
     # snet client get-channel-state [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
     #                           [--wallet-index WALLET_INDEX]
     #                           CHANNEL_ID ENDPOINT
 
     # Check for required parameters
     if not channel_id or len(channel_id) == 0:
-        return "ERROR: Channel ID is required", 42, None
+        return "ERROR: Channel ID is required", 42
     if not endpoint or len(endpoint) == 0:
-        return "ERROR: Service endpoint is required", 42, None
+        return "ERROR: Service endpoint is required", 42
 
     # Construct command
     command = f"snet --print-traceback client call-lowlevel {channel_id} {endpoint}"
@@ -1548,6 +1548,547 @@ def get_channel_state(channel_id, endpoint, mpe_addr, wallet_index, view):
         command += f" --multipartyescrow-at {mpe_addr}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_init(org_id, group_name, channel_id, registry, mpe_addr):
+    # snet channel init [-h] [--registry-at REGISTRY_AT]
+    #               [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #               ORG_ID group_name CHANNEL_ID
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not channel_id or len(channel_id) == 0:
+        return "ERROR: Channel ID is required", 42
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+
+    # Construct command
+    command = f"snet --print-traceback channel init {org_id} {group_name} {channel_id}"
+    
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+
+def channel_init_metadata(org_id, group_name, channel_id, registry, mpe_addr, meta_file, wallet_index):
+    # snet channel init-metadata [-h] [--registry-at REGISTRY_AT]
+    #                        [--metadata-file METADATA_FILE]
+    #                        [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                        [--wallet-index WALLET_INDEX]
+    #                        ORG_ID group_name CHANNEL_ID
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not channel_id or len(channel_id) == 0:
+        return "ERROR: Channel ID is required", 42
+    if not meta_file or len(meta_file) == 0:
+        return "ERROR: Metadata file path is required", 42
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+
+    # Construct command
+    command = f"snet --print-traceback channel init-metadata {org_id} {group_name} {channel_id} --metadata-file {meta_file}"
+    
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, from_block, gas, wallet_index, quiet, verbose, view):
+    # snet channel open-init [-h] [--registry-at REGISTRY_AT] [--force]
+    #                    [--signer SIGNER]
+    #                    [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                    [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                    [--yes] [--quiet | --verbose] [--open-new-anyway]
+    #                    [--from-block FROM_BLOCK]
+    #                    ORG_ID group_name AMOUNT EXPIRATION
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42, None
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    
+    try:
+        if not agi_amount or float(agi_amount) <= 0:
+            return "ERROR: Amount of AGI must be greater than 0", 42, None
+    except ValueError:
+        return "ERROR: Amount of AGI must be a valid number greater than 0", 42, None
+    
+    try:
+        if not expr or int(expr) <= 0:
+            return "ERROR: Expiration must be a positive integer", 42, None
+    except ValueError:
+        return "ERROR: Expiration must be a valid positive integer", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback channel open-init {org_id} {group_name} {agi_amount} {expr}"
+    
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if force:
+        command += " --force"
+    if signer and len(signer) > 0:
+        command += f" --signer {signer}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if open_anyway:
+        command += " --open-new-anyway"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+
+    return output, errCode, command
+
+def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, from_block, metadata_file, gas, wallet_index, quiet, verbose, view):
+    # snet channel open-init-metadata [-h] [--registry-at REGISTRY_AT] [--force]
+    #                             [--signer SIGNER]
+    #                             [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                             [--gas-price GAS_PRICE]
+    #                             [--wallet-index WALLET_INDEX] [--yes]
+    #                             [--quiet | --verbose] [--open-new-anyway]
+    #                             [--from-block FROM_BLOCK]
+    #                             [--metadata-file METADATA_FILE]
+    #                             ORG_ID group_name AMOUNT EXPIRATION
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42, None
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    
+    try:
+        if not agi_amount or float(agi_amount) <= 0:
+            return "ERROR: Amount of AGI must be greater than 0", 42, None
+    except ValueError:
+        return "ERROR: Amount of AGI must be a valid number greater than 0", 42, None
+    
+    try:
+        if not expr or int(expr) <= 0:
+            return "ERROR: Expiration must be a positive integer", 42, None
+    except ValueError:
+        return "ERROR: Expiration must be a valid positive integer", 42, None
+    
+    if not metadata_file or len(metadata_file) == 0:
+        return "ERROR: Metadata file path is required", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback channel open-init-metadata {org_id} {group_name} {agi_amount} {expr} --metadata-file {metadata_file}"
+    
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if force:
+        command += " --force"
+    if signer and len(signer) > 0:
+        command += f" --signer {signer}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if open_anyway:
+        command += " --open-new-anyway"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+
+    return output, errCode, command
+
+
+def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, wallet_index, quiet, verbose, view):
+    # snet channel extend-add [-h] [--expiration EXPIRATION] [--force]
+    #                     [--amount AMOUNT]
+    #                     [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                     [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                     [--yes] [--quiet | --verbose]
+    #                     CHANNEL_ID
+
+    # Check for required parameters
+    if not channel_id or len(channel_id) == 0:
+        return "ERROR: Channel ID is required", 42, None
+
+    try:
+        if expr and int(expr) <= 0:
+            return "ERROR: Expiration must be a positive integer", 42, None
+    except ValueError:
+        return "ERROR: Expiration must be a valid positive integer", 42, None
+
+    try:
+        if agi_amount and float(agi_amount) < 0:
+            return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
+    except ValueError:
+        return "ERROR: Amount of AGI must be a valid number", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback channel extend-add {channel_id}"
+    
+    if expr and len(expr) > 0:
+        command += f" --expiration {expr}"
+    if force:
+        command += " --force"
+    if agi_amount and len(agi_amount) > 0:
+        command += f" --amount {agi_amount}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+
+    return output, errCode, command
+
+def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, gas, wallet_index, quiet, verbose, view):
+    # snet channel extend-add-for-org [-h] [--registry-at REGISTRY_AT]
+    #                             [--expiration EXPIRATION] [--force]
+    #                             [--amount AMOUNT]
+    #                             [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                             [--gas-price GAS_PRICE]
+    #                             [--wallet-index WALLET_INDEX] [--yes]
+    #                             [--quiet | --verbose]
+    #                             [--group-name GROUP_NAME]
+    #                             [--channel-id CHANNEL_ID]
+    #                             [--from-block FROM_BLOCK]
+    #                             ORG_ID group_name
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42, None
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    
+    try:
+        if expr and int(expr) <= 0:
+            return "ERROR: Expiration must be a positive integer", 42, None
+    except ValueError:
+        return "ERROR: Expiration must be a valid positive integer", 42, None
+
+    try:
+        if agi_amount and float(agi_amount) < 0:
+            return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
+    except ValueError:
+        return "ERROR: Amount of AGI must be a valid number", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback channel extend-add-for-org {org_id} {group_name}"
+
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if expr and len(expr) > 0:
+        command += f" --expiration {expr}"
+    if force:
+        command += " --force"
+    if agi_amount and len(agi_amount) > 0:
+        command += f" --amount {agi_amount}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    if channel_id and len(channel_id) > 0:
+        command += f" --channel-id {channel_id}"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+
+    return output, errCode, command
+
+def channel_print_initialized(only_id, filter_sender, filter_signer, filter_my, mpe_addr, registry, wallet_index):
+    # snet channel print-initialized [-h] [--only-id]
+    #                            [--filter-sender | --filter-signer | --filter-my]
+    #                            [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                            [--wallet-index WALLET_INDEX]
+    #                            [--registry-at REGISTRY_AT]
+
+    # Construct command
+    command = "snet --print-traceback channel print-initialized"
+    
+    if only_id:
+        command += " --only-id"
+    if filter_sender:
+        command += " --filter-sender"
+    elif filter_signer:
+        command += " --filter-signer"
+    elif filter_my:
+        command += " --filter-my"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_print_initialized_filter_org(org_id, group_name, registry, only_id, filter_sender, filter_signer, filter_my, mpe_addr, wallet_index):
+    # snet channel print-initialized-filter-org [-h] [--registry-at REGISTRY_AT]
+    #                                       [--only-id]
+    #                                       [--filter-sender | --filter-signer | --filter-my]
+    #                                       [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                                       [--wallet-index WALLET_INDEX]
+    #                                       ORG_ID group_name
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+    
+
+    # Construct command
+    command = f"snet --print-traceback channel print-initialized-filter-org {org_id} {group_name}"
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if only_id:
+        command += " --only-id"
+    if filter_sender:
+        command += " --filter-sender"
+    elif filter_signer:
+        command += " --filter-signer"
+    elif filter_my:
+        command += " --filter-my"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_print_all_filter_sender(only_id, mpe_addr, from_block, sender, wallet_index):
+    # snet channel print-all-filter-sender [-h] [--only-id]
+    #                                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                                  [--from-block FROM_BLOCK]
+    #                                  [--wallet-index WALLET_INDEX]
+    #                                  [--sender SENDER]
+
+    # Construct command
+    command = "snet --print-traceback channel print-all-filter-sender"
+
+    if only_id:
+        command += " --only-id"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if sender and len(sender) > 0:
+        command += f" --sender {sender}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_print_all_filter_recipient(only_id, mpe_addr, from_block, recipient, wallet_index):
+    # snet channel print-all-filter-recipient [-h] [--only-id]
+    #                                     [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                                     [--from-block FROM_BLOCK]
+    #                                     [--wallet-index WALLET_INDEX]
+    #                                     [--recipient RECIPIENT]
+
+    # Construct command
+    command = "snet --print-traceback channel print-all-filter-recipient"
+
+    if only_id:
+        command += " --only-id"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if recipient and len(recipient) > 0:
+        command += f" --recipient {recipient}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_print_all_filter_group(org_id, group_name, registry, only_id, mpe_addr, from_block, wallet_index):
+    # snet channel print-all-filter-group [-h] [--registry-at REGISTRY_AT]
+    #                                 [--only-id]
+    #                                 [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                                 [--from-block FROM_BLOCK]
+    #                                 [--wallet-index WALLET_INDEX]
+    #                                 ORG_ID group_name
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+
+    # Construct command
+    command = f"snet --print-traceback channel print-all-filter-group {org_id} {group_name}"
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if only_id:
+        command += " --only-id"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_print_all_filter_group_sender(org_id, group_name, registry, only_id, mpe_addr, from_block, sender, wallet_index):
+    # snet channel print-all-filter-group-sender [-h] [--registry-at REGISTRY_AT]
+    #                                        [--only-id]
+    #                                        [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                                        [--from-block FROM_BLOCK]
+    #                                        [--wallet-index WALLET_INDEX]
+    #                                        [--sender SENDER]
+    #                                        ORG_ID group_name
+
+    # Check for required parameters
+    if not org_id or len(org_id) == 0:
+        return "ERROR: Organization ID is required", 42
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Group name is required", 42
+
+    # Construct command
+    command = f"snet --print-traceback channel print-all-filter-group-sender {org_id} {group_name}"
+    if registry and len(registry) > 0:
+        command += f" --registry-at {registry}"
+    if only_id:
+        command += " --only-id"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if sender and len(sender) > 0:
+        command += f" --sender {sender}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+
+    # Run command
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
+def channel_claim_timeout(channel_id, mpe_addr, gas, wallet_index, quiet, verbose, view):
+    # snet channel claim-timeout [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                        [--gas-price GAS_PRICE]
+    #                        [--wallet-index WALLET_INDEX] [--yes]
+    #                        [--quiet | --verbose]
+    #                        CHANNEL_ID
+
+    # Check for required parameters
+    if not channel_id or len(channel_id) == 0:
+        return "ERROR: Channel ID is required", 42, None
+
+    # Construct command
+    command = f"snet --print-traceback channel claim-timeout {channel_id}"
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
+
+    # Run command
+    if view:
+        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+    else:
+        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+
+    return output, errCode, command
+
+def channel_claim_timeout_all(mpe_addr, from_block, gas, wallet_index, quiet, verbose, view):
+    # snet channel claim-timeout-all [-h]
+    #                            [--multipartyescrow-at MULTIPARTYESCROW_AT]
+    #                            [--gas-price GAS_PRICE]
+    #                            [--wallet-index WALLET_INDEX] [--yes]
+    #                            [--quiet | --verbose] [--from-block FROM_BLOCK]
+
+    # Construct command
+    command = "snet --print-traceback channel claim-timeout-all"
+    
+    if mpe_addr and len(mpe_addr) > 0:
+        command += f" --multipartyescrow-at {mpe_addr}"
+    if from_block and len(from_block) > 0:
+        command += f" --from-block {from_block}"
+    if gas and len(gas) > 0:
+        command += f" --gas-price {gas}"
+    if wallet_index and len(wallet_index) > 0:
+        command += f" --wallet-index {wallet_index}"
+    if quiet:
+        command += " --quiet"
+    elif verbose:
+        command += " --verbose"
 
     # Run command
     if view:
