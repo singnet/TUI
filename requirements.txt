@@ -1,3 +1,4 @@
 snet.cli==2.1.2
 textual==0.43.2
 textual-dev==1.2.1
+rich-pixels==3.0.1

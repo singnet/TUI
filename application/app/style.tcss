@@ -170,13 +170,13 @@ exit_page {
 
 #create_identity_page_left_block {
     margin-left: 3;
-    margin-top: 3;
+    margin-top: 2;
     margin-bottom: 3;
-    padding-left: 20;
-    padding-right: 20;
-    padding-top: 21;
-    padding-bottom: 21;
-    background: #2d2d2d;
+    background: #23245b;
+    height: 45;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    align: center middle;
 }
 
 #create_identity_right_div {
@@ -237,14 +237,14 @@ exit_page {
 #create_identity_button {
     margin-left: 5;
     margin-right: 2;
-    background: #0185b5;
+    background: #23245b;
     border: none;
     padding: 1;
-    color: #f6d7b0;
+    color: #fff;
 }
 
 #create_identity_button:hover {
-    background: #05b9fa;
+    background: #0053b3;
 }
 
 /* Navigation sidebar */
@@ -278,7 +278,7 @@ exit_page {
 }
 
 #exit_page_nav {
-    margin-top: 25;
+    margin-top: 20;
 }
 
 /* All content pages */

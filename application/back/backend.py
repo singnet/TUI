@@ -1445,12 +1445,11 @@ def client_call(org_id, serv_id, group_name, method, params, proto_serv=None, mp
         return "ERROR: Method name of target service is required", 42, None
     if not params or len(params) == 0:
         return "ERROR: Parameters file path for method call are required", 42, None
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Payment group name is required", 42
 
     # Construct command
-    command = f"snet --print-traceback client call {org_id} {serv_id}"
-    if group_name and len(group_name) > 0:
-        command += f" {group_name}"
-    command += f" {method} {params}"
+    command = f"snet --print-traceback client call {org_id} {serv_id} {group_name} {method} {params}"
 
     if proto_serv and len(proto_serv) > 0:
         command += f" --service {proto_serv}"
@@ -1494,6 +1493,8 @@ def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, met
         return "ERROR: Service ID is required", 42
     if not channel_id or len(channel_id) == 0:
         return "ERROR: Channel ID is required", 42
+    if not group_name or len(group_name) == 0:
+        return "ERROR: Payment group name is required", 42
     if not nonce or len(nonce) == 0:
         return "ERROR: Nonce is required", 42
     try:
@@ -1507,12 +1508,8 @@ def client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, met
         return "ERROR: Params file path is required", 42
 
     # Construct command
-    command = f"snet --print-traceback client call-lowlevel {org_id} {serv_id}"
-    if group_name and len(group_name) > 0:
-        command += f" {group_name}"
-    command += f" {channel_id} {nonce} {cog_amt} {method} {params}"
+    command = f"snet --print-traceback client call-lowlevel {org_id} {serv_id} {group_name} {channel_id} {nonce} {cog_amt} {method} {params}"
     
-
     if proto_serv and len(proto_serv) > 0:
         command += f" --service {proto_serv}"
     if mpe_addr and len(mpe_addr) > 0:

@@ -1,7 +1,8 @@
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal, ScrollableContainer
 from textual.screen import Screen
-from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator, Log, RadioSet
+from textual.widgets import Button, Header, Label, Input, Select, RadioButton, RichLog, Log, RadioSet
+from rich_pixels import Pixels, FullcellRenderer
 import back.backend as be
 import sys
 import os
@@ -109,12 +110,13 @@ class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
         network_list, errCode = be.network_list()
+        img = Pixels.from_image_path("application/app/assets/snet_logo.png", renderer=FullcellRenderer(), resize=(32, 45))
         if errCode == 0:
             yield ScrollableContainer(
                 Horizontal(
-                    Label("Welcome to |U|", id="create_identity_page_left_block"),
+                    RichLog(id="create_identity_page_left_block").write(img, expand=True),
                     Vertical(
-                        Label("Get started with |U|", id="create_identity_page_info_label_1"),
+                        Label("Get started with the TUI", id="create_identity_page_info_label_1"),
                         Label("Fill in all the fields and connect your Web3 account", id="create_identity_page_info_label_2"),
                         Horizontal(
                             Label("Identity", id="create_identity_page_name_label"),
@@ -143,7 +145,7 @@ class create_identity_page(Screen):
                         id="create_identity_right_div",
                         classes="create_identity_right_div_class"
                     ),
-                    id="create_identity_outer_right_div"
+                    id="create_identity_outer_div"
                 ),
                 id="create_identity",
                 classes="create_identity_full_page"
@@ -155,9 +157,9 @@ class create_identity_page(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         if event.button.id == "create_identity_button":
-            id_name = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_right_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_name_div").get_child_by_id("org_identity_input").value
-            network = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_right_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_network_div").get_child_by_id("network_select").value
-            wallet_info = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_right_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_key_div").get_child_by_id("wallet_info_input").value
+            id_name = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_name_div").get_child_by_id("org_identity_input").value
+            network = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_network_div").get_child_by_id("network_select").value
+            wallet_info = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_key_div").get_child_by_id("wallet_info_input").value
             if not isinstance(id_name, str) or len(id_name) == 0:
                 popup_output = "ERROR: Organization Identity cannot be blank."
                 self.app.push_screen(popup_output_page())
@@ -3965,7 +3967,7 @@ class client_call_page(Screen):
                 ),
                 Horizontal(
                     Label("Payment Group", id="client_call_pay_group_label", classes="client_call_page_label"),
-                    Input(placeholder="[OPTIONAL] Only specified for services with several groups", id="client_call_pay_group_input", classes="client_call_page_input"),
+                    Input(placeholder="Payment group of the service", id="client_call_pay_group_input", classes="client_call_page_input"),
                     id="client_call_page_pay_group_div",
                     classes="client_call_page_div"
                 ),
@@ -4122,7 +4124,7 @@ class client_call_low_page(Screen):
                 ),
                 Horizontal(
                     Label("Payment Group", id="client_call_low_page_pay_group_label", classes="client_call_low_page_label"),
-                    Input(placeholder="[OPTIONAL] Name of the payment group. Parameter should be specified only for services with several payment groups", id="client_call_low_pay_group_input", classes="client_call_low_page_input"),
+                    Input(placeholder="Name of the payment group", id="client_call_low_pay_group_input", classes="client_call_low_page_input"),
                     id="client_call_low_page_pay_group_div",
                     classes="client_call_low_page_div"
                 ),
@@ -4283,7 +4285,7 @@ class client_channel_state_page(Screen):
             mpe_addr = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_mpe_addr_div").get_child_by_id("client_channel_state_mpe_addr_input").value
             wallet_index = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_wallet_index_div").get_child_by_id("client_channel_state_wallet_index_input").value
 
-            output, errCode, command = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet_index, True)
+            output, errCode, command = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet_index)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
