@@ -99,8 +99,11 @@ class conditional_input_page(Screen):
         yield Horizontal(Button("Yes", id="conditional_input_accept_button"), Button("No", id="conditional_input_deny_button"), id="conditional_input_buttons")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global conditional_output
+        global conditional_command
+        global popup_output
         if event.button.id == "conditional_input_accept_button":
-            output, errCode = be.run_shell_command_with_input(command=conditional_command, input_text="y\n")
+            output, errCode = be.run_shell_command(command=f"{conditional_command} --yes")
             popup_output = output
             self.app.switch_screen(popup_output_page())
         elif event.button.id == "conditional_input_deny_button":
@@ -4285,7 +4288,7 @@ class client_channel_state_page(Screen):
             mpe_addr = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_mpe_addr_div").get_child_by_id("client_channel_state_mpe_addr_input").value
             wallet_index = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_wallet_index_div").get_child_by_id("client_channel_state_wallet_index_input").value
 
-            output, errCode, command = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet_index)
+            output, errCode = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet_index)
             popup_output = output
             self.app.push_screen(popup_output_page())
 

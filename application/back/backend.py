@@ -1,15 +1,7 @@
 import subprocess
-from typing import Union
-from textual.widgets import Button, Header, Label, Input, Select, RadioButton, LoadingIndicator
-from textual.app import App, ComposeResult
-from textual.containers import Grid, Vertical, Horizontal
-from textual.screen import Screen
-from time import sleep
+from textual.widgets import Button, Select
+from textual.containers import Vertical
 import re
-import os
-import json
-# from web3 import Web3
-# from eth_account import Account
 
 # Stable build v0.1
 
@@ -1472,7 +1464,7 @@ def client_call(org_id, serv_id, group_name, method, params, proto_serv=None, mp
     if view:
         output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
     else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+        output, errCode = run_shell_command(command=f"{command} --yes")
 
     return output, errCode, command
 
@@ -1539,7 +1531,7 @@ def get_channel_state(channel_id, endpoint, mpe_addr, wallet_index):
         return "ERROR: Service endpoint is required", 42
 
     # Construct command
-    command = f"snet --print-traceback client call-lowlevel {channel_id} {endpoint}"
+    command = f"snet --print-traceback client get-channel-state {channel_id} {endpoint}"
 
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"
@@ -1621,6 +1613,8 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
         return "ERROR: Organization ID is required", 42, None
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
+    if not expr or len(expr) <= 0:
+            return "ERROR: Expiration time is required", 42, None
     
     try:
         if not agi_amount or float(agi_amount) <= 0:
@@ -1628,11 +1622,11 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
     except ValueError:
         return "ERROR: Amount of AGI must be a valid number greater than 0", 42, None
     
-    try:
-        if not expr or int(expr) <= 0:
-            return "ERROR: Expiration must be a positive integer", 42, None
-    except ValueError:
-        return "ERROR: Expiration must be a valid positive integer", 42, None
+    # try:
+    #     if not expr or int(expr) <= 0:
+    #         return "ERROR: Expiration must be a positive integer", 42, None
+    # except ValueError:
+    #     return "ERROR: Expiration must be a valid positive integer", 42, None
 
     # Construct command
     command = f"snet --print-traceback channel open-init {org_id} {group_name} {agi_amount} {expr}"
@@ -1683,6 +1677,8 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
         return "ERROR: Organization ID is required", 42, None
     if not group_name or len(group_name) == 0:
         return "ERROR: Group name is required", 42
+    if not expr or len(expr) <= 0:
+            return "ERROR: Expiration time is required", 42, None
     
     try:
         if not agi_amount or float(agi_amount) <= 0:
@@ -1690,11 +1686,11 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
     except ValueError:
         return "ERROR: Amount of AGI must be a valid number greater than 0", 42, None
     
-    try:
-        if not expr or int(expr) <= 0:
-            return "ERROR: Expiration must be a positive integer", 42, None
-    except ValueError:
-        return "ERROR: Expiration must be a valid positive integer", 42, None
+    # try:
+    #     if not expr or int(expr) <= 0:
+    #         return "ERROR: Expiration must be a positive integer", 42, None
+    # except ValueError:
+    #     return "ERROR: Expiration must be a valid positive integer", 42, None
     
     if not metadata_file or len(metadata_file) == 0:
         return "ERROR: Metadata file path is required", 42, None
@@ -1749,11 +1745,6 @@ def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, walle
     command = f"snet --print-traceback channel extend-add {channel_id}"
     
     if expr and len(expr) > 0:
-        try:
-            if expr and int(expr) <= 0:
-                return "ERROR: Expiration must be a positive integer", 42, None
-        except ValueError:
-            return "ERROR: Expiration must be a valid positive integer", 42, None
         command += f" --expiration {expr}"
     if force:
         command += " --force"
@@ -1809,11 +1800,6 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
     if registry and len(registry) > 0:
         command += f" --registry-at {registry}"
     if expr and len(expr) > 0:
-        try:
-            if expr and int(expr) <= 0:
-                return "ERROR: Expiration must be a positive integer", 42, None
-        except ValueError:
-            return "ERROR: Expiration must be a valid positive integer", 42, None
         command += f" --expiration {expr}"
     if force:
         command += " --force"
