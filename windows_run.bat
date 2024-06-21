@@ -59,19 +59,53 @@ if "%PYTHONMAJOR%" NEQ "3" (
 if not exist "tui_venv\" (
     echo Creating virtual environment...
     python -m venv tui_venv
+    if errorlevel 1 (
+        echo Failed to create virtual environment.
+        rmdir /s /q tui_venv
+        exit /b 1
+    )
     echo Virtual environment created.
-
-    :: Activate virtual environment and install dependencies
     call tui_venv\Scripts\activate.bat
     pip install -r requirements.txt
+    if errorlevel 1 (
+        echo Failed to install dependencies.
+        exit /b 1
+    )
     echo Dependencies installed.
-) else (
-    echo Activating virtual environment...
+    deactivate
+)
+
+:: Activate the virtual environment
+if exist "tui_venv\Scripts\activate.bat" (
     call tui_venv\Scripts\activate.bat
+    echo Virtual environment activated.
+) else (
+    echo Failed to find the virtual environment activation script.
+    rmdir /s /q tui_venv
+    exit /b 1
+)
+
+:: Check if "update" argument is passed
+if "%1"=="update" (
+    echo Updating dependencies...
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    echo Dependencies updated.
 )
 
 :: Run the main.py script
-python application\main.py
+if "%1"=="dev" (
+    echo Running in DEV mode
+    textual run --dev application\main.py
+) else (
+    python application\main.py
+)
+
+if errorlevel 1 (
+    echo Failed to run the application.
+    exit /b 1
+)
+
 goto End
 
 :ErrorPython

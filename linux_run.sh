@@ -48,6 +48,7 @@ fi
 sudo ln -sf $(which python3) /usr/local/bin/python
 
 # Determine the correct venv package name
+PYTHON_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
 VENV_PKG="python3.$PYTHON_MINOR-venv"
 
 # Check for python3-venv
@@ -89,8 +90,24 @@ else
     exit 1
 fi
 
+# Check if "update" argument is passed
+if [[ "$1" == "update" ]]; then
+    echo "Updating dependencies..."
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    echo "Dependencies updated."
+fi
+
 # Run the main.py script
-python3 application/main.py
+
+# Check if "dev" argument is passed
+if [[ "$1" == "dev" ]]; then
+    echo "Running in DEV mode"
+    textual run --dev application/main.py
+else
+    python3 application/main.py
+fi
+
 if [ $? -ne 0 ]; then
     echo "Failed to run the application."
     exit 1

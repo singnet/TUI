@@ -69,23 +69,54 @@ fi
 ln -sf $(brew --prefix)/bin/python3 $(brew --prefix)/bin/python
 
 # Check for the virtual environment folder
-if [[ ! -d "tui_venv" ]]; then
+if [ ! -d "tui_venv" ]; then
     # Create the virtual environment
-    python -m venv tui_venv
+    python3 -m venv tui_venv
+    if [ $? -ne 0 ]; then
+        echo "Failed to create virtual environment."
+        rm -r tui_venv
+        exit 1
+    fi
     echo "Virtual environment created."
-
-    # Activate the virtual environment
     source tui_venv/bin/activate
-    echo "Virtual environment activated."
-
-    # Install requirements from the requirements.txt file
     pip install -r requirements.txt
+    if [ $? -ne 0 ]; then
+        echo "Failed to install dependencies."
+        exit 1
+    fi
     echo "Dependencies installed."
-else
-    # Activate the virtual environment
+    deactivate
+fi
+
+# Activate the virtual environment
+if [ -f "tui_venv/bin/activate" ]; then
     source tui_venv/bin/activate
     echo "Virtual environment activated."
+else
+    echo "Failed to find the virtual environment activation script."
+    rm -r tui_venv
+    exit 1
+fi
+
+# Check if "update" argument is passed
+if [[ "$1" == "update" ]]; then
+    echo "Updating dependencies..."
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    echo "Dependencies updated."
 fi
 
 # Run the main.py script
-python application/main.py
+
+# Check if "dev" argument is passed
+if [[ "$1" == "dev" ]]; then
+    echo "Running in DEV mode"
+    textual run --dev application/main.py
+else
+    python3 application/main.py
+fi
+
+if [ $? -ne 0 ]; then
+    echo "Failed to run the application."
+    exit 1
+fi
