@@ -1,5 +1,15 @@
 #!/bin/sh
 
+# Detect architecture
+if [[ $(uname -m) == 'arm64' ]]; then
+    BREW_PATH="/opt/homebrew/bin/brew"
+elif [[ $(uname -m) == 'x86_64' ]]; then
+    BREW_PATH="/usr/local/bin/brew"
+else
+    echo "Could not detect architecture. Please ensure you are running this with an Intel or Silicon CPU Mac"
+    exit 1
+fi
+
 # Detect the shell
 if [ -n "$ZSH_VERSION" ]; then
     SHELL_NAME="zsh"
@@ -27,11 +37,17 @@ prompt_install() {
         # Re-source Homebrew after installation
         if [[ "$1" == "Homebrew" ]]; then
             if [ "$SHELL_NAME" = "zsh" ]; then
-                echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zshrc
-                eval "$(/usr/local/bin/brew shellenv)"
+                if [ "$BREW_PATH" = "/opt/homebrew/bin/brew" ]; then
+                    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+                else
+                    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zshrc
+                fi
             else
-                echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.bash_profile
-                eval "$(/usr/local/bin/brew shellenv)"
+                if [ "$BREW_PATH" = "/opt/homebrew/bin/brew" ]; then
+                    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
+                else
+                    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.bash_profile
+                fi
             fi
         fi
     else
@@ -43,18 +59,8 @@ prompt_install() {
 # Check if Homebrew is installed
 command -v brew &>/dev/null || prompt_install "Homebrew" 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
 
-# Update PATH for Homebrew
-if [ "$SHELL_NAME" = "zsh" ]; then
-    if [[ -e ~/.zshrc ]]; then
-        source ~/.zshrc
-    fi
-else
-    if [[ -e ~/.bash_profile ]]; then
-        source ~/.bash_profile
-    fi
-fi
-
-eval "$(/usr/local/bin/brew shellenv)"
+# Ensure PATH for Homebrew is correct
+eval "$($BREW_PATH shellenv)"
 
 # Check if Python >= 3.10 is installed
 PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))' 2>/dev/null || true)
