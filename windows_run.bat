@@ -8,6 +8,9 @@ if '%ERRORLEVEL%' NEQ '0' (
     exit /b 1
 )
 
+:: Change to the directory where the batch file is located
+cd /d %~dp0
+
 :: Install Chocolatey if not installed
 choco -v >nul 2>&1
 if '%ERRORLEVEL%' NEQ '0' (

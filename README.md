@@ -55,6 +55,12 @@ sh macos_run.sh
 windows_run.bat
 ```
 
+Upon the chocolatey dependancy install
+   - Restart your command prompt. 
+Upon the python dependancy install
+   - Restart your machine. 
+Ensure you pay attention to the terminal output. Chocolatey will let you know if you need to restart your command prompt, restart your machine, or if the install has failed and needs to be done manually.
+
 **NOTE:**
 
 First startup will take longer than usual, as the script will check and install base dependancies, generate a virtual environment and install the python requirements. The scripts are simple and commented, please read through them so you understand what is being done on your machine.
