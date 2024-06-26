@@ -227,7 +227,7 @@ class account_page(Screen):
                 id="account_page"
             )
         else:
-            error_exit_label = "ERROR: Could not retrieve account information, please ensure you have created an identity and can access it through the CLI"
+            error_exit_label = "ERROR: Could not retrieve account information, please ensure you have created a valid identity and set it to your default identity"
             self.app.push_screen(error_exit_page())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
