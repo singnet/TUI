@@ -117,7 +117,7 @@ class create_identity_page(Screen):
         if errCode == 0:
             yield ScrollableContainer(
                 Horizontal(
-                    RichLog(id="create_identity_page_left_block").write(img, expand=True),
+                    RichLog(id="create_identity_page_left_block").write(img),
                     Vertical(
                         Label("Get started with the TUI", id="create_identity_page_info_label_1"),
                         Label("Fill in all the fields and connect your Web3 account", id="create_identity_page_info_label_2"),

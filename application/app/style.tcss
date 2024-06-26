@@ -154,6 +154,14 @@ exit_page {
     width: 100%;
 }
 
+#exit_button {
+    background: #bf0b0b;
+}
+
+#exit_button:hover {
+    background: #db1212;
+}
+
 /* Create Identity screen */
 #create_identity {
     background: #f6d7b0;
@@ -173,10 +181,9 @@ exit_page {
     margin-top: 2;
     margin-bottom: 3;
     background: #23245b;
-    height: 45;
     overflow-y: hidden;
     overflow-x: hidden;
-    align: center middle;
+    max-width: 65;
 }
 
 #create_identity_right_div {
@@ -188,7 +195,7 @@ exit_page {
 }
 
 .create_identity_right_div_class Input {
-    width: 80;
+    width: 75w;
     border: black solid;
 }
 
@@ -405,6 +412,7 @@ exit_page {
     padding-left: 4;
     padding-right: 4;
     margin-bottom: 8;
+    margin-right: 1;
 }
 
 #identity_page_delete_label {
