@@ -199,8 +199,8 @@ class account_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
         wallet_dict, errCode = be.wallet_dict_create()
-        log_output = f"Account: {wallet_dict['account']}\nETH: {wallet_dict['ETH']}\nAGIX: {wallet_dict['AGIX']}\nMPE: {wallet_dict['MPE']}"
         if errCode == 0:
+            log_output = f"Account: {wallet_dict['account']}\nETH: {wallet_dict['ETH']}\nAGIX: {wallet_dict['AGIX']}\nMPE: {wallet_dict['MPE']}"
             yield Header()
             yield Horizontal(
                 be.nav_sidebar_vert("account"),
