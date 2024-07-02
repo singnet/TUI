@@ -37,17 +37,12 @@ prompt_install() {
         # Re-source Homebrew after installation
         if [[ "$1" == "Homebrew" ]]; then
             if [ "$SHELL_NAME" = "zsh" ]; then
-                if [ "$BREW_PATH" = "/opt/homebrew/bin/brew" ]; then
-                    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
-                else
-                    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zshrc
-                fi
+                echo 'eval "$('$BREW_PATH' shellenv)"' >> ~/.zshrc
+                echo 'eval "$('$BREW_PATH' shellenv)"' >> ~/.zprofile
+                eval "$($BREW_PATH shellenv)"
             else
-                if [ "$BREW_PATH" = "/opt/homebrew/bin/brew" ]; then
-                    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
-                else
-                    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.bash_profile
-                fi
+                echo 'eval "$('$BREW_PATH' shellenv)"' >> ~/.bash_profile
+                eval "$($BREW_PATH shellenv)"
             fi
         fi
     else
@@ -57,10 +52,8 @@ prompt_install() {
 }
 
 # Check if Homebrew is installed
-command -v brew &>/dev/null || prompt_install "Homebrew" 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-
-# Ensure PATH for Homebrew is correct
 eval "$($BREW_PATH shellenv)"
+command -v brew &>/dev/null || prompt_install "Homebrew" 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
 
 # Check if Python >= 3.10 is installed
 PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))' 2>/dev/null || true)

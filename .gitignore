@@ -1,11 +1,10 @@
-# Mac temp files
+# Temp files
 .DS_Store
-
-# Python temp files
-__pycache__/
+__pycache__
+.vscode
 
 # Virtual environement
-tui_venv/
+tui_venv
 
 # Testing
 launch.json
