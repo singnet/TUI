@@ -1834,7 +1834,7 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
 
     return output, errCode, command
 
-def channel_print_initialized(only_id, filter_sender, filter_signer, filter_my, mpe_addr, registry, wallet_index):
+def channel_print_initialized(only_id=None, filter_sender=None, filter_signer=None, filter_my=None, mpe_addr=None, registry=None, wallet_index=None):
     # snet channel print-initialized [-h] [--only-id]
     #                            [--filter-sender | --filter-signer | --filter-my]
     #                            [--multipartyescrow-at MULTIPARTYESCROW_AT]
