@@ -29,7 +29,7 @@
     border: none;
     height: 3;
     width: 8;
-    margin-left: 21;
+    margin-left: 20;
 }
 
 #start_button:focus {
@@ -285,7 +285,7 @@ exit_page {
 }
 
 #exit_page_nav {
-    margin-top: 20;
+    margin-top: 15;
 }
 
 /* All content pages */
@@ -660,6 +660,7 @@ exit_page {
 #treasurer_back_button {
     margin-left: 3;
     margin-top: 3;
+    margin-bottom: 1;
 }
 
 /* Account Treasurer claim Page */
@@ -865,6 +866,7 @@ exit_page {
 #organization_page_bottom_button_div {
     margin-top: 3;
     margin-left: 10;
+    margin-bottom: 1;
 }
 
 #organization_page_metadata_button {
@@ -956,6 +958,7 @@ exit_page {
 
 #org_metadata_back_button {
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Organization Print metadata page */
@@ -1272,12 +1275,13 @@ exit_page {
 
 .update_org_metadata_page_div {
     align: right middle;
-    margin-bottom: 3;
+    margin-bottom: 2;
 }
 
 #update_org_metadata_radio_set {
     border: black solid;
     margin-left: 3;
+    margin-bottom: 3;
 }
 
 #update_org_metadata_quiet_radio {
@@ -1316,7 +1320,7 @@ exit_page {
 }
 
 #org_groups_update_button {
-    margin-left: 33;
+    margin-left: 25;
     padding-top: 3;
     padding-left: 9;
     padding-right: 9;
@@ -1324,7 +1328,8 @@ exit_page {
 
 #org_groups_back_button {
     margin-left: 3;
-    margin-top: 15;
+    margin-top: 12;
+    margin-bottom: 1;
 }
 
 /* Organization Groups add page */
@@ -1450,7 +1455,8 @@ exit_page {
 
 #members_back_button {
     margin-left: 3;
-    margin-top: 15;
+    margin-top: 12;
+    margin-bottom: 1;
 }
 
 /* Organization Members manage page */
@@ -1585,7 +1591,7 @@ exit_page {
 #org_manage_page_title {
     margin-left: 3;
     text-style: bold underline;
-    margin-bottom: 15;
+    margin-bottom: 10;
 }
 
 #org_manage_page_button_div {
@@ -1608,6 +1614,7 @@ exit_page {
 
 #org_manage_back_button {
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Organization Manage create org page */
@@ -1732,13 +1739,13 @@ exit_page {
 #services_page_title{
     margin-left: 3;
     text-style: bold underline;
-    margin-bottom: 15;
+    margin-bottom: 11;
 }
 
 #services_page_button_div {
     margin-left: 17;
     margin-bottom: 10;
-    # margin-top: 15;
+    margin-top: 2;
 }
 
 #services_metadata_button {
@@ -1869,41 +1876,41 @@ exit_page {
     padding-left: 8;
     padding-right: 8;
     margin-left: 2;
-    margin-right: 10;
+    margin-right: 5;
 }
 
 #service_metadata_set_fixed_price_button {
     padding-top: 3;
     padding-left: 5;
     padding-right: 5;
-    margin-left: 10;
-    margin-right: 10;
+    margin-left: 5;
+    margin-right: 5;
 }
 
 #service_metadata_set_method_price_button {
     padding-top: 3;
     padding-left: 7;
     padding-right: 7;
-    margin-left: 10;
+    margin-left: 5;
     margin-right: 10;
 }
 
 #service_metadata_set_lower_div {
-    margin-left: 15;
+    margin-left: 10;
 }
 
 #service_metadata_set_free_calls_button {
     padding-top: 3;
     padding-left: 6;
     padding-right: 6;
-    margin-left: 8;
+    margin-left: 10;
 }
 
 #service_metadata_set_freecall_signer_button {
     padding-top: 3;
     padding-left: 1;
     padding-right: 1;
-    margin-left: 10;
+    margin-left: 5;
 }
 
 #service_metadata_set_back_button {
