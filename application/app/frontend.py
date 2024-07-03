@@ -348,6 +348,7 @@ class treasurer_claim_page(Screen):
                     id="treasurer_claim_index_div",
                     classes="treasurer_claim_page_div"
                 ),
+                Label("Run Options", id="treasurer_claim_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="treasurer_claim_quiet_radio", classes="treasurer_claim_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="treasurer_claim_verbose_radio", classes="treasurer_claim_page_radio"),
@@ -423,6 +424,7 @@ class treasurer_claim_all_page(Screen):
                     id="treasurer_claim_all_index_div",
                     classes="treasurer_claim_all_page_div"
                 ),
+                Label("Run Options", id="treasurer_claim_all_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="treasurer_claim_all_quiet_radio", classes="treasurer_claim_all_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="treasurer_claim_all_verbose_radio", classes="treasurer_claim_all_page_radio"),
@@ -503,6 +505,7 @@ class treasurer_claim_expr_page(Screen):
                     id="treasurer_claim_expr_index_div",
                     classes="treasurer_claim_expr_page_div"
                 ),
+                Label("Run Options", id="treasurer_claim_expr_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="treasurer_claim_expr_quiet_radio", classes="treasurer_claim_expr_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="treasurer_claim_expr_verbose_radio", classes="treasurer_claim_expr_page_radio"),
@@ -649,6 +652,7 @@ class account_deposit_page(Screen):
                     id="account_deposit_index_div",
                     classes="account_deposit_page_div"
                 ),
+                Label("Run Options", id="account_deposit_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="account_deposit_quiet_radio", classes="account_deposit_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="account_deposit_verbose_radio", classes="account_deposit_page_radio"),
@@ -734,6 +738,7 @@ class account_withdraw_page(Screen):
                     id="account_withdraw_index_div",
                     classes="account_withdraw_page_div"
                 ),
+                Label("Run Options", id="account_withdraw_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="account_withdraw_quiet_radio", classes="account_withdraw_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="account_withdraw_verbose_radio", classes="account_withdraw_page_radio"),
@@ -824,6 +829,7 @@ class account_transfer_page(Screen):
                     id="account_transfer_index_div",
                     classes="account_transfer_page_div"
                 ),
+                Label("Run Options", id="account_transfer_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="account_transfer_quiet_radio", classes="account_transfer_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="account_transfer_verbose_radio", classes="account_transfer_page_radio"),
@@ -1384,6 +1390,7 @@ class update_org_metadata_page(Screen):
                     id="update_org_metadata_index_div",
                     classes="update_org_metadata_page_div"
                 ),
+                Label("Run Options", id="update_org_metadata_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="update_org_metadata_quiet_radio", classes="update_org_metadata_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="update_org_metadata_verbose_radio", classes="update_org_metadata_page_radio"),
@@ -1780,6 +1787,7 @@ class manage_members_page(Screen):
                     id="manage_members_index_div",
                     classes="manage_members_page_div"
                 ),
+                Label("Run Options", id="manage_members_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="manage_members_quiet_radio", classes="manage_members_radio"),
                     RadioButton(label="Verbose transaction printing", id="manage_members_verbose_radio", classes="manage_members_radio"),
@@ -1866,6 +1874,7 @@ class change_org_owner_page(Screen):
                     id="change_org_owner_page_index_div",
                     classes="change_org_owner_page_div"
                 ),
+                Label("Run Options", id="change_org_owner_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="change_org_owner_quiet_radio"),
                     RadioButton(label="Verbose transaction printing", id="change_org_owner_verbose_radio"),
@@ -2004,6 +2013,7 @@ class org_manage_create_page(Screen):
                     id="org_manage_create_index_div",
                     classes="org_manage_create_page_div"
                 ),
+                Label("Run Options", id="org_manage_create_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="org_manage_create_quiet_radio", classes="org_manage_create_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="org_manage_create_verbose_radio", classes="org_manage_create_page_radio"),
@@ -2087,6 +2097,7 @@ class org_manage_delete_page(Screen):
                     id="org_manage_delete_reg_addr_div",
                     classes="org_manage_delete_page_div"
                 ),
+                Label("Run Options", id="org_manage_delete_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="org_manage_delete_quiet_radio", classes="org_manage_delete_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="org_manage_delete_verbose_radio", classes="org_manage_delete_page_radio"),
@@ -3128,6 +3139,7 @@ class service_metadata_add_remove_media_page(Screen):
                     id="service_metadata_add_remove_media_file_div",
                     classes="service_metadata_add_remove_media_page_div"
                 ),
+                Label("Run Options", id="service_metadata_add_remove_media_page_run_options_label"),
                 RadioButton(label="Media is hero-image", id="service_metadata_add_media_hero_radio", classes="service_metadata_add_remove_media_page_radio"),
                 Horizontal(
                     Button("Remove ALL Media (NOTE: EVERY media file)", id="service_metadata_add_remove_media_remove_button"),
@@ -3392,6 +3404,7 @@ class service_metadata_update_metadata_page(Screen):
                     id="service_metadata_update_metadata_index_div",
                     classes="service_metadata_update_metadata_page_div"
                 ),
+                Label("Run Options", id="service_metadata_update_metadata_page_run_options_label"),
                 RadioButton(label="Update MPE Address in metadata before publishing service", id="service_metadata_update_metadata_update_mpe_radio", classes="service_metadata_update_metadata_page_radio"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="service_metadata_update_metadata_quiet_radio", classes="service_metadata_update_metadata_page_radio"),
@@ -3796,6 +3809,7 @@ class publish_service_page(Screen):
                     id="publish_service_index_div",
                     classes="publish_service_page_div"
                 ),
+                Label("Run Options", id="publish_service_page_run_options_label"),
                 RadioButton(label="Update MPE Address in metadata before publishing service", id="publish_service_update_mpe_radio", classes="publish_service_page_radio"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="publish_service_quiet_radio", classes="publish_service_page_radio"),
@@ -3888,6 +3902,7 @@ class delete_service_page(Screen):
                     id="delete_service_index_div",
                     classes="delete_service_page_div"
                 ),
+                Label("Run Options", id="delete_service_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet transaction printing", id="delete_service_quiet_radio", classes="delete_service_page_radio"),
                     RadioButton(label="Verbose transaction printing", id="delete_service_verbose_radio", classes="delete_service_page_radio"),
@@ -4074,6 +4089,7 @@ class client_call_page(Screen):
                     id="client_call_page_wallet_index_div",
                     classes="client_call_page_div"
                 ),
+                Label("Run Options", id="client_call_page_run_options_label"),
                 RadioButton(label="Skip check for service update", id="client_call_skip_update_check_radio"),
                 Horizontal(
                     Button(label="Back", id="client_call_back_button"),
@@ -4717,6 +4733,7 @@ class channel_open_init_page(Screen):
                     id="channel_open_init_page_wallet_index_div",
                     classes="channel_open_init_page_div"
                 ),
+                Label("Run Options", id="channel_open_init_page_run_options_label"),
                 RadioButton(label="Force", id="channel_open_init_page_force_radio"),
                 RadioButton(label="Open New Anyway", id="channel_open_init_page_new_anyway_radio"),
                 RadioSet(
@@ -4863,6 +4880,7 @@ class channel_open_init_meta_page(Screen):
                     id="channel_open_init_meta_page_wallet_index_div",
                     classes="channel_open_init_meta_page_div"
                 ),
+                Label("Run Options", id="channel_open_init_meta_page_run_options_label"),
                 RadioButton(label="Force", id="channel_open_init_meta_page_force_radio"),
                 RadioButton(label="Open New Anyway", id="channel_open_init_meta_page_new_anyway_radio"),
                 RadioSet(
@@ -5025,6 +5043,7 @@ class channel_extend_add_page(Screen):
                     id="channel_extend_add_page_wallet_index_div",
                     classes="channel_extend_add_page_div"
                 ),
+                Label("Run Options", id="channel_extend_add_page_run_options_label"),
                 RadioButton(label="Force", id="channel_extend_add_page_force_radio"),
                 RadioSet(
                     RadioButton(label="Quiet Print", id="channel_extend_add_page_quiet_radio"),
@@ -5158,6 +5177,7 @@ class channel_extend_add_org_page(Screen):
                     id="channel_extend_add_org_page_wallet_index_div",
                     classes="channel_extend_add_org_page_div"
                 ),
+                Label("Run Options", id="channel_extend_add_org_page_run_options_label"),
                 RadioButton(label="Force", id="channel_extend_add_org_page_force_radio"),
                 RadioSet(
                     RadioButton(label="Quiet Print", id="channel_extend_add_org_page_quiet_radio"),
@@ -5314,6 +5334,7 @@ class channel_print_init_page(Screen):
                     id="channel_print_initialized_page_wallet_index_div",
                     classes="channel_print_initialized_page_div"
                 ),
+                Label("Run Options", id="channel_print_initialized_page_run_options_label"),
                 RadioButton(label="Only Print Ids", id="channel_print_initialized_page_only_id_radio"),
                 RadioSet(
                     RadioButton(label="Filter by Sender", id="channel_print_initialized_page_filter_sender_radio"),
@@ -5407,6 +5428,7 @@ class channel_print_init_filter_org_page(Screen):
                     id="channel_print_initialized_filter_org_page_wallet_index_div",
                     classes="channel_print_initialized_filter_org_page_div"
                 ),
+                Label("Run Options", id="channel_print_initialized_filter_org_page_run_options_label"),
                 RadioButton(label="Only Print Ids", id="channel_print_initialized_filter_org_page_only_id_radio"),
                 RadioSet(
                     RadioButton(label="Filter by Sender", id="channel_print_initialized_filter_org_page_filter_sender_radio"),
@@ -5496,6 +5518,7 @@ class channel_print_all_filter_sender_page(Screen):
                     id="channel_print_all_filter_sender_page_wallet_index_div",
                     classes="channel_print_all_filter_sender_page_div"
                 ),
+                Label("Run Options", id="channel_print_all_filter_sender_page_run_options_label"),
                 RadioButton(label="Only Print Ids", id="channel_print_all_filter_sender_page_only_id_radio"),
                 Horizontal(
                     Button(label="Back", id="channel_print_all_filter_sender_page_back_button"),
@@ -5575,6 +5598,7 @@ class channel_print_all_filter_recipient_page(Screen):
                     id="channel_print_all_filter_recipient_page_wallet_index_div",
                     classes="channel_print_all_filter_recipient_page_div"
                 ),
+                Label("Run Options", id="channel_print_all_filter_recipient_page_run_options_label"),
                 RadioButton(label="Only Print Ids", id="channel_print_all_filter_recipient_page_only_id_radio"),
                 Horizontal(
                     Button(label="Back", id="channel_print_all_filter_recipient_page_back_button"),
@@ -5666,6 +5690,7 @@ class channel_print_all_filter_group_page(Screen):
                     id="channel_print_all_filter_group_page_wallet_index_div",
                     classes="channel_print_all_filter_group_page_div"
                 ),
+                Label("Run Options", id="channel_print_all_filter_group_page_run_options_label"),
                 RadioButton(label="Only Print Ids", id="channel_print_all_filter_group_page_only_id_radio"),
                 Horizontal(
                     Button(label="Back", id="channel_print_all_filter_group_page_back_button"),
@@ -5765,6 +5790,7 @@ class channel_print_all_filter_group_sender_page(Screen):
                     id="channel_print_all_filter_group_sender_page_wallet_index_div",
                     classes="channel_print_all_filter_group_sender_page_div"
                 ),
+                Label("Run Options", id="channel_print_all_filter_group_sender_page_run_options_label"),
                 RadioButton(label="Only Print Ids", id="channel_print_all_filter_group_sender_page_only_id_radio"),
                 Horizontal(
                     Button(label="Back", id="channel_print_all_filter_group_sender_page_back_button"),
@@ -5892,6 +5918,7 @@ class channel_claim_to_page(Screen):
                     id="channel_claim_timeout_page_wallet_index_div",
                     classes="channel_claim_timeout_page_div"
                 ),
+                Label("Run Options", id="channel_claim_timeout_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet Print", id="channel_claim_timeout_page_quiet_radio"),
                     RadioButton(label="Verbose Print", id="channel_claim_timeout_page_verbose_radio"),
@@ -5985,6 +6012,7 @@ class channel_claim_to_all_page(Screen):
                     id="channel_claim_timeout_all_page_wallet_index_div",
                     classes="channel_claim_timeout_all_page_div"
                 ),
+                Label("Run Options", id="channel_claim_timeout_all_page_run_options_label"),
                 RadioSet(
                     RadioButton(label="Quiet Print", id="channel_claim_timeout_all_page_quiet_radio"),
                     RadioButton(label="Verbose Print", id="channel_claim_timeout_all_page_verbose_radio"),
@@ -6078,6 +6106,7 @@ class custom_command_page(Screen):
                     id="custom_command_dir_div",
                     classes="custom_command_page_div"
                 ),
+                Label("Run Options", id="custom_command_page_run_options_label"),
                 RadioButton(label="Print Traceback", id="custom_command_traceback_radio"),
                 Horizontal(
                     Button("Run Custom Command", id="custom_command_confirm_button"),
