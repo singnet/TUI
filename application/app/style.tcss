@@ -301,6 +301,7 @@ exit_page {
 .content_page Input {
     border: heavy black;
     padding: 0;
+    height: 2w;
 }
 
 .content_page Horizontal {
