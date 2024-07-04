@@ -2363,6 +2363,7 @@ exit_page {
 
 #service_metadata_add_remove_group_back_button {
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Service metadata add/remove daemon addr Page */
@@ -2425,6 +2426,7 @@ exit_page {
 
 #service_metadata_add_remove_daemon_addr_back_button {
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Services Metadata add/remove assets Page */
@@ -2492,6 +2494,7 @@ exit_page {
 
 #service_metadata_add_remove_assets_back_button {
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Services metadata add/remove media Page */
