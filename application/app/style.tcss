@@ -3125,10 +3125,6 @@ exit_page {
 }
 
 /* Client page */
-# #client_page_content {
-#     align: left middle;
-# }
-
 #client_page_title{
     margin-left: 3;
     margin-top: 2;
@@ -3176,7 +3172,7 @@ exit_page {
     margin-left: 25;
     padding-top: 3;
     padding-left: 3;
-    padding-right: 3;
+    padding-right: 2;
 }
 
 /* Client call page */
