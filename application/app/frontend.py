@@ -621,10 +621,10 @@ class account_deposit_page(Screen):
         yield Horizontal(
             be.nav_sidebar_vert("account"),
             ScrollableContainer(
-                Label("Deposit AGI Tokens", id="account_deposit_page_title"),
+                Label("Deposit AGIX Tokens", id="account_deposit_page_title"),
                 Horizontal(
                     Label("Amount to Deposit", id="account_deposit_amount_label", classes="account_deposit_page_label"),
-                    Input(placeholder="Amount of AGI tokens to deposit in MPE wallet", id="account_deposit_amount_input", classes="account_deposit_page_input"),
+                    Input(placeholder="Amount of AGIX tokens to deposit in MPE wallet", id="account_deposit_amount_input", classes="account_deposit_page_input"),
                     id="account_deposit_amount_div",
                     classes="account_deposit_page_div"
                 ),
@@ -713,10 +713,10 @@ class account_withdraw_page(Screen):
         yield Horizontal(
             be.nav_sidebar_vert("account"),
             ScrollableContainer(
-                Label("Withdraw AGI Tokens", id="account_withdraw_page_title"),
+                Label("Withdraw AGIX Tokens", id="account_withdraw_page_title"),
                 Horizontal(
                     Label("Amount", id="account_withdraw_amount_label", classes="account_withdraw_page_label"),
-                    Input(placeholder="Amount of AGI tokens to withdraw from MPE wallet", id="account_withdraw_amount_input", classes="account_withdraw_page_input"),
+                    Input(placeholder="Amount of AGIX tokens to withdraw from MPE wallet", id="account_withdraw_amount_input", classes="account_withdraw_page_input"),
                     id="account_withdraw_amount_div",
                     classes="account_withdraw_page_div"
                 ),
@@ -798,7 +798,7 @@ class account_transfer_page(Screen):
         yield Horizontal(
             be.nav_sidebar_vert("account"),
             ScrollableContainer(
-                Label("Transfer AGI Tokens", id="account_transfer_page_title"),
+                Label("Transfer AGIX Tokens", id="account_transfer_page_title"),
                 Horizontal(
                     Label("Receiver Address", id="account_transfer_addr_label", classes="account_transfer_page_label"),
                     Input(placeholder="Address of the receiver", id="account_transfer_addr_input", classes="account_transfer_page_input"),
@@ -807,7 +807,7 @@ class account_transfer_page(Screen):
                 ),
                 Horizontal(
                     Label("Amount to Transfer", id="account_transfer_amount_label", classes="account_transfer_page_label"),
-                    Input(placeholder="Amount of AGI tokens to be transferred to another account inside MPE wallet", id="account_transfer_amount_input", classes="account_transfer_page_input"),
+                    Input(placeholder="Amount of AGIX tokens to be transferred to another account inside MPE wallet", id="account_transfer_amount_input", classes="account_transfer_page_input"),
                     id="account_transfer_amount_div",
                     classes="account_transfer_page_div"
                 ),
@@ -2299,7 +2299,7 @@ class init_service_metadata_page(Screen):
                 ),
                 Horizontal(
                     Label("Fixed Price", id="init_service_metadata_price_label", classes="init_service_metadata_page_label"),
-                    Input(placeholder="Set fixed price in AGI token for all methods", id="init_service_metadata_price_input", classes="init_service_metadata_page_input"),
+                    Input(placeholder="Set fixed price in AGIX token for all methods", id="init_service_metadata_price_input", classes="init_service_metadata_page_input"),
                     id="init_service_metadata_price_div",
                     classes="init_service_metadata_page_div"
                 ),
@@ -2504,7 +2504,7 @@ class service_metadata_set_fixed_price_page(Screen):
                 ),
                 Horizontal(
                     Label("Fixed Price", id="service_metadata_set_fixed_price_amount_label", classes="service_metadata_set_fixed_price_page_label"),
-                    Input(placeholder="Fixed price in AGI token for all methods", id="service_metadata_set_fixed_price_amount_input", classes="service_metadata_set_fixed_price_page_input"),
+                    Input(placeholder="Fixed price in AGIX token for all methods", id="service_metadata_set_fixed_price_amount_input", classes="service_metadata_set_fixed_price_page_input"),
                     id="service_metadata_set_fixed_price_amount_div",
                     classes="service_metadata_set_fixed_price_page_div"
                 ),
@@ -2589,7 +2589,7 @@ class service_metadata_set_method_price_page(Screen):
                 ),
                 Horizontal(
                     Label("Fixed Price", id="service_metadata_set_method_price_amount_label", classes="service_metadata_set_method_price_page_label"),
-                    Input(placeholder="Set fixed price in AGI token for all methods", id="service_metadata_set_method_price_amount_input", classes="service_metadata_set_method_price_page_input"),
+                    Input(placeholder="Set fixed price in AGIX token for all methods", id="service_metadata_set_method_price_amount_input", classes="service_metadata_set_method_price_page_input"),
                     id="service_metadata_set_method_price_amount_div",
                     classes="service_metadata_set_method_price_page_div"
                 ),
@@ -4686,8 +4686,8 @@ class channel_open_init_page(Screen):
                     classes="channel_open_init_page_div"
                 ),
                 Horizontal(
-                    Label("AGI Amount", id="channel_open_init_page_agi_amount_label", classes="channel_open_init_page_label"),
-                    Input(placeholder="Amount of AGI tokens to put in the new channel", id="channel_open_init_page_agi_amount_input", classes="channel_open_init_page_input"),
+                    Label("AGIX Amount", id="channel_open_init_page_agi_amount_label", classes="channel_open_init_page_label"),
+                    Input(placeholder="Amount of AGIX tokens to put in the new channel", id="channel_open_init_page_agi_amount_input", classes="channel_open_init_page_input"),
                     id="channel_open_init_page_agi_amount_div",
                     classes="channel_open_init_page_div"
                 ),
@@ -4827,8 +4827,8 @@ class channel_open_init_meta_page(Screen):
                     classes="channel_open_init_meta_page_div"
                 ),
                 Horizontal(
-                    Label("AGI Amount", id="channel_open_init_meta_page_agi_amount_label", classes="channel_open_init_meta_page_label"),
-                    Input(placeholder="Amount of AGI tokens to put in the new channel", id="channel_open_init_meta_page_agi_amount_input", classes="channel_open_init_meta_page_input"),
+                    Label("AGIX Amount", id="channel_open_init_meta_page_agi_amount_label", classes="channel_open_init_meta_page_label"),
+                    Input(placeholder="Amount of AGIX tokens to put in the new channel", id="channel_open_init_meta_page_agi_amount_input", classes="channel_open_init_meta_page_input"),
                     id="channel_open_init_meta_page_agi_amount_div",
                     classes="channel_open_init_meta_page_div"
                 ),
@@ -5020,8 +5020,8 @@ class channel_extend_add_page(Screen):
                     classes="channel_extend_add_page_div"
                 ),
                 Horizontal(
-                    Label("AGI Amount", id="channel_extend_add_page_agi_amount_label", classes="channel_extend_add_page_label"),
-                    Input(placeholder="[OPTIONAL] Amount of AGI tokens to add", id="channel_extend_add_page_agi_amount_input", classes="channel_extend_add_page_input"),
+                    Label("AGIX Amount", id="channel_extend_add_page_agi_amount_label", classes="channel_extend_add_page_label"),
+                    Input(placeholder="[OPTIONAL] Amount of AGIX tokens to add", id="channel_extend_add_page_agi_amount_input", classes="channel_extend_add_page_input"),
                     id="channel_extend_add_page_agi_amount_div",
                     classes="channel_extend_add_page_div"
                 ),
@@ -5160,8 +5160,8 @@ class channel_extend_add_org_page(Screen):
                     classes="channel_extend_add_org_page_div"
                 ),
                 Horizontal(
-                    Label("AGI Tokens Amount", id="channel_extend_add_org_page_agi_amount_label", classes="channel_extend_add_org_page_label"),
-                    Input(placeholder="[OPTIONAL] Amount of AGI tokens to add", id="channel_extend_add_org_page_agi_amount_input", classes="channel_extend_add_org_page_input"),
+                    Label("AGIX Tokens Amount", id="channel_extend_add_org_page_agi_amount_label", classes="channel_extend_add_org_page_label"),
+                    Input(placeholder="[OPTIONAL] Amount of AGIX tokens to add", id="channel_extend_add_org_page_agi_amount_input", classes="channel_extend_add_org_page_input"),
                     id="channel_extend_add_org_page_agi_amount_div",
                     classes="channel_extend_add_org_page_div"
                 ),
