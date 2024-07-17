@@ -208,10 +208,10 @@ def delete_identity_cli(id_name):
     output, errCode = run_shell_command(f"snet --print-traceback identity delete {id_name}")
     return output, errCode
 
-def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose):
+def account_deposit(agi_amount, contract_address, mpe_address, wallet_index, quiet, verbose):
     # snet account deposit [-h] [--singularitynettoken-at SINGULARITYNETTOKEN_AT]
     #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                  [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                  [--wallet-index WALLET_INDEX]
     #                  [--yes] [--quiet | --verbose]
     #                  AMOUNT
     command = "snet --print-traceback account deposit"
@@ -226,8 +226,6 @@ def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet
         command += f" --singularitynettoken-at {contract_address}"
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
-    if isinstance(gas_price, str) and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if isinstance(wallet_index, str) and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -239,9 +237,9 @@ def account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet
 
     return run_shell_command(command)
 
-def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
+def account_withdraw(agi_amount, mpe_address, wallet_index, quiet, verbose):
     # snet account withdraw [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                   [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                   [--wallet-index WALLET_INDEX]
     #                   [--yes] [--quiet | --verbose]
     #                   AMOUNT
     command = "snet --print-traceback account withdraw"
@@ -254,8 +252,6 @@ def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, ve
         return "ERROR: Please enter deposit amount greater than 0", 42
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
-    if isinstance(gas_price, str) and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if isinstance(wallet_index, str) and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -267,9 +263,9 @@ def account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, ve
 
     return run_shell_command(command)
 
-def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose):
+def account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet, verbose):
     # snet account transfer [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                   [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                   [--wallet-index WALLET_INDEX]
     #                   [--yes] [--quiet | --verbose]
     #                   RECEIVER AMOUNT
     command = "snet --print-traceback account transfer"
@@ -284,8 +280,6 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_i
         return "ERROR: Please enter deposit amount greater than 0", 42
     if isinstance(mpe_address, str) and len(mpe_address) > 0:
         command += f" --multipartyescrow-at {mpe_address}"
-    if isinstance(gas_price, str) and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if isinstance(wallet_index, str) and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -419,10 +413,9 @@ def remove_org_metadata_contacts(metadata_file):
         output = "Successfully deleted all contacts!"
     return output, errCode
 
-def update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose):
+def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose):
     # snet organization update-metadata [-h] [--metadata-file METADATA_FILE]
     #                               [--members ORG_MEMBERS]
-    #                               [--gas-price GAS_PRICE]
     #                               [--wallet-index WALLET_INDEX] [--yes]
     #                               [--quiet | --verbose]
     #                               [--registry-at REGISTRY_ADDRESS]
@@ -436,8 +429,6 @@ def update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose)
     command += f" --metadata-file {file_name}"
     if mem_list and len(mem_list) > 0:
         command += f" --members {mem_list}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -451,9 +442,9 @@ def update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose)
         output = "Organization metadata successfully updated!"
     return output, errCode
 
-def create_organization(org_id, metadata_file, members, gas, index, quiet, verbose, registry_address):
+def create_organization(org_id, metadata_file, members, index, quiet, verbose, registry_address):
     # snet organization create [-h] [--metadata-file METADATA_FILE]
-    #                      [--members ORG_MEMBERS] [--gas-price GAS_PRICE]
+    #                      [--members ORG_MEMBERS] 
     #                      [--wallet-index WALLET_INDEX] [--yes]
     #                      [--quiet | --verbose]
     #                      [--registry-at REGISTRY_ADDRESS]
@@ -467,8 +458,6 @@ def create_organization(org_id, metadata_file, members, gas, index, quiet, verbo
     command += f" --metadata-file {metadata_file}"
     if members and len(members) > 0:
         command += f" --members {members}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -484,8 +473,8 @@ def create_organization(org_id, metadata_file, members, gas, index, quiet, verbo
         output = "Organization successfully created!"
     return output, errCode
 
-def change_organization_owner(org_id, owner_address, gas_price, wallet_index, quiet, verbose, registry_address):
-    # snet organization change-owner [-h] [--gas-price GAS_PRICE]
+def change_organization_owner(org_id, owner_address, wallet_index, quiet, verbose, registry_address):
+    # snet organization change-owner [-h] 
     #                            [--wallet-index WALLET_INDEX] [--yes]
     #                            [--quiet | --verbose]
     #                            [--registry-at REGISTRY_ADDRESS]
@@ -496,8 +485,6 @@ def change_organization_owner(org_id, owner_address, gas_price, wallet_index, qu
     if not owner_address or len(owner_address) <= 0:
         return "ERROR: Must enter owner address", 42
     command = f"snet --print-traceback organization change-owner {org_id} {owner_address}"
-    if gas_price and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -513,8 +500,8 @@ def change_organization_owner(org_id, owner_address, gas_price, wallet_index, qu
         output = "Organization owner successfully changed!"
     return output, errCode
 
-def add_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet, verbose, registry_address):
-    # snet organization add-members [-h] [--gas-price GAS_PRICE]
+def add_org_metadata_members(org_id, org_members, wallet_index, quiet, verbose, registry_address):
+    # snet organization add-members [-h] 
     #                           [--wallet-index WALLET_INDEX] [--yes]
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
@@ -525,8 +512,6 @@ def add_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet
     if not org_members or len(org_members) <= 0:
         return "ERROR: Must enter organization members", 42
     command = f"snet --print-traceback organization add-members {org_id} [{org_members}]"
-    if gas_price and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -542,8 +527,8 @@ def add_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet
         output = "Members successfully added to organization!"
     return output, errCode
 
-def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, quiet, verbose, registry_address):
-    # snet organization rem-members [-h] [--gas-price GAS_PRICE]
+def remove_org_metadata_members(org_id, org_members, wallet_index, quiet, verbose, registry_address):
+    # snet organization rem-members [-h] 
     #                           [--wallet-index WALLET_INDEX] [--yes]
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
@@ -554,8 +539,6 @@ def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, qu
     if not org_members or len(org_members) <= 0:
         return "ERROR: Must enter organization members", 42
     command = f"snet --print-traceback organization rem-members {org_id} [{org_members}]"
-    if gas_price and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -571,8 +554,8 @@ def remove_org_metadata_members(org_id, org_members, gas_price, wallet_index, qu
         output = "Members successfully removed from organization!"
     return output, errCode
 
-def delete_organization(org_id, gas_price, wallet_index, quiet, verbose, registry_address):
-    # snet organization delete [-h] [--gas-price GAS_PRICE]
+def delete_organization(org_id, wallet_index, quiet, verbose, registry_address):
+    # snet organization delete [-h] 
     #                      [--wallet-index WALLET_INDEX] [--yes]
     #                      [--quiet | --verbose]
     #                      [--registry-at REGISTRY_ADDRESS]
@@ -581,8 +564,6 @@ def delete_organization(org_id, gas_price, wallet_index, quiet, verbose, registr
     if not org_id or len(org_id) <= 0:
         return "ERROR: Must enter organization identity", 42
     command = f"snet --print-traceback organization delete {org_id}"
-    if gas_price and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -748,11 +729,11 @@ def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
         output = "Service description successfully added!"
     return output, errCode
 
-def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose):
+def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose):
     # snet service publish [-h] [--metadata-file METADATA_FILE]
     #                  [--update-mpe-address]
     #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                  [--registry-at REGISTRY_AT] [--gas-price GAS_PRICE]
+    #                  [--registry-at REGISTRY_AT] 
     #                  [--wallet-index WALLET_INDEX] [--yes]
     #                  [--quiet | --verbose]
     #                  ORG_ID SERVICE_ID
@@ -770,8 +751,6 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
         command += f" --multipartyescrow-at {mpe_addr}"
     if update_mpe:
         command += " --update-mpe-address"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -785,8 +764,8 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
         output = "Service successfully published!"
     return output, errCode
 
-def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
-    # snet service delete [-h] [--registry-at REGISTRY_AT] [--gas-price GAS_PRICE]
+def delete_service(org_id, service_id, reg_addr, index, quiet, verbose):
+    # snet service delete [-h] [--registry-at REGISTRY_AT] 
     #                 [--wallet-index WALLET_INDEX] [--yes]
     #                 [--quiet | --verbose]
     #                 ORG_ID SERVICE_ID
@@ -799,8 +778,6 @@ def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
     command = f"snet --print-traceback service delete {org_id} {service_id}"
     if reg_addr and len(reg_addr) > 0:
         command += f" --registry-at {reg_addr}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -814,8 +791,8 @@ def delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose):
         output = "Service successfully deleted!"
     return output, errCode
 
-def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
-    # snet organization add-members [-h] [--gas-price GAS_PRICE]
+def add_org_members(org_id, mem_list, index, quiet, verbose):
+    # snet organization add-members [-h] 
     #                           [--wallet-index WALLET_INDEX] [--yes]
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
@@ -825,8 +802,6 @@ def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
     if not mem_list or len(mem_list) == 0:
         return "ERROR: Members list is required", 42
     command = f"snet --print-traceback organization add-members {org_id} {mem_list}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -840,8 +815,8 @@ def add_org_members(org_id, mem_list, gas, index, quiet, verbose):
         output = "Members successfully added to the organization!"
     return output, errCode
 
-def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
-    # snet organization rem-members [-h] [--gas-price GAS_PRICE]
+def remove_org_members(org_id, mem_list, index, quiet, verbose):
+    # snet organization rem-members [-h] 
     #                           [--wallet-index WALLET_INDEX] [--yes]
     #                           [--quiet | --verbose]
     #                           [--registry-at REGISTRY_ADDRESS]
@@ -851,8 +826,6 @@ def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
     if not mem_list or len(mem_list) == 0:
         return "ERROR: Members list is required", 42
     command = f"snet --print-traceback organization rem-members {org_id} {mem_list}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -866,8 +839,8 @@ def remove_org_members(org_id, mem_list, gas, index, quiet, verbose):
         output = "Members successfully removed from the organization!"
     return output, errCode
 
-def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
-    # snet organization change-owner [-h] [--gas-price GAS_PRICE]
+def change_org_owner(org_id, new_addr, index, quiet, verbose):
+    # snet organization change-owner [-h] 
     #                            [--wallet-index WALLET_INDEX] [--yes]
     #                            [--quiet | --verbose]
     #                            [--registry-at REGISTRY_ADDRESS]
@@ -879,8 +852,6 @@ def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
         return "ERROR: New owner address is required", 42
 
     command = f"snet --print-traceback organization change-owner {org_id} {new_addr}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -904,8 +875,8 @@ def change_org_owner(org_id, new_addr, gas, index, quiet, verbose):
 #     output, errCode = run_shell_command(command)
 #     return output, errCode
 
-def treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose):
-    # snet treasurer claim [-h] --endpoint ENDPOINT [--gas-price GAS_PRICE]
+def treasurer_claim(channels, endpoint, wallet_index, quiet, verbose):
+    # snet treasurer claim [-h] --endpoint ENDPOINT 
     #                  [--wallet-index WALLET_INDEX] [--yes]
     #                  [--quiet | --verbose]
     #                  CHANNELS [CHANNELS ...]
@@ -915,8 +886,6 @@ def treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose)
         return "ERROR: Endpoint is required", 42
 
     command = f"snet --print-traceback treasurer claim --endpoint {endpoint} {channels}"
-    if gas_price and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -930,16 +899,14 @@ def treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose)
         output = "Payments successfully claimed from channels!"
     return output, errCode
 
-def treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose):
-    # snet treasurer claim-all [-h] --endpoint ENDPOINT [--gas-price GAS_PRICE]
+def treasurer_claim_all(endpoint, wallet_index, quiet, verbose):
+    # snet treasurer claim-all [-h] --endpoint ENDPOINT 
     #                      [--wallet-index WALLET_INDEX] [--yes]
     #                      [--quiet | --verbose]
     if not endpoint or len(endpoint) == 0:
         return "ERROR: Endpoint is required", 42
 
     command = f"snet --print-traceback treasurer claim-all --endpoint {endpoint}"
-    if gas_price and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -953,10 +920,10 @@ def treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose):
         output = "All available payments successfully claimed!"
     return output, errCode
 
-def treasurer_claim_expr(threshold: str, endpoint, gas_price, wallet_index, quiet, verbose):
+def treasurer_claim_expr(threshold: str, endpoint, wallet_index, quiet, verbose):
     # snet treasurer claim-expired [-h]
     #                          [--expiration-threshold EXPIRATION_THRESHOLD]
-    #                          --endpoint ENDPOINT [--gas-price GAS_PRICE]
+    #                          --endpoint ENDPOINT 
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
 
@@ -973,8 +940,6 @@ def treasurer_claim_expr(threshold: str, endpoint, gas_price, wallet_index, quie
             return "ERROR: Invalid expiration threshold, must be a number > 0", 42
         
         command += f" --expiration-threshold {threshold}"
-    if gas_price and len(gas_price) > 0:
-        command += f" --gas-price {gas_price}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -1315,12 +1280,11 @@ def service_metadata_update_validate_metadata(metadata_file):
 
     return output, errCode
 
-def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose):
+def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose):
     # snet service update-metadata [-h] [--metadata-file METADATA_FILE]
     #                          [--update-mpe-address]
     #                          [--multipartyescrow-at MULTIPARTYESCROW_AT]
     #                          [--registry-at REGISTRY_AT]
-    #                          [--gas-price GAS_PRICE]
     #                          [--wallet-index WALLET_INDEX] [--yes]
     #                          [--quiet | --verbose]
     #                          ORG_ID SERVICE_ID
@@ -1342,8 +1306,6 @@ def service_metadata_update_update_metadata(org_id, service_id, metadata_file, r
         command += f" --multipartyescrow-at {mpe_addr}"
     if update_mpe:
         command += " --update-mpe-address"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if index and len(index) > 0:
         command += f" --wallet-index {index}"
     if quiet:
@@ -1599,11 +1561,11 @@ def channel_init_metadata(org_id, group_name, channel_id, registry, mpe_addr, me
     output, errCode = run_shell_command(command)
     return output, errCode
 
-def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, from_block, gas, wallet_index, quiet, verbose, view):
+def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, from_block, wallet_index, quiet, verbose, view):
     # snet channel open-init [-h] [--registry-at REGISTRY_AT] [--force]
     #                    [--signer SIGNER]
     #                    [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                    [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                    [--wallet-index WALLET_INDEX]
     #                    [--yes] [--quiet | --verbose] [--open-new-anyway]
     #                    [--from-block FROM_BLOCK]
     #                    ORG_ID group_name AMOUNT EXPIRATION
@@ -1643,8 +1605,6 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
         command += " --open-new-anyway"
     if from_block and len(from_block) > 0:
         command += f" --from-block {from_block}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     
@@ -1661,11 +1621,10 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
 
     return output, errCode, command
 
-def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, from_block, metadata_file, gas, wallet_index, quiet, verbose, view):
+def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, from_block, metadata_file, wallet_index, quiet, verbose, view):
     # snet channel open-init-metadata [-h] [--registry-at REGISTRY_AT] [--force]
     #                             [--signer SIGNER]
     #                             [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                             [--gas-price GAS_PRICE]
     #                             [--wallet-index WALLET_INDEX] [--yes]
     #                             [--quiet | --verbose] [--open-new-anyway]
     #                             [--from-block FROM_BLOCK]
@@ -1710,8 +1669,6 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
         command += " --open-new-anyway"
     if from_block and len(from_block) > 0:
         command += f" --from-block {from_block}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     
@@ -1729,11 +1686,11 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
     return output, errCode, command
 
 
-def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, wallet_index, quiet, verbose, view):
+def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, wallet_index, quiet, verbose, view):
     # snet channel extend-add [-h] [--expiration EXPIRATION] [--force]
     #                     [--amount AMOUNT]
     #                     [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                     [--gas-price GAS_PRICE] [--wallet-index WALLET_INDEX]
+    #                     [--wallet-index WALLET_INDEX]
     #                     [--yes] [--quiet | --verbose]
     #                     CHANNEL_ID
 
@@ -1757,8 +1714,6 @@ def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, walle
         command += f" --amount {agi_amount}"
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     
@@ -1775,12 +1730,11 @@ def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, walle
 
     return output, errCode, command
 
-def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, gas, wallet_index, quiet, verbose, view):
+def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, wallet_index, quiet, verbose, view):
     # snet channel extend-add-for-org [-h] [--registry-at REGISTRY_AT]
     #                             [--expiration EXPIRATION] [--force]
     #                             [--amount AMOUNT]
     #                             [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                             [--gas-price GAS_PRICE]
     #                             [--wallet-index WALLET_INDEX] [--yes]
     #                             [--quiet | --verbose]
     #                             [--group-name GROUP_NAME]
@@ -1812,8 +1766,6 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
         command += f" --amount {agi_amount}"
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if channel_id and len(channel_id) > 0:
@@ -2014,9 +1966,8 @@ def channel_print_all_filter_group_sender(org_id, group_name, registry, only_id,
     output, errCode = run_shell_command(command)
     return output, errCode
 
-def channel_claim_timeout(channel_id, mpe_addr, gas, wallet_index, quiet, verbose, view):
+def channel_claim_timeout(channel_id, mpe_addr, wallet_index, quiet, verbose, view):
     # snet channel claim-timeout [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                        [--gas-price GAS_PRICE]
     #                        [--wallet-index WALLET_INDEX] [--yes]
     #                        [--quiet | --verbose]
     #                        CHANNEL_ID
@@ -2029,8 +1980,6 @@ def channel_claim_timeout(channel_id, mpe_addr, gas, wallet_index, quiet, verbos
     command = f"snet --print-traceback channel claim-timeout {channel_id}"
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:
@@ -2046,10 +1995,9 @@ def channel_claim_timeout(channel_id, mpe_addr, gas, wallet_index, quiet, verbos
 
     return output, errCode, command
 
-def channel_claim_timeout_all(mpe_addr, from_block, gas, wallet_index, quiet, verbose, view):
+def channel_claim_timeout_all(mpe_addr, from_block, wallet_index, quiet, verbose, view):
     # snet channel claim-timeout-all [-h]
     #                            [--multipartyescrow-at MULTIPARTYESCROW_AT]
-    #                            [--gas-price GAS_PRICE]
     #                            [--wallet-index WALLET_INDEX] [--yes]
     #                            [--quiet | --verbose] [--from-block FROM_BLOCK]
 
@@ -2060,8 +2008,6 @@ def channel_claim_timeout_all(mpe_addr, from_block, gas, wallet_index, quiet, ve
         command += f" --multipartyescrow-at {mpe_addr}"
     if from_block and len(from_block) > 0:
         command += f" --from-block {from_block}"
-    if gas and len(gas) > 0:
-        command += f" --gas-price {gas}"
     if wallet_index and len(wallet_index) > 0:
         command += f" --wallet-index {wallet_index}"
     if quiet:

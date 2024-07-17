@@ -337,12 +337,6 @@ class treasurer_claim_page(Screen):
                     classes="treasurer_claim_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="treasurer_claim_gas_label", classes="treasurer_claim_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="treasurer_claim_gas_input", classes="treasurer_claim_page_input"),
-                    id="treasurer_claim_gas_div",
-                    classes="treasurer_claim_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="treasurer_claim_index_label", classes="treasurer_claim_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="treasurer_claim_index_input", classes="treasurer_claim_page_input"),
                     id="treasurer_claim_index_div",
@@ -390,12 +384,11 @@ class treasurer_claim_page(Screen):
         elif event.button.id == "treasurer_claim_confirm_button":
             channels = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_channels_div").get_child_by_id("treasurer_claim_channels_input").value
             endpoint = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_endpoint_div").get_child_by_id("treasurer_claim_endpoint_input").value
-            gas_price = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_gas_div").get_child_by_id("treasurer_claim_gas_input").value
             wallet_index = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_index_div").get_child_by_id("treasurer_claim_index_input").value
             quiet = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_radio_set").get_child_by_id("treasurer_claim_quiet_radio").value
             verbose = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_radio_set").get_child_by_id("treasurer_claim_verbose_radio").value
 
-            output, errCode = be.treasurer_claim(channels, endpoint, gas_price, wallet_index, quiet, verbose)
+            output, errCode = be.treasurer_claim(channels, endpoint, wallet_index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -410,12 +403,6 @@ class treasurer_claim_all_page(Screen):
                     Label("Daemon Endpoint", id="treasurer_claim_all_endpoint_label", classes="treasurer_claim_all_page_label"),
                     Input(placeholder="Daemon Endpoint", id="treasurer_claim_all_endpoint_input", classes="treasurer_claim_all_page_input"),
                     id="treasurer_claim_all_endpoint_div",
-                    classes="treasurer_claim_all_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="treasurer_claim_all_gas_label", classes="treasurer_claim_all_page_label"),
-                    Input(placeholder="[OPTIONAL] In Wei or time based gas price strategy (defaults to session.default_gas_price)", id="treasurer_claim_all_gas_input", classes="treasurer_claim_all_page_input"),
-                    id="treasurer_claim_all_gas_div",
                     classes="treasurer_claim_all_page_div"
                 ),
                 Horizontal(
@@ -465,12 +452,11 @@ class treasurer_claim_all_page(Screen):
             self.app.switch_screen(treasurer_page())
         elif event.button.id == "treasurer_claim_all_confirm_button":
             endpoint = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_endpoint_div").get_child_by_id("treasurer_claim_all_endpoint_input").value
-            gas_price = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_gas_div").get_child_by_id("treasurer_claim_all_gas_input").value
             wallet_index = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_index_div").get_child_by_id("treasurer_claim_all_index_input").value
             quiet = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_radio_set").get_child_by_id("treasurer_claim_all_quiet_radio").value
             verbose = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_radio_set").get_child_by_id("treasurer_claim_all_verbose_radio").value
 
-            output, errCode = be.treasurer_claim_all(endpoint, gas_price, wallet_index, quiet, verbose)
+            output, errCode = be.treasurer_claim_all(endpoint, wallet_index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -491,12 +477,6 @@ class treasurer_claim_expr_page(Screen):
                     Label("Expir. Threshold", id="treasurer_claim_expr_threshold_label", classes="treasurer_claim_expr_page_label"),
                     Input(placeholder="[OPTIONAL] Service expiration threshold in blocks (default is 34560 ~ 6 days with 15s/block)", id="treasurer_claim_expr_threshold_input", classes="treasurer_claim_expr_page_input"),
                     id="treasurer_claim_expr_threshold_div",
-                    classes="treasurer_claim_expr_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="treasurer_claim_expr_gas_label", classes="treasurer_claim_expr_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="treasurer_claim_expr_gas_input", classes="treasurer_claim_expr_page_input"),
-                    id="treasurer_claim_expr_gas_div",
                     classes="treasurer_claim_expr_page_div"
                 ),
                 Horizontal(
@@ -547,12 +527,11 @@ class treasurer_claim_expr_page(Screen):
         elif event.button.id == "treasurer_claim_expr_confirm_button":
             threshold = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_threshold_div").get_child_by_id("treasurer_claim_expr_threshold_input").value
             endpoint = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_endpoint_div").get_child_by_id("treasurer_claim_expr_endpoint_input").value
-            gas_price = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_gas_div").get_child_by_id("treasurer_claim_expr_gas_input").value
             wallet_index = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_index_div").get_child_by_id("treasurer_claim_expr_index_input").value
             quiet = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_radio_set").get_child_by_id("treasurer_claim_expr_quiet_radio").value
             verbose = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_radio_set").get_child_by_id("treasurer_claim_expr_verbose_radio").value
 
-            output, errCode = be.treasurer_claim_expr(threshold, endpoint, gas_price, wallet_index, quiet, verbose)
+            output, errCode = be.treasurer_claim_expr(threshold, endpoint, wallet_index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -641,12 +620,6 @@ class account_deposit_page(Screen):
                     classes="account_deposit_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="account_deposit_gas_label", classes="account_deposit_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="account_deposit_gas_input", classes="account_deposit_page_input"),
-                    id="account_deposit_gas_div",
-                    classes="account_deposit_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="account_deposit_index_label", classes="account_deposit_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="account_deposit_index_input", classes="account_deposit_page_input"),
                     id="account_deposit_index_div",
@@ -696,12 +669,11 @@ class account_deposit_page(Screen):
             agi_amount = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_amount_div").get_child_by_id("account_deposit_amount_input").value
             contract_address = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_contract_div").get_child_by_id("account_deposit_contract_input").value
             mpe_address = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_mpe_div").get_child_by_id("account_deposit_mpe_input").value
-            gas_price = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_gas_div").get_child_by_id("account_deposit_gas_input").value
             wallet_index = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_index_div").get_child_by_id("account_deposit_index_input").value
             quiet = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_radio_set").get_child_by_id("account_deposit_quiet_radio").value
             verbose = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_radio_set").get_child_by_id("account_deposit_verbose_radio").value
 
-            output, errCode = be.account_deposit(agi_amount, contract_address, mpe_address, gas_price, wallet_index, quiet, verbose)
+            output, errCode = be.account_deposit(agi_amount, contract_address, mpe_address, wallet_index, quiet, verbose)
             popup_output = output
             if errCode == 0:
                 self.app.switch_screen(account_page())
@@ -724,12 +696,6 @@ class account_withdraw_page(Screen):
                     Label("MPE Address", id="account_withdraw_mpe_label", classes="account_withdraw_page_label"),
                     Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from 'networks'", id="account_withdraw_mpe_input", classes="account_withdraw_page_input"),
                     id="account_withdraw_mpe_div",
-                    classes="account_withdraw_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="account_withdraw_gas_label", classes="account_withdraw_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="account_withdraw_gas_input", classes="account_withdraw_page_input"),
-                    id="account_withdraw_gas_div",
                     classes="account_withdraw_page_div"
                 ),
                 Horizontal(
@@ -781,12 +747,11 @@ class account_withdraw_page(Screen):
         elif event.button.id == "account_withdraw_confirm_button":
             agi_amount = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_amount_div").get_child_by_id("account_withdraw_amount_input").value
             mpe_address = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_mpe_div").get_child_by_id("account_withdraw_mpe_input").value
-            gas_price = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_gas_div").get_child_by_id("account_withdraw_gas_input").value
             wallet_index = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_index_div").get_child_by_id("account_withdraw_index_input").value
             quiet = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_radio_set").get_child_by_id("account_withdraw_quiet_radio").value
             verbose = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_radio_set").get_child_by_id("account_withdraw_verbose_radio").value
 
-            output, errCode = be.account_withdraw(agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose)
+            output, errCode = be.account_withdraw(agi_amount, mpe_address, wallet_index, quiet, verbose)
             popup_output = output
             if errCode == 0:
                 self.app.switch_screen(account_page())
@@ -815,12 +780,6 @@ class account_transfer_page(Screen):
                     Label("MPE Address", id="account_transfer_mpe_label", classes="account_transfer_page_label"),
                     Input(placeholder="[OPTIONAL] Address of MultiPartyEscrow contract, if not specified we read address from 'networks'", id="account_transfer_mpe_input", classes="account_transfer_page_input"),
                     id="account_transfer_mpe_div",
-                    classes="account_transfer_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="account_transfer_gas_label", classes="account_transfer_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="account_transfer_gas_input", classes="account_transfer_page_input"),
-                    id="account_transfer_gas_div",
                     classes="account_transfer_page_div"
                 ),
                 Horizontal(
@@ -873,12 +832,11 @@ class account_transfer_page(Screen):
             agi_amount = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_amount_div").get_child_by_id("account_transfer_amount_input").value
             reciever_addr = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_addr_div").get_child_by_id("account_transfer_addr_input").value
             mpe_address = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_mpe_div").get_child_by_id("account_transfer_mpe_input").value
-            gas_price = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_gas_div").get_child_by_id("account_transfer_gas_input").value
             wallet_index = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_index_div").get_child_by_id("account_transfer_index_input").value
             quiet = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_radio_set").get_child_by_id("account_transfer_quiet_radio").value
             verbose = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_radio_set").get_child_by_id("account_transfer_verbose_radio").value
 
-            output, errCode = be.account_transfer(reciever_addr, agi_amount, mpe_address, gas_price, wallet_index, quiet, verbose)
+            output, errCode = be.account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet, verbose)
             popup_output = output
             if errCode == 0:
                 self.app.switch_screen(account_page())
@@ -1379,12 +1337,6 @@ class update_org_metadata_page(Screen):
                     classes="update_org_metadata_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="update_org_metadata_gas_label", classes="update_org_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="update_org_metadata_gas_input", classes="update_org_metadata_page_input"),
-                    id="update_org_metadata_gas_div",
-                    classes="update_org_metadata_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="update_org_metadata_index_label", classes="update_org_metadata_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="update_org_metadata_index_input", classes="update_org_metadata_page_input"),
                     id="update_org_metadata_index_div",
@@ -1433,12 +1385,11 @@ class update_org_metadata_page(Screen):
             org_id = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_id_div").get_child_by_id("update_org_metadata_id_input").value
             file_name = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_file_div").get_child_by_id("update_org_metadata_file_input").value
             mem_list = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_mems_div").get_child_by_id("update_org_metadata_mems_input").value
-            gas = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_gas_div").get_child_by_id("update_org_metadata_gas_input").value
             index = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_index_div").get_child_by_id("update_org_metadata_index_input").value
             quiet = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_radio_set").get_child_by_id("update_org_metadata_quiet_radio").value
             verbose = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_radio_set").get_child_by_id("update_org_metadata_verbose_radio").value
 
-            output, errCode = be.update_org_metadata(org_id, file_name, mem_list, gas, index, quiet, verbose)
+            output, errCode = be.update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -1776,12 +1727,6 @@ class manage_members_page(Screen):
                     classes="manage_members_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="manage_members_gas_label", classes="manage_members_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="manage_members_gas_input", classes="manage_members_page_input"),
-                    id="manage_members_gas_div",
-                    classes="manage_members_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="manage_members_index_label", classes="manage_members_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="manage_members_index_input", classes="manage_members_page_input"),
                     id="manage_members_index_div",
@@ -1812,7 +1757,6 @@ class manage_members_page(Screen):
 
         org_id = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_id_div").get_child_by_id("manage_members_id_input").value
         mem_list = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_mem_list_div").get_child_by_id("manage_members_mem_list_input").value
-        gas = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_gas_div").get_child_by_id("manage_members_gas_input").value
         index = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_index_div").get_child_by_id("manage_members_index_input").value
         quiet = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_radio_set").get_child_by_id("manage_members_quiet_radio").value
         verbose = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_radio_set").get_child_by_id("manage_members_verbose_radio").value
@@ -1835,11 +1779,11 @@ class manage_members_page(Screen):
         elif event.button.id == "manage_members_back_button":
             self.app.pop_screen()
         elif event.button.id == "manage_members_add_button":
-            output, errCode = be.add_org_members(org_id, mem_list, gas, index, quiet, verbose)
+            output, errCode = be.add_org_members(org_id, mem_list, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
         elif event.button.id == "manage_members_remove_button":
-            output, errCode = be.remove_org_members(org_id, mem_list, gas, index, quiet, verbose)
+            output, errCode = be.remove_org_members(org_id, mem_list, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -1860,12 +1804,6 @@ class change_org_owner_page(Screen):
                     Label("New Owner Address", id="change_org_owner_new_addr_label", classes="change_org_owner_page_label"),
                     Input(placeholder="Address of the new Organization's owner", id="change_org_owner_new_addr_input", classes="change_org_owner_page_input"),
                     id="change_org_owner_page_new_addr_div",
-                    classes="change_org_owner_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="change_org_owner_gas_label", classes="change_org_owner_page_label"),
-                    Input(placeholder="[OPTIONAL] In Wei or time based gas price strategy (defaults to session.default_gas_price)", id="change_org_owner_gas_input", classes="change_org_owner_page_input"),
-                    id="change_org_owner_page_gas_div",
                     classes="change_org_owner_page_div"
                 ),
                 Horizontal(
@@ -1916,12 +1854,11 @@ class change_org_owner_page(Screen):
         elif event.button.id == "change_org_owner_confirm_button":
             org_id = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_page_id_div").get_child_by_id("change_org_owner_id_input").value
             new_addr = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_page_new_addr_div").get_child_by_id("change_org_owner_new_addr_input").value
-            gas = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_page_gas_div").get_child_by_id("change_org_owner_gas_input").value
             index = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_page_index_div").get_child_by_id("change_org_owner_index_input").value
             quiet = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_radio_set").get_child_by_id("change_org_owner_quiet_radio").value
             verbose = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_radio_set").get_child_by_id("change_org_owner_verbose_radio").value
 
-            output, errCode = be.change_org_owner(org_id, new_addr, gas, index, quiet, verbose)
+            output, errCode = be.change_org_owner(org_id, new_addr, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -2002,12 +1939,6 @@ class org_manage_create_page(Screen):
                     classes="org_manage_create_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="org_manage_create_gas_label", classes="org_manage_create_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="org_manage_create_gas_input", classes="org_manage_create_page_input"),
-                    id="org_manage_create_gas_div",
-                    classes="org_manage_create_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="org_manage_create_index_label", classes="org_manage_create_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="org_manage_create_index_input", classes="org_manage_create_page_input"),
                     id="org_manage_create_index_div",
@@ -2057,12 +1988,11 @@ class org_manage_create_page(Screen):
             reg_addr = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_reg_addr_div").get_child_by_id("org_reg_addr_input").value
             file_name = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_file_div").get_child_by_id("org_manage_create_file_input").value
             mem_list = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_mems_div").get_child_by_id("org_manage_create_mems_input").value
-            gas = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_gas_div").get_child_by_id("org_manage_create_gas_input").value
             index = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_index_div").get_child_by_id("org_manage_create_index_input").value
             quiet = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_quiet_radio").value
             verbose = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_verbose_radio").value
 
-            output, errCode = be.create_organization(org_id, file_name, mem_list, gas, index, quiet, verbose, reg_addr)
+            output, errCode = be.create_organization(org_id, file_name, mem_list, index, quiet, verbose, reg_addr)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -2077,12 +2007,6 @@ class org_manage_delete_page(Screen):
                     Label("Organization ID", id="org_manage_delete_id_label", classes="org_manage_delete_page_label"),
                     Input(placeholder="Your Organization ID", id="org_manage_delete_id_input", classes="org_manage_delete_page_input"),
                     id="org_manage_delete_id_div",
-                    classes="org_manage_delete_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="org_manage_delete_gas_label", classes="org_manage_delete_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="org_manage_delete_gas_input", classes="org_manage_delete_page_input"),
-                    id="org_manage_delete_gas_div",
                     classes="org_manage_delete_page_div"
                 ),
                 Horizontal(
@@ -2138,13 +2062,12 @@ class org_manage_delete_page(Screen):
             self.app.pop_screen()
         elif event.button.id == "org_manage_delete_confirm_button":
             org_id = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_id_div").get_child_by_id("org_manage_delete_id_input").value
-            gas = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_gas_div").get_child_by_id("org_manage_delete_gas_input").value
             index = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_index_div").get_child_by_id("org_manage_delete_index_input").value
             reg_addr = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_reg_addr_div").get_child_by_id("org_manage_delete_reg_addr_input").value
             quiet = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_radio_set").get_child_by_id("org_manage_delete_quiet_radio").value
             verbose = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_radio_set").get_child_by_id("org_manage_delete_verbose_radio").value
 
-            output, errCode = be.delete_organization(org_id, gas, index, quiet, verbose, reg_addr)
+            output, errCode = be.delete_organization(org_id, index, quiet, verbose, reg_addr)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -3393,12 +3316,6 @@ class service_metadata_update_metadata_page(Screen):
                     classes="service_metadata_update_metadata_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="service_metadata_update_metadata_gas_label", classes="service_metadata_update_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="service_metadata_update_metadata_gas_input", classes="service_metadata_update_metadata_page_input"),
-                    id="service_metadata_update_metadata_gas_div",
-                    classes="service_metadata_update_metadata_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="service_metadata_update_metadata_index_label", classes="service_metadata_update_metadata_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="service_metadata_update_metadata_index_input", classes="service_metadata_update_metadata_page_input"),
                     id="service_metadata_update_metadata_index_div",
@@ -3451,12 +3368,11 @@ class service_metadata_update_metadata_page(Screen):
             reg_addr = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_reg_contract_div").get_child_by_id("service_metadata_update_metadata_reg_contract_input").value
             mpe_addr = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_mpe_div").get_child_by_id("service_metadata_update_metadata_mpe_input").value
             update_mpe = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_update_mpe_radio").value
-            gas = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_gas_div").get_child_by_id("service_metadata_update_metadata_gas_input").value
             index = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_index_div").get_child_by_id("service_metadata_update_metadata_index_input").value
             quiet = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_quiet_radio").value
             verbose = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_verbose_radio").value
             
-            output, errCode = be.service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose)
+            output, errCode = be.service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -3798,12 +3714,6 @@ class publish_service_page(Screen):
                     classes="publish_service_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="publish_service_gas_label", classes="publish_service_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="publish_service_gas_input", classes="publish_service_page_input"),
-                    id="publish_service_gas_div",
-                    classes="publish_service_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="publish_service_index_label", classes="publish_service_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="publish_service_index_input", classes="publish_service_page_input"),
                     id="publish_service_index_div",
@@ -3856,12 +3766,11 @@ class publish_service_page(Screen):
             reg_addr = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_reg_contract_div").get_child_by_id("publish_service_reg_contract_input").value
             mpe_addr = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_mpe_div").get_child_by_id("publish_service_mpe_input").value
             update_mpe = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_update_mpe_radio").value
-            gas = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_gas_div").get_child_by_id("publish_service_gas_input").value
             index = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_index_div").get_child_by_id("publish_service_index_input").value
             quiet = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_quiet_radio").value
             verbose = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_verbose_radio").value
             
-            output, errCode = be.publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, gas, index, quiet, verbose)
+            output, errCode = be.publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -3888,12 +3797,6 @@ class delete_service_page(Screen):
                     Label("Registry Contract", id="delete_service_reg_contract_label", classes="delete_service_page_label"),
                     Input(placeholder="[OPTIONAL] Address of Registry contract, if not specified we read address from 'networks'", id="delete_service_reg_contract_input", classes="delete_service_page_input"),
                     id="delete_service_reg_contract_div",
-                    classes="delete_service_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="delete_service_gas_label", classes="delete_service_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy ('fast' ~1min, 'medium' ~5min or 'slow' ~60min) (defaults to session.default_gas_price)", id="delete_service_gas_input", classes="delete_service_page_input"),
-                    id="delete_service_gas_div",
                     classes="delete_service_page_div"
                 ),
                 Horizontal(
@@ -3945,12 +3848,11 @@ class delete_service_page(Screen):
             org_id = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_org_id_div").get_child_by_id("delete_service_org_id_input").value
             service_id = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_service_id_div").get_child_by_id("delete_service_service_id_input").value
             reg_addr = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_reg_contract_div").get_child_by_id("delete_service_reg_contract_input").value
-            gas = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_gas_div").get_child_by_id("delete_service_gas_input").value
             index = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_index_div").get_child_by_id("delete_service_index_input").value
             quiet = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_radio_set").get_child_by_id("delete_service_quiet_radio").value
             verbose = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_radio_set").get_child_by_id("delete_service_verbose_radio").value
             
-            output, errCode = be.delete_service(org_id, service_id, reg_addr, gas, index, quiet, verbose)
+            output, errCode = be.delete_service(org_id, service_id, reg_addr, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
 
@@ -4722,12 +4624,6 @@ class channel_open_init_page(Screen):
                     classes="channel_open_init_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="channel_open_init_page_gas_label", classes="channel_open_init_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy (‘fast’ ~1min, ‘medium’ ~5min or ‘slow’ ~60min) (defaults to session.default_gas_price)", id="channel_open_init_page_gas_input", classes="channel_open_init_page_input"),
-                    id="channel_open_init_page_gas_div",
-                    classes="channel_open_init_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="channel_open_init_page_wallet_index_label", classes="channel_open_init_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="channel_open_init_page_wallet_index_input", classes="channel_open_init_page_input"),
                     id="channel_open_init_page_wallet_index_div",
@@ -4786,7 +4682,6 @@ class channel_open_init_page(Screen):
             mpe_addr = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_mpe_addr_div").get_child_by_id("channel_open_init_page_mpe_addr_input").value
             signer = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_signer_div").get_child_by_id("channel_open_init_page_signer_input").value
             block = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_block_div").get_child_by_id("channel_open_init_page_block_input").value
-            gas = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_gas_div").get_child_by_id("channel_open_init_page_gas_input").value
             wallet_index = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_wallet_index_div").get_child_by_id("channel_open_init_page_wallet_index_input").value
             force = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_force_radio").value
             open_anyway = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_new_anyway_radio").value
@@ -4795,7 +4690,7 @@ class channel_open_init_page(Screen):
 
             client_nav_button = self.get_child_by_id("channel_open_init_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
 
-            output, errCode, command = be.channel_open_init(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, gas, wallet_index, quiet, verbose, True)
+            output, errCode, command = be.channel_open_init(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, wallet_index, quiet, verbose, True)
 
             if errCode == 0:
                 conditional_output = output
@@ -4869,12 +4764,6 @@ class channel_open_init_meta_page(Screen):
                     classes="channel_open_init_meta_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="channel_open_init_meta_page_gas_label", classes="channel_open_init_meta_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy (‘fast’ ~1min, ‘medium’ ~5min or ‘slow’ ~60min) (defaults to session.default_gas_price)", id="channel_open_init_meta_page_gas_input", classes="channel_open_init_meta_page_input"),
-                    id="channel_open_init_meta_page_gas_div",
-                    classes="channel_open_init_meta_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="channel_open_init_meta_page_wallet_index_label", classes="channel_open_init_meta_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing (defaults to session.identity.default_wallet_index)", id="channel_open_init_meta_page_wallet_index_input", classes="channel_open_init_meta_page_input"),
                     id="channel_open_init_meta_page_wallet_index_div",
@@ -4934,7 +4823,6 @@ class channel_open_init_meta_page(Screen):
             mpe_addr = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_mpe_addr_div").get_child_by_id("channel_open_init_meta_page_mpe_addr_input").value
             signer = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_signer_div").get_child_by_id("channel_open_init_meta_page_signer_input").value
             block = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_block_div").get_child_by_id("channel_open_init_meta_page_block_input").value
-            gas = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_gas_div").get_child_by_id("channel_open_init_meta_page_gas_input").value
             wallet_index = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_wallet_index_div").get_child_by_id("channel_open_init_meta_page_wallet_index_input").value
             force = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_force_radio").value
             open_anyway = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_new_anyway_radio").value
@@ -4943,7 +4831,7 @@ class channel_open_init_meta_page(Screen):
 
             client_nav_button = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
 
-            output, errCode, command = be.channel_open_init_metadata(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, meta_path, gas, wallet_index, quiet, verbose, True)
+            output, errCode, command = be.channel_open_init_metadata(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, meta_path, wallet_index, quiet, verbose, True)
 
             if errCode == 0:
                 conditional_output = output
@@ -5032,12 +4920,6 @@ class channel_extend_add_page(Screen):
                     classes="channel_extend_add_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="channel_extend_add_page_gas_label", classes="channel_extend_add_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_extend_add_page_gas_input", classes="channel_extend_add_page_input"),
-                    id="channel_extend_add_page_gas_div",
-                    classes="channel_extend_add_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="channel_extend_add_page_wallet_index_label", classes="channel_extend_add_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing", id="channel_extend_add_page_wallet_index_input", classes="channel_extend_add_page_input"),
                     id="channel_extend_add_page_wallet_index_div",
@@ -5090,7 +4972,6 @@ class channel_extend_add_page(Screen):
             expr = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_expr_div").get_child_by_id("channel_extend_add_page_expr_input").value
             agi_amount = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_agi_amount_div").get_child_by_id("channel_extend_add_page_agi_amount_input").value
             mpe_addr = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_mpe_addr_div").get_child_by_id("channel_extend_add_page_mpe_addr_input").value
-            gas = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_gas_div").get_child_by_id("channel_extend_add_page_gas_input").value
             wallet_index = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_wallet_index_div").get_child_by_id("channel_extend_add_page_wallet_index_input").value
             force = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_force_radio").value
             quiet = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_quiet_verbose_set").get_child_by_id("channel_extend_add_page_quiet_radio").value
@@ -5098,7 +4979,7 @@ class channel_extend_add_page(Screen):
 
             client_nav_button = self.get_child_by_id("channel_extend_add_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
 
-            output, errCode, command = be.channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, gas, wallet_index, quiet, verbose, True)
+            output, errCode, command = be.channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, wallet_index, quiet, verbose, True)
             
             if errCode == 0:
                 conditional_output = output
@@ -5166,12 +5047,6 @@ class channel_extend_add_org_page(Screen):
                     classes="channel_extend_add_org_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="channel_extend_add_org_page_gas_label", classes="channel_extend_add_org_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_extend_add_org_page_gas_input", classes="channel_extend_add_org_page_input"),
-                    id="channel_extend_add_org_page_gas_div",
-                    classes="channel_extend_add_org_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="channel_extend_add_org_page_wallet_index_label", classes="channel_extend_add_org_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing", id="channel_extend_add_org_page_wallet_index_input", classes="channel_extend_add_org_page_input"),
                     id="channel_extend_add_org_page_wallet_index_div",
@@ -5228,7 +5103,6 @@ class channel_extend_add_org_page(Screen):
             from_block = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_from_block_div").get_child_by_id("channel_extend_add_org_page_from_block_input").value
             expr = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_expr_div").get_child_by_id("channel_extend_add_org_page_expr_input").value
             agi_amount = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_agi_amount_div").get_child_by_id("channel_extend_add_org_page_agi_amount_input").value
-            gas = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_gas_div").get_child_by_id("channel_extend_add_org_page_gas_input").value
             wallet_index = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_wallet_index_div").get_child_by_id("channel_extend_add_org_page_wallet_index_input").value
             force = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_force_radio").value
             quiet = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_quiet_verbose_set").get_child_by_id("channel_extend_add_org_page_quiet_radio").value
@@ -5236,7 +5110,7 @@ class channel_extend_add_org_page(Screen):
 
             client_nav_button = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
 
-            output, errCode, command = be.channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, gas, wallet_index, quiet, verbose, True)
+            output, errCode, command = be.channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, wallet_index, quiet, verbose, True)
 
             if errCode == 0:
                 conditional_output = output
@@ -5907,12 +5781,6 @@ class channel_claim_to_page(Screen):
                     classes="channel_claim_timeout_page_div"
                 ),
                 Horizontal(
-                    Label("Gas Price", id="channel_claim_timeout_page_gas_label", classes="channel_claim_timeout_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_claim_timeout_page_gas_input", classes="channel_claim_timeout_page_input"),
-                    id="channel_claim_timeout_page_gas_div",
-                    classes="channel_claim_timeout_page_div"
-                ),
-                Horizontal(
                     Label("Wallet Index", id="channel_claim_timeout_page_wallet_index_label", classes="channel_claim_timeout_page_label"),
                     Input(placeholder="[OPTIONAL] Wallet index of account to use for signing", id="channel_claim_timeout_page_wallet_index_input", classes="channel_claim_timeout_page_input"),
                     id="channel_claim_timeout_page_wallet_index_div",
@@ -5962,14 +5830,13 @@ class channel_claim_to_page(Screen):
         elif event.button.id == "channel_claim_timeout_page_confirm_button":
             channel_id = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_channel_id_div").get_child_by_id("channel_claim_timeout_page_channel_id_input").value
             mpe_addr = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_mpe_addr_div").get_child_by_id("channel_claim_timeout_page_mpe_addr_input").value
-            gas = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_gas_div").get_child_by_id("channel_claim_timeout_page_gas_input").value
             wallet_index = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_wallet_index_div").get_child_by_id("channel_claim_timeout_page_wallet_index_input").value
             quiet = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_page_verbose_radio").value
 
             client_nav_button = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
 
-            output, errCode, command = be.channel_claim_timeout(channel_id, mpe_addr, gas, wallet_index, quiet, verbose, True)
+            output, errCode, command = be.channel_claim_timeout(channel_id, mpe_addr, wallet_index, quiet, verbose, True)
             
             if errCode == 0:
                 conditional_output = output
@@ -5998,12 +5865,6 @@ class channel_claim_to_all_page(Screen):
                     Label("From Block", id="channel_claim_timeout_all_page_from_block_label", classes="channel_claim_timeout_all_page_label"),
                     Input(placeholder="[OPTIONAL] Start searching from this block", id="channel_claim_timeout_all_page_from_block_input", classes="channel_claim_timeout_all_page_input"),
                     id="channel_claim_timeout_all_page_from_block_div",
-                    classes="channel_claim_timeout_all_page_div"
-                ),
-                Horizontal(
-                    Label("Gas Price", id="channel_claim_timeout_all_page_gas_label", classes="channel_claim_timeout_all_page_label"),
-                    Input(placeholder="[OPTIONAL] Ethereum gas price in Wei or time based gas price strategy", id="channel_claim_timeout_all_page_gas_input", classes="channel_claim_timeout_all_page_input"),
-                    id="channel_claim_timeout_all_page_gas_div",
                     classes="channel_claim_timeout_all_page_div"
                 ),
                 Horizontal(
@@ -6056,14 +5917,13 @@ class channel_claim_to_all_page(Screen):
         elif event.button.id == "channel_claim_timeout_all_page_confirm_button":
             mpe_addr = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_mpe_addr_div").get_child_by_id("channel_claim_timeout_all_page_mpe_addr_input").value
             from_block = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_from_block_div").get_child_by_id("channel_claim_timeout_all_page_from_block_input").value
-            gas = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_gas_div").get_child_by_id("channel_claim_timeout_all_page_gas_input").value
             wallet_index = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_wallet_index_div").get_child_by_id("channel_claim_timeout_all_page_wallet_index_input").value
             quiet = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_all_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_all_page_verbose_radio").value
 
             client_nav_button = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
 
-            output, errCode, command = be.channel_claim_timeout_all(mpe_addr, from_block, gas, wallet_index, quiet, verbose, True)
+            output, errCode, command = be.channel_claim_timeout_all(mpe_addr, from_block, wallet_index, quiet, verbose, True)
             
             if errCode == 0:
                 conditional_output = output
