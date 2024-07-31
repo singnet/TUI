@@ -8,3 +8,4 @@ tui_venv
 
 # Testing
 launch.json
+test.py

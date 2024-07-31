@@ -39,23 +39,25 @@
 #start_button:hover {
     background: #05b9fa;
 }
-
-/* Loading page */
-#loading_screen {
+/* Load page*/
+#load_page {
     align: center middle;
     background: #f6d7b0;
     width: 100w;
     height: 100h;
 }
 
-#loading_screen_content {
+#load_page_content {
     align: center middle;
 }
 
-#loading_page_text {
-    text-style: bold;
-    padding: 2 8 2 8;
-    background: #2d2d2d;
+#load_apprx_time_label {
+    text-style: bold underline;
+    color: black;
+}
+
+.load_cancel_button:focus {
+    text-style: none;   
 }
 
 /* Error Exit screen */
@@ -1831,7 +1833,9 @@ exit_page {
 }
 
 #manage_services_metadata_page_upper_div {
+    margin-top: 4;
     margin-left: 3;
+    margin-bottom: 5;
 }
 
 #services_set_button {
@@ -1851,7 +1855,8 @@ exit_page {
 }
 
 #manage_services_metadata_page_lower_div {
-    margin-left: 20;
+    margin-left: 15;
+    margin-bottom: 4;
 }
 
 #services_update_button {
@@ -1870,6 +1875,7 @@ exit_page {
 
 #services_metadata_back_button {
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Init metadata Page */

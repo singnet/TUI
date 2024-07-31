@@ -5,6 +5,8 @@ import re
 
 # Stable build v0.1
 
+current_process = None
+
 condCommDict = set({
     "account deposit",
     "account withdraw", 
@@ -90,41 +92,20 @@ condCommDict = set({
     "treasurer claim-all",
     "treasurer claim-expired"
 })
-
-def run_shell_command(command, workdir=None):
-    try:
-        if workdir != None:
-            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=workdir)
-        else:
-            result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        
-        stdout, stderr, errCode = result.stdout, result.stderr, result.returncode
-        
-        if errCode == 0:
-            return stdout, errCode
-        elif errCode == 42:
-            return stdout, errCode
-        else:
-            return stderr, errCode 
-        
-    except subprocess.CalledProcessError as e:
-        stdout, stderr, errCode = e.stdout, e.stderr, e.returncode
-
-        if errCode == 0:
-            return stdout, errCode
-        elif errCode == 42:
-            return stdout, errCode
-        else:
-            return stderr, errCode 
     
-def run_shell_command_with_input(command, input_text, workdir=None):
+def run_shell_command(command, input_text=None, workdir=None):
+    global current_process 
+    
     try:
         if workdir != None:
-            process = subprocess.Popen(args=command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=workdir)
+            current_process = subprocess.Popen(args=command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=workdir)
         else:
-            process = subprocess.Popen(args=command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        
-        stdout, stderr = process.communicate(input_text)
+            current_process = subprocess.Popen(args=command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if input_text != None:
+            stdout, stderr = current_process.communicate(input=input_text)
+        else:
+           stdout, stderr = current_process.communicate() 
         
         if stdout:
             return stdout, 0
@@ -135,6 +116,18 @@ def run_shell_command_with_input(command, input_text, workdir=None):
 
     except Exception as e:
         return str(e), 1
+
+def cancel_current_process():
+    global current_process
+    if current_process:
+        current_process.terminate()
+        try:
+            current_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            current_process.kill()
+        current_process = None
+        return "Process cancelled", 0
+    return "No process to cancel", 1
 
 def check_cli():
     output, errCode = run_shell_command('snet')
@@ -1424,7 +1417,7 @@ def client_call(org_id, serv_id, group_name, method, params, proto_serv=None, mp
 
     # Run command
     if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+        output, errCode = run_shell_command(command=command, input_text="n\n")
     else:
         output, errCode = run_shell_command(command=f"{command} --yes")
 
@@ -1615,9 +1608,9 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
 
     # Run command
     if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+        output, errCode = run_shell_command(command=command, input_text="n\n")
     else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+        output, errCode = run_shell_command(command=f"{command} --yes") 
 
     return output, errCode, command
 
@@ -1679,9 +1672,9 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
 
     # Run command
     if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+        output, errCode = run_shell_command(command=command, input_text="n\n")
     else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+        output, errCode = run_shell_command(command=f"{command} --yes") 
 
     return output, errCode, command
 
@@ -1724,9 +1717,9 @@ def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, wallet_ind
 
     # Run command
     if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+        output, errCode = run_shell_command(command=command, input_text="n\n")
     else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+        output, errCode = run_shell_command(command=f"{command} --yes") 
 
     return output, errCode, command
 
@@ -1780,9 +1773,9 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
 
     # Run command
     if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+        output, errCode = run_shell_command(command=command, input_text="n\n")
     else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+        output, errCode = run_shell_command(command=f"{command} --yes") 
 
     return output, errCode, command
 
@@ -1989,9 +1982,9 @@ def channel_claim_timeout(channel_id, mpe_addr, wallet_index, quiet, verbose, vi
 
     # Run command
     if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+        output, errCode = run_shell_command(command=command, input_text="n\n")
     else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+        output, errCode = run_shell_command(command=f"{command} --yes") 
 
     return output, errCode, command
 
@@ -2017,9 +2010,9 @@ def channel_claim_timeout_all(mpe_addr, from_block, wallet_index, quiet, verbose
 
     # Run command
     if view:
-        output, errCode = run_shell_command_with_input(command=command, input_text="n\n")
+        output, errCode = run_shell_command(command=command, input_text="n\n")
     else:
-        output, errCode = run_shell_command_with_input(command=command, input_text="y\n")
+        output, errCode = run_shell_command(command=f"{command} --yes") 
 
     return output, errCode, command
 
@@ -2055,14 +2048,14 @@ def custom_conditional_command(root, sub, args, cwd, traceback, view):
 
     if view:
         if cwd and len(cwd) > 0:
-            output, errCode = run_shell_command_with_input(cmd, input_text="n\n", workdir=cwd)
+            output, errCode = run_shell_command(cmd, input_text="n\n", workdir=cwd)
         else:
-            output, errCode = run_shell_command_with_input(cmd, input_text="n\n")
+            output, errCode = run_shell_command(cmd, input_text="n\n")
     else:
         if cwd and len(cwd) > 0:
-            output, errCode = run_shell_command_with_input(cmd, input_text="y\n", workdir=cwd)
+            output, errCode = run_shell_command(command=f"{command} --yes", workdir=cwd) 
         else:
-            output, errCode = run_shell_command_with_input(cmd, input_text="y\n")
+            output, errCode = run_shell_command(command=f"{command} --yes")
 
     return output, errCode, cmd
 

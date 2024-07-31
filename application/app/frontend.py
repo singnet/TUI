@@ -1,19 +1,20 @@
+from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal, ScrollableContainer
 from textual.screen import Screen
-from textual.widgets import Button, Header, Label, Input, Select, RadioButton, RichLog, Log, RadioSet
+from textual.widgets import Button, Header, Label, Input, Select, RadioButton, RichLog, Log, RadioSet, LoadingIndicator
 from rich_pixels import Pixels, FullcellRenderer
 import back.backend as be
 import sys
 import os
 
-# Unstable build v0.1.0
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
 popup_output: str
 conditional_output: str
 conditional_command: str
 load_screen_redirect: str
+load_aprx_time: str
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -26,45 +27,119 @@ class WelcomeScreen(Screen):
             ),
             id = "welcome_screen"
         )
-    
+
+    def switch(self, screen: str) -> None:
+        if screen == "account":
+           self.app.push_screen(account_page()) 
+        if screen == "create_id":
+           self.app.push_screen(create_identity_page())
+        if screen == "cli_error":
+           global error_exit_label
+
+           error_exit_label = "ERROR: Cannot call CLI, ensure it is installed (you are running the TUI with the run script or virtual environment)"
+           self.app.push_screen(error_exit_page()) 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_screen_redirect
+        global load_aprx_time
+
         if event.button.id == "start_button":
             load_screen_redirect = "welcome"
-            self.app.push_screen(loading_screen())
+            load_aprx_time = "Approximately 5s."
+            self.app.push_screen(load(), callback=self.switch)
 
-class loading_screen(Screen):
+class load(Screen[str]):
     def compose(self) -> ComposeResult:
         yield Grid(
-            Grid(
-                Label("Loading...", id="loading_page_text"),
-                id = "loading_screen_content"
+            Vertical(
+                Label("Approximately 10s.", id="load_apprx_time_label"), 
+                LoadingIndicator(id="load_indi"),
+                id="load_page_content",
+                classes="content_page"
             ),
-            id = "loading_screen"
+            Button(label="Cancel", id="load_cancel_button", classes="load_cancel_button"),
+            id="load_page"
         )
         
-    def on_show(self) -> None:
+    @work(thread=True)
+    def welcome(self) -> None:
+        id_check, output, errCode = be.identity_check()
+        cli_check, output, errCode = be.check_cli()
+        if cli_check:
+            if id_check:
+                redirect = "account"
+            else:
+                redirect = "create_id" 
+        else:
+            redirect = "cli_error"
+        self.app.call_from_thread(self.dismiss, redirect)
+
+    @work(thread=True)
+    def conditional(self) -> None:
+        global conditional_command
+        output, errCode = be.run_shell_command(command=f"{conditional_command} --yes")
+        self.app.call_from_thread(self.dismiss, output)
+
+    @work(thread=True)
+    def id_page(self) -> None:
+        idList, errCode = be.run_shell_command("snet identity list")
+        self.app.call_from_thread(self.dismiss, idList)
+
+    @work(thread=True)
+    def account_info(self) -> None:
+        wallet_dict, errCode = be.wallet_dict_create()
+        if errCode != 0:
+            self.app.call_from_thread(self.dismiss, "retrieve_error")
+        else:
+            self.app.call_from_thread(self.dismiss, wallet_dict)
+
+    @work(thread=True)
+    def network_list(self) -> None:
+        network_list, errCode = be.network_list()
+        if errCode != 0:
+            self.app.call_from_thread(self.dismiss, "retrieve_error")
+        else:
+            self.app.call_from_thread(self.dismiss, network_list)
+    
+    @work(thread=True)
+    def my_org_list(self) -> None:
+        output, errCode = be.print_organization_info()
+        self.app.call_from_thread(self.dismiss, output) 
+    
+    @work(thread=True)
+    def init_channels(self) -> None:
+        channels, errCode = be.channel_print_initialized() 
+        if errCode != 0:
+            self.app.call_from_thread(self.dismiss, "retrieve_error")
+        else:
+            self.app.call_from_thread(self.dismiss, channels)
+
+    def on_mount(self) -> None:
         global load_screen_redirect
+        global load_aprx_time
         
-        if load_screen_redirect == "organization":
-            self.app.switch_screen(organization_page())
-        elif load_screen_redirect == "account":
-            self.app.switch_screen(account_page())
-        elif load_screen_redirect == "welcome":
-            identity_added, output, errCode = be.identity_check()
-            if (identity_added):
-                self.app.switch_screen(account_page())
-            elif (not identity_added):
-                self.app.switch_screen(create_identity_page())
-        elif load_screen_redirect == "client":
-            self.app.switch_screen(client_page())
-        elif load_screen_redirect == "id_settings":
-            self.app.switch_screen(identity_page())
-        elif load_screen_redirect == "id_create":
-            self.app.switch_screen(create_identity_page())
-        elif load_screen_redirect == "account_popup":
-            self.app.switch_screen(account_page())
-            self.app.push_screen(popup_output_page())
+        self.query_one(Label).update("Loading: " + load_aprx_time)
+
+        if load_screen_redirect == "welcome":
+            self.welcome()
+        elif load_screen_redirect == "conditional":
+            self.conditional()
+        elif load_screen_redirect == "id_page":
+            self.id_page()
+        elif load_screen_redirect == "acc_info":
+            self.account_info()
+        elif load_screen_redirect == "net_list":
+            self.network_list()
+        elif load_screen_redirect == "org_page":
+            self.my_org_list()
+        elif load_screen_redirect == "client_page":
+            self.init_channels()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "load_cancel_button":
+            self.workers.cancel_all()
+            be.cancel_current_process()
+            self.dismiss("cancel")
 
 class error_exit_page(Screen):
     def compose(self) -> ComposeResult:
@@ -95,69 +170,92 @@ class popup_output_page(Screen):
 class conditional_input_page(Screen):
     def compose(self) -> ComposeResult:
         global conditional_output
-        global conditional_command
-        global popup_output
         yield Log(id="conditional_input_log", auto_scroll=False).write(conditional_output)
         yield Horizontal(Button("Yes", id="conditional_input_accept_button"), Button("No", id="conditional_input_deny_button"), id="conditional_input_buttons")
-    
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        global conditional_output
-        global conditional_command
+
+    def print_output(self, output: str) -> None:
         global popup_output
-        if event.button.id == "conditional_input_accept_button":
-            output, errCode = be.run_shell_command(command=f"{conditional_command} --yes")
+
+        if output != "cancel":
             popup_output = output
             self.app.switch_screen(popup_output_page())
+        else:
+            self.app.pop_screen()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global load_aprx_time
+        global load_screen_redirect
+        
+        if event.button.id == "conditional_input_accept_button":
+            # TODO: Redo conditional to just return yes or no
+            # TODO: Check where conditional command is ran, and redo apprx time
+            load_screen_redirect = "conditional"
+            load_aprx_time = "Approximately 5s."  
+            self.app.push_screen(load(), callback=self.print_output)
         elif event.button.id == "conditional_input_deny_button":
             self.app.pop_screen()
 
 class create_identity_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
-        network_list, errCode = be.network_list()
         img = Pixels.from_image_path("application/app/assets/snet_logo.png", renderer=FullcellRenderer(), resize=(32, 45))
-        if errCode == 0:
-            yield ScrollableContainer(
-                Horizontal(
-                    RichLog(id="create_identity_page_left_block").write(img),
-                    Vertical(
-                        Label("Get started with the TUI", id="create_identity_page_info_label_1"),
-                        Label("Fill in all the fields and connect your Web3 account", id="create_identity_page_info_label_2"),
-                        Horizontal(
-                            Label("Identity", id="create_identity_page_name_label"),
-                            Input(placeholder="Identity Name", id="org_identity_input"),
-                            id="create_identity_name_div",
-                            classes="create_identity_div"
-                        ),
-                        Horizontal(
-                            Label("Wallet Key", id="create_identity_page_wallet_label"),
-                            Input(placeholder="Private Key", id="wallet_info_input", password=True),
-                            id="create_identity_key_div",
-                            classes="create_identity_div"
-                        ),
-                        Horizontal(
-                            Label("Network", id="create_identity_page_network_label"),
-                            Select(options=((line, line) for line in network_list), prompt="Select Network", id="network_select"),
-                            id="create_identity_network_div",
-                            classes="create_identity_div"
-                        ),
-                        Horizontal(
-                            Button("Back", id="create_identity_back_button"),
-                            Button("Create Identity", id="create_identity_button"),
-                            id="create_identity_button_div",
-                            classes="create_identity_div"
-                        ),
-                        id="create_identity_right_div",
-                        classes="create_identity_right_div_class"
+        yield ScrollableContainer(
+            Horizontal(
+                RichLog(id="create_identity_page_left_block").write(img),
+                Vertical(
+                    Label("Get started with the TUI", id="create_identity_page_info_label_1"),
+                    Label("Fill in all the fields and connect your Web3 account", id="create_identity_page_info_label_2"),
+                    Horizontal(
+                        Label("Identity", id="create_identity_page_name_label"),
+                        Input(placeholder="Identity Name", id="org_identity_input"),
+                        id="create_identity_name_div",
+                        classes="create_identity_div"
                     ),
-                    id="create_identity_outer_div"
+                    Horizontal(
+                        Label("Wallet Key", id="create_identity_page_wallet_label"),
+                        Input(placeholder="Private Key", id="wallet_info_input", password=True),
+                        id="create_identity_key_div",
+                        classes="create_identity_div"
+                    ),
+                    Horizontal(
+                        Label("Network", id="create_identity_page_network_label"),
+                        Select(options=(("Sepolia", "Sepolia"), ("Mainnet", "Mainnet")), prompt="Select Network", id="network_select"),
+                        id="create_identity_network_div",
+                        classes="create_identity_div"
+                    ),
+                    Horizontal(
+                        Button("Back", id="create_identity_back_button"),
+                        Button("Create Identity", id="create_identity_button"),
+                        id="create_identity_button_div",
+                        classes="create_identity_div"
+                    ),
+                    id="create_identity_right_div",
+                    classes="create_identity_right_div_class"
                 ),
-                id="create_identity",
-                classes="create_identity_full_page"
-            )
-        else:
+                id="create_identity_outer_div"
+            ),
+            id="create_identity",
+            classes="create_identity_full_page"
+        )
+
+    def print_net_list(self, network_list) -> None:
+        global error_exit_label
+        
+        if network_list == "retrieve_error":
             error_exit_label = "ERROR: Could not find network list, please check CLI installation and run the command 'snet network list'"
             self.app.switch_screen(error_exit_page())
+        elif network_list == "cancel":
+            self.app.pop_screen() 
+        else:
+            self.query_one("#network_select", expect_type=Select).set_options((line, line) for line in network_list)
+
+    def on_mount(self) -> None:
+        global load_aprx_time
+        global load_screen_redirect
+
+        load_aprx_time = "Approximately 5s."
+        load_screen_redirect = "net_list"
+        self.app.push_screen(load(), callback=self.print_net_list)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -173,7 +271,7 @@ class create_identity_page(Screen):
                 self.app.push_screen(popup_output_page())
             else:
                 if network == Select.BLANK:
-                    network = "goerli"
+                    network = "sepolia"
                 else:
                     network = network.lower()
                 self.create_identity(id_name, False, wallet_info, network)
@@ -181,17 +279,16 @@ class create_identity_page(Screen):
             self.app.pop_screen()
                 
     
-    def create_identity(self, id_name, mnemonic, wallet_info = None, network_select = "goerli"):
+    def create_identity(self, id_name, mnemonic, wallet_info = None, network_select = "sepolia"):
         global popup_output
         global error_exit_label
-        global cur_org
         
         output, errCode = be.create_identity_cli(id_name, wallet_info, network_select, mnemonic)
         if errCode == 0:
             popup_output = output
             if len(popup_output) == 0:
                 popup_output = f"Identity '{id_name} created!'"
-            self.app.switch_screen(account_page())
+            self.app.push_screen(account_page())
             self.app.push_screen(popup_output_page())
         else:
             error_exit_label = output
@@ -200,65 +297,73 @@ class create_identity_page(Screen):
 class account_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
-        wallet_dict, errCode = be.wallet_dict_create()
-        if errCode == 0:
-            log_output = f"Account: {wallet_dict['account']}\nETH: {wallet_dict['ETH']}\nAGIX: {wallet_dict['AGIX']}\nMPE: {wallet_dict['MPE']}"
-            yield Header()
-            yield Horizontal(
-                be.nav_sidebar_vert("account"),
-                ScrollableContainer(
-                    Label("Account Page", id="account_page_title"),
-                    Label("Account Info:", id="account_page_info_label"),
-                    Label(log_output, id="account_page_info_log"),
-                    Horizontal(
-                        Button("Deposit", id="account_page_deposit_button"),
-                        Button("Withdraw", id="account_page_withdraw_button"),
-                        Button("Transfer", id="account_page_transfer_button"),
-                        id="account_page_top_button_div",
-                        classes="account_page_button_div"
-                    ),
-                    Horizontal(
-                        Button("Treasurer", id="account_treasurer_button"),
-                        Button("Identity Settings", id="account_page_identity_settings_button"),
-                        id="account_page_bottom_button_div",
-                        classes="account_page_button_div"
-                    ),
-                    id="account_page_content",
-                    classes="content_page"
+        
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("account"),
+            ScrollableContainer(
+                Label("Account Page", id="account_page_title"),
+                Label("Account Info:", id="account_page_info_label"),
+                Label("log_output", id="account_page_info_log"),
+                Horizontal(
+                    Button("Deposit", id="account_page_deposit_button"),
+                    Button("Withdraw", id="account_page_withdraw_button"),
+                    Button("Transfer", id="account_page_transfer_button"),
+                    id="account_page_top_button_div",
+                    classes="account_page_button_div"
                 ),
-                id="account_page"
-            )
-        else:
-            error_exit_label = "ERROR: Could not retrieve account information, please ensure you have created a valid identity and set it to your default identity"
-            self.app.push_screen(error_exit_page())
+                Horizontal(
+                    Button("Treasurer", id="account_treasurer_button"),
+                    Button("Identity Settings", id="account_page_identity_settings_button"),
+                    id="account_page_bottom_button_div",
+                    classes="account_page_button_div"
+                ),
+                id="account_page_content",
+                classes="content_page"
+            ),
+            id="account_page"
+        )
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    def print_info(self, account_info) -> None:
+        global error_exit_label
+        
+        if account_info == "cancel":
+            self.app.pop_screen() 
+        elif account_info == "retrieve_error":
+            error_exit_label = "ERROR: Could not retrieve account information, please ensure you have created a valid identity and set it to your default identity"
+            self.app.push_screen(error_exit_page()) 
+        else:
+            self.query_one("#account_page_info_log", expect_type=Label).update(f"Account: {account_info['account']}\nETH: {account_info['ETH']}\nAGIX: {account_info['AGIX']}\nMPE: {account_info['MPE']}")
+
+    def on_mount(self) -> None:
+        global load_aprx_time
         global load_screen_redirect
 
+        load_aprx_time = "Approximately 5s."
+        load_screen_redirect = "acc_info"
+        self.app.push_screen(load(), callback=self.print_info)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_page_identity_settings_button":
-            load_screen_redirect = "id_settings"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(identity_page())
         elif event.button.id == "account_page_deposit_button":
-            self.app.switch_screen(account_deposit_page())
+            self.app.push_screen(account_deposit_page())
         elif event.button.id == "account_page_withdraw_button":
-            self.app.switch_screen(account_withdraw_page())
+            self.app.push_screen(account_withdraw_page())
         elif event.button.id == "account_page_transfer_button":
-            self.app.switch_screen(account_transfer_page())
+            self.app.push_screen(account_transfer_page())
         elif event.button.id == "account_treasurer_button":
             self.app.switch_screen(treasurer_page())
 
@@ -288,27 +393,20 @@ class treasurer_page(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        global popup_output
-        global load_screen_redirect
-
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "treasurer_back_button":
-            load_screen_redirect = "account"
-            self.app.push_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "treasurer_claim_button":
             self.app.push_screen(treasurer_claim_page())
         elif event.button.id == "treasurer_claim_exp_button":
@@ -365,16 +463,13 @@ class treasurer_claim_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -430,20 +525,14 @@ class treasurer_claim_all_page(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        global popup_output
-        global load_screen_redirect
-
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -504,20 +593,14 @@ class treasurer_claim_expr_page(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        global popup_output
-        global load_screen_redirect
-
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -537,14 +620,13 @@ class treasurer_claim_expr_page(Screen):
 
 class identity_page(Screen):
     def compose(self) -> ComposeResult:
-        idList, listErrCode = be.run_shell_command("snet identity list")
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert("account"),
             ScrollableContainer(
                 Label("Identity Page", id="identity_page_title"),
                 Label("Identity Info Section:", id="identity_page_log_label"),
-                Log(id="identity_page_log", auto_scroll=False).write(f"Identity List:\n\n{idList}"),
+                Log(id="identity_page_log", auto_scroll=False),
                 Button("Create Identity Page", id="identity_page_create_identity_button"),
                 Label("Identity Delete Section:", id="identity_page_delete_label"),
                 Input(placeholder="Identity name to delete", id="identity_page_delete_input"),
@@ -555,32 +637,41 @@ class identity_page(Screen):
             ),
             id="identity_page"
         )
-    
+
+    def id_list_update(self, idList: str) -> None:
+        if idList != "cancel":
+            self.query_one(Log).write(f"Identity List:\n\n{idList}")
+        else:
+            self.app.pop_screen()
+
+    def on_mount(self) -> None:
+        global load_aprx_time
+        global load_screen_redirect
+
+        load_aprx_time = "Approximately 5s."
+        load_screen_redirect = "id_page"
+        self.app.push_screen(load(), callback=self.id_list_update) 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "identity_page_create_identity_button":
-            load_screen_redirect = "id_create"
-            self.app.push_screen(loading_screen())
+            self.app.push_screen(create_identity_page())
         elif event.button.id == "identity_page_back_button":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "identity_page_delete_identity_button":
             id_name = self.get_child_by_id("identity_page").get_child_by_id("identity_page_content").get_child_by_id("identity_page_delete_input").value
             if not isinstance(id_name, str) or len(id_name) == 0:
@@ -648,23 +739,19 @@ class account_deposit_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_deposit_back_button":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "account_deposit_confirm_button":
             agi_amount = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_amount_div").get_child_by_id("account_deposit_amount_input").value
             contract_address = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_contract_div").get_child_by_id("account_deposit_contract_input").value
@@ -676,7 +763,7 @@ class account_deposit_page(Screen):
             output, errCode = be.account_deposit(agi_amount, contract_address, mpe_address, wallet_index, quiet, verbose)
             popup_output = output
             if errCode == 0:
-                self.app.switch_screen(account_page())
+                self.app.push_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class account_withdraw_page(Screen):
@@ -727,23 +814,19 @@ class account_withdraw_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_withdraw_back_button":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "account_withdraw_confirm_button":
             agi_amount = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_amount_div").get_child_by_id("account_withdraw_amount_input").value
             mpe_address = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_mpe_div").get_child_by_id("account_withdraw_mpe_input").value
@@ -754,7 +837,7 @@ class account_withdraw_page(Screen):
             output, errCode = be.account_withdraw(agi_amount, mpe_address, wallet_index, quiet, verbose)
             popup_output = output
             if errCode == 0:
-                self.app.switch_screen(account_page())
+                self.app.push_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class account_transfer_page(Screen):
@@ -811,23 +894,19 @@ class account_transfer_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "account_transfer_back_button":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "account_transfer_confirm_button":
             agi_amount = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_amount_div").get_child_by_id("account_transfer_amount_input").value
             reciever_addr = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_addr_div").get_child_by_id("account_transfer_addr_input").value
@@ -839,19 +918,18 @@ class account_transfer_page(Screen):
             output, errCode = be.account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet, verbose)
             popup_output = output
             if errCode == 0:
-                self.app.switch_screen(account_page())
+                self.app.push_screen(account_page())
             self.app.push_screen(popup_output_page())
 
 class organization_page(Screen):
     def compose(self) -> ComposeResult:
-        output, errCode = be.print_organization_info()
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert("org"),
             ScrollableContainer(
                 Label("Organization Page", id="organization_page_title"),
                 Label("Organization Info:", id="organization_page_log_label"),
-                Log(id="org_metadata_info_log", auto_scroll=False).write(f"My Organizations:\n\n{output}"),
+                Log(id="org_metadata_info_log", auto_scroll=False),
                 Horizontal(
                     Button(label="Metadata", id="organization_page_metadata_button"),
                     Button(label="Groups", id="organization_page_groups_button"),
@@ -869,21 +947,34 @@ class organization_page(Screen):
             ),
             id="organization_page"
         )
+    
+    def print_info(self, org_info) -> None:
+        global popup_output 
+        
+        if org_info == "cancel":
+            self.app.pop_screen() 
+        else:
+            self.query_one("#org_metadata_info_log", expect_type=Log).write(f"My Organizations:\n\n{org_info}")
+
+    def on_mount(self) -> None:
+        global load_aprx_time
+        global load_screen_redirect
+
+        load_aprx_time = "Approximately 30s."
+        load_screen_redirect = "org_page"
+        self.app.push_screen(load(), callback=self.print_info)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -930,23 +1021,19 @@ class org_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_metadata_back_button":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "org_metadata_page_print_button":
             self.app.push_screen(print_org_metadata_page())
         elif event.button.id == "org_metadata_page_init_button":
@@ -990,16 +1077,13 @@ class print_org_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1066,16 +1150,13 @@ class init_org_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1141,16 +1222,13 @@ class add_org_metadata_desc_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1207,16 +1285,13 @@ class manage_org_assets_page(Screen):
         metadata_file_name = self.get_child_by_id("manage_org_assets_page").get_child_by_id("manage_org_assets_page_content").get_child_by_id("manage_org_assets_meta_div").get_child_by_id("manage_org_assets_meta_input").value
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1286,16 +1361,13 @@ class manage_org_contacts_page(Screen):
         metadata_file = self.get_child_by_id("manage_org_contacts_page").get_child_by_id("manage_org_contacts_page_content").get_child_by_id("manage_org_contacts_meta_div").get_child_by_id("manage_org_contacts_meta_input").value
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen()) 
+            self.app.push_screen(account_page()) 
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen()) 
+            self.app.push_screen(organization_page()) 
         elif event.button.id == "services_page_nav": 
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav": 
@@ -1365,16 +1437,13 @@ class update_org_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1416,23 +1485,19 @@ class org_groups_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_groups_back_button":
-            load_screen_redirect = "organization"
-            self.app.push_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "org_groups_add_button":
             self.app.push_screen(add_org_group_page())
         elif event.button.id == "org_groups_update_button":
@@ -1516,16 +1581,13 @@ class add_org_group_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1546,7 +1608,7 @@ class add_org_group_page(Screen):
             output, errCode = be.add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
             popup_output = output
             if errCode == 0:
-                self.app.switch_screen(organization_page())
+                self.app.push_screen(organization_page())
             self.app.push_screen(popup_output_page())
         
 
@@ -1628,16 +1690,13 @@ class update_org_group_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1658,7 +1717,7 @@ class update_org_group_page(Screen):
             output, errCode = be.update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
             popup_output = output
             if errCode == 0:
-                self.app.switch_screen(organization_page())
+                self.app.push_screen(organization_page())
             self.app.push_screen(popup_output_page())
 
 class members_page(Screen):
@@ -1685,23 +1744,19 @@ class members_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "members_back_button":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "members_manage_button":
             self.app.push_screen(manage_members_page())
         elif event.button.id == "members_change_owner_button":
@@ -1762,16 +1817,13 @@ class manage_members_page(Screen):
         verbose = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_radio_set").get_child_by_id("manage_members_verbose_radio").value
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1835,16 +1887,13 @@ class change_org_owner_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -1885,23 +1934,19 @@ class org_manage_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "org_manage_back_button":
-            load_screen_redirect = "organization"
-            self.app.push_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "org_manage_add_button":
             self.app.push_screen(org_manage_create_page())
         elif event.button.id == "org_manage_delete_button":
@@ -1967,16 +2012,13 @@ class org_manage_create_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2044,16 +2086,13 @@ class org_manage_delete_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2094,16 +2133,13 @@ class services_page(Screen):
         global load_screen_redirect
         
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2114,14 +2150,15 @@ class services_page(Screen):
             self.app.push_screen(services_manage_page())
 
 class services_metadata_page(Screen):
+    # TODO: Check all subpages and make them scrollable
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert("serv"),
-            Grid(
+            ScrollableContainer(
                 Label("Service Metadata Page", id="manage_services_metadata_page_title"),
                 Horizontal(
-                    Button(label="Initialize Service Metadata", id="services_metadata_init_button", classes="manage_services_metadata_page_button"),
+                    Button(label="Init. Service Metadata", id="services_metadata_init_button", classes="manage_services_metadata_page_button"),
                     Button(label="Set", id="services_set_button", classes="manage_services_metadata_page_button"),
                     Button(label="Add/Remove", id="services_add_remove_button", classes="manage_services_metadata_page_button"),
                     id="manage_services_metadata_page_upper_div",
@@ -2144,16 +2181,13 @@ class services_metadata_page(Screen):
         global load_screen_redirect
         
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2255,16 +2289,13 @@ class init_service_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2324,16 +2355,13 @@ class service_metadata_set_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2387,16 +2415,13 @@ class service_metadata_set_model_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2454,16 +2479,13 @@ class service_metadata_set_fixed_price_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2539,16 +2561,13 @@ class service_metadata_set_method_price_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2609,16 +2628,13 @@ class service_metadata_set_free_calls_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2676,16 +2692,13 @@ class service_metadata_set_freecall_signer_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2733,16 +2746,13 @@ class service_metadata_add_remove_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2808,16 +2818,13 @@ class add_desc_service_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2874,16 +2881,13 @@ class service_metadata_add_remove_group_page(Screen):
         metadata_file = self.get_child_by_id("service_metadata_add_remove_group_page").get_child_by_id("service_metadata_add_remove_group_page_content").get_child_by_id("service_metadata_add_remove_group_file_div").get_child_by_id("service_metadata_add_remove_group_file_input").value
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -2946,16 +2950,13 @@ class service_metadata_add_remove_daemon_addr_page(Screen):
         metadata_file = self.get_child_by_id("service_metadata_add_remove_daemon_addr_page").get_child_by_id("service_metadata_add_remove_daemon_addr_page_content").get_child_by_id("service_metadata_add_remove_daemon_addr_file_div").get_child_by_id("service_metadata_add_remove_daemon_addr_file_input").value
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3017,16 +3018,13 @@ class service_metadata_add_remove_assets_page(Screen):
         metadata_file = self.get_child_by_id("service_metadata_add_remove_assets_page").get_child_by_id("service_metadata_add_remove_assets_page_content").get_child_by_id("service_metadata_add_remove_assets_file_div").get_child_by_id("service_metadata_add_remove_assets_file_input").value
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3084,16 +3082,13 @@ class service_metadata_add_remove_media_page(Screen):
         metadata_file = self.get_child_by_id("service_metadata_add_remove_media_page").get_child_by_id("service_metadata_add_remove_media_page_content").get_child_by_id("service_metadata_add_remove_media_file_div").get_child_by_id("service_metadata_add_media_file_input").value
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3124,7 +3119,7 @@ class service_metadata_update_page(Screen):
                     id="service_metadata_update_div"
                 ),
                 Button("Update Metadata", id="service_metadata_update_metadata_button", classes="service_metadata_update_button"),
-                Button("Back", id="serivce_metadata_update_back_button"),
+                Button("Back", id="service_metadata_update_back_button"),
                 id="service_metadata_update_page_content",
                 classes="content_page"
             ),
@@ -3136,21 +3131,18 @@ class service_metadata_update_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
-        elif event.button.id == "serivce_metadata_update_back_button":
+        elif event.button.id == "service_metadata_update_back_button":
             self.app.pop_screen()
         elif event.button.id == "service_metadata_update_daemon_button":
             self.app.push_screen(service_metadata_update_daemon_addr_page())
@@ -3201,16 +3193,13 @@ class service_metadata_update_daemon_addr_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3256,16 +3245,13 @@ class service_metadata_update_validate_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3345,16 +3331,13 @@ class service_metadata_update_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3401,16 +3384,13 @@ class service_metadata_get_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3472,16 +3452,13 @@ class service_metadata_get_service_status_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3534,16 +3511,13 @@ class service_metadata_get_api_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3606,16 +3580,13 @@ class service_metadata_get_api_registry_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3655,16 +3626,13 @@ class services_manage_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3743,16 +3711,13 @@ class publish_service_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3828,16 +3793,13 @@ class delete_service_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -3858,14 +3820,13 @@ class delete_service_page(Screen):
 
 class client_page(Screen):
     def compose(self) -> ComposeResult:
-        output, errCode = be.channel_print_initialized()
         yield Header()
         yield Horizontal(
             be.nav_sidebar_vert("client"),
             ScrollableContainer(
                 Label("Client Page", id="client_page_title"),
                 Label("Initialized Channels Info:", id="client_page_log_label"),
-                Log(id="client_page_info_log", auto_scroll=False).write(f"My Initialized channels:\n\n{output}"),
+                Log(id="client_page_info_log", auto_scroll=False),
                 Horizontal(
                     Button(label="Call", id="client_page_call_button", classes="client_page_button"),
                     Button(label="Call low level", id="client_page_call_low_button", classes="client_page_button"),
@@ -3884,21 +3845,37 @@ class client_page(Screen):
             id="client_page"
         )
     
+    def print_info(self, channels) -> None:
+        global popup_output 
+        
+        if channels == "cancel":
+            self.app.pop_screen() 
+        elif channels == "retrieve_error":
+            popup_output = "ERROR: Could not retrieve initialized channel information"
+            self.app.switch_screen(popup_output_page()) 
+        else:
+            self.query_one("#client_page_info_log", expect_type=Log).write(f"My Initialized channels:\n\n{channels}"),
+
+    def on_mount(self) -> None:
+        global load_aprx_time
+        global load_screen_redirect
+
+        load_aprx_time = "Approximately 10s."
+        load_screen_redirect = "client_page"
+        self.app.push_screen(load(), callback=self.print_info)    
+     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -4012,23 +3989,19 @@ class client_call_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "client_call_back_button":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "client_call_view_price_button":
             org_id = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_page_org_id_div").get_child_by_id("client_call_org_id_input").value
             serv_id = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_page_service_id_div").get_child_by_id("client_call_service_id_input").value
@@ -4158,23 +4131,19 @@ class client_call_low_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "client_call_low_back_button":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "client_call_low_view_price_button":
             org_id = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_page_org_id_div").get_child_by_id("client_call_low_org_id_input").value
             serv_id = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_page_service_id_div").get_child_by_id("client_call_low_service_id_input").value
@@ -4247,23 +4216,19 @@ class client_channel_state_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "client_channel_state_back_button":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "client_channel_state_submit_button":
             channel_id = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_channel_id_div").get_child_by_id("client_channel_state_id_input").value
             endpoint = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_endpoint_div").get_child_by_id("client_channel_state_endpoint_input").value
@@ -4305,23 +4270,19 @@ class channel_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "channel_page_back_button":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "channel_page_init_open_button":
             self.app.push_screen(channel_init_open_page())
         elif event.button.id == "channel_page_extend_button":
@@ -4361,16 +4322,13 @@ class channel_init_open_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -4440,16 +4398,13 @@ class channel_init_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -4536,16 +4491,13 @@ class channel_init_metadata_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -4653,16 +4605,13 @@ class channel_open_init_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -4793,16 +4742,13 @@ class channel_open_init_meta_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -4867,16 +4813,13 @@ class channel_extend_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -4951,16 +4894,13 @@ class channel_extend_add_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5078,16 +5018,13 @@ class channel_extend_add_org_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5154,16 +5091,13 @@ class channel_print_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5233,16 +5167,13 @@ class channel_print_init_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5327,16 +5258,13 @@ class channel_print_init_filter_org_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5411,16 +5339,13 @@ class channel_print_all_filter_sender_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5491,16 +5416,13 @@ class channel_print_all_filter_recipient_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5583,16 +5505,13 @@ class channel_print_all_filter_group_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5683,16 +5602,13 @@ class channel_print_all_filter_group_sender_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5740,16 +5656,13 @@ class channel_claim_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5811,16 +5724,13 @@ class channel_claim_to_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5898,16 +5808,13 @@ class channel_claim_to_all_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
@@ -5986,16 +5893,13 @@ class custom_command_page(Screen):
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
-            load_screen_redirect = "account"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
-            load_screen_redirect = "organization"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(organization_page())
         elif event.button.id == "services_page_nav":
             self.app.switch_screen(services_page())
         elif event.button.id == "client_page_nav":
-            load_screen_redirect = "client"
-            self.app.switch_screen(loading_screen())
+            self.app.push_screen(client_page())
         elif event.button.id == "custom_command_page_nav":
             self.app.switch_screen(custom_command_page())
         elif event.button.id == "exit_page_nav":
