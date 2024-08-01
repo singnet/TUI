@@ -784,6 +784,56 @@ def delete_service(org_id, service_id, reg_addr, index, quiet, verbose):
         output = "Service successfully deleted!"
     return output, errCode
 
+def get_all_organizations_and_services():
+    org_list, err_code = run_shell_command("snet organization list")
+    if err_code != 0:
+        return f"Error fetching organizations: {org_list}", err_code
+
+    org_ids = [line.strip() for line in org_list.split('\n')[1:]]
+
+    marketplace_data = {}
+
+    for org_id in org_ids:
+        if len(org_id) > 0:
+            services_list, err_code = run_shell_command(f"snet organization list-services {org_id}")
+            if err_code != 0:
+                marketplace_data[org_id] = f"Error fetching services: {services_list}"
+            else:
+                services = [line.strip() for line in services_list.split('\n')[1:]]
+                marketplace_data[org_id] = services
+
+    return marketplace_data, 0
+
+def search_organizations_and_services(data, phrase):
+    results = {}
+    phrase = phrase.lower()
+
+    for org_id, services in data.items():
+        org_matches = phrase in org_id.lower()
+        if isinstance(services, str):
+            if org_matches or phrase in services.lower():
+                results[org_id] = services
+        else:
+            matching_services = [service for service in services if phrase in service.lower()]
+            if org_matches or matching_services:
+                results[org_id] = services if org_matches else matching_services
+
+    return results
+
+def format_marketplace_data(data):
+    output = []
+    for org_id, services in data.items():
+        output.append(f"Organization ID: {org_id}")
+        if isinstance(services, str):
+            output.append(f"  {services}")
+        elif services:
+            for service in services:
+                output.append(f"  {service}")
+        else:
+            output.append("  No services found")
+        output.append("")
+    return "\n".join(output)
+
 def add_org_members(org_id, mem_list, index, quiet, verbose):
     # snet organization add-members [-h] 
     #                           [--wallet-index WALLET_INDEX] [--yes]

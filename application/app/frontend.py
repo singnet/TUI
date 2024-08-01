@@ -15,6 +15,7 @@ conditional_output: str
 conditional_command: str
 load_screen_redirect: str
 load_aprx_time: str
+load_params: dict
 
 class WelcomeScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -114,6 +115,28 @@ class load(Screen[str]):
         else:
             self.app.call_from_thread(self.dismiss, channels)
 
+    @work(thread=True)
+    def services_view_all_search(self) -> None:
+        global load_params
+        
+        try:
+            data = load_params["view_all_data"]
+            phrase = load_params["view_all_search"]
+            
+            output = be.search_organizations_and_services(data, phrase)
+            self.app.call_from_thread(self.dismiss, be.format_marketplace_data(output))
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def services_view_all_init(self) -> None:
+        output, errCode = be.get_all_organizations_and_services()
+        if errCode != 0:
+            self.app.call_from_thread(self.dismiss, "retrieve_error")
+        else:
+            ret = [output, be.format_marketplace_data(output)]
+            self.app.call_from_thread(self.dismiss, ret)
+
     def on_mount(self) -> None:
         global load_screen_redirect
         global load_aprx_time
@@ -134,6 +157,10 @@ class load(Screen[str]):
             self.my_org_list()
         elif load_screen_redirect == "client_page":
             self.init_channels()
+        elif load_screen_redirect == "view_all_init":
+            self.services_view_all_init()
+        elif load_screen_redirect == "view_all_search":
+            self.services_view_all_search()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "load_cancel_button":
@@ -2110,7 +2137,6 @@ class org_manage_delete_page(Screen):
             popup_output = output
             self.app.push_screen(popup_output_page())
 
-
 class services_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -2122,6 +2148,10 @@ class services_page(Screen):
                     Button(label="Metadata", id="services_metadata_button"),
                     Button(label="Manage", id="services_page_manage_button"),
                     id="services_page_button_div"
+                ),
+                Horizontal(
+                    Button(label="View All", id="services_view_all_button"),
+                    id="services_page_lower_button_div"
                 ),
                 id="services_page_content",
                 classes="content_page"
@@ -2148,6 +2178,8 @@ class services_page(Screen):
             self.app.push_screen(services_metadata_page())
         elif event.button.id == "services_page_manage_button":
             self.app.push_screen(services_manage_page())
+        elif event.button.id == "services_view_all_button":
+            self.app.push_screen(services_view_all_page())
 
 class services_metadata_page(Screen):
     # TODO: Check all subpages and make them scrollable
@@ -3817,6 +3849,92 @@ class delete_service_page(Screen):
             output, errCode = be.delete_service(org_id, service_id, reg_addr, index, quiet, verbose)
             popup_output = output
             self.app.push_screen(popup_output_page())
+
+class services_view_all_page(Screen):
+
+    market_data = {}
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert("serv"),
+            ScrollableContainer(
+                Label("View All Page", id="services_view_all_title"),
+                Horizontal(
+                    Input(placeholder="Search", id="services_view_all_search_input"),
+                    Button(label="Reset", id="services_view_all_reset_button"),
+                    Button(label="Search", id="services_view_all_search_button"),
+                    id="services_view_all_search_div"
+                ),
+                Log(id="services_view_all_log", auto_scroll=False),
+                Button(label="Back", id="services_view_all_back_button"),
+                id="services_view_all_page_content",
+                classes="content_page"
+            ),
+            id="services_view_all_page"
+        )
+
+    def update_log(self, output) -> None:
+        global popup_output
+
+        if output == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif output != "cancel":
+            log = self.query_one("#services_view_all_log", expect_type=Log)
+            log.clear()
+            log.write(output)
+
+    def init_print(self, output) -> None:
+        global popup_output
+
+        if output == "retrieve_error":
+            popup_output = "ERROR: Could not retrieve marketplace data"
+            self.app.switch_screen(popup_output_page())
+        elif output == "cancel":
+            self.app.pop_screen()
+        else:
+            self.market_data = output[0] 
+            self.query_one("#services_view_all_log", expect_type=Log).write(output[1])
+
+    def on_mount(self) -> None:
+        global load_aprx_time
+        global load_screen_redirect
+
+        load_aprx_time = "Approximately 4 minutes"
+        load_screen_redirect = "view_all_init"
+        self.app.push_screen(load(), callback=self.init_print)
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global load_params
+        global load_aprx_time
+        global load_screen_redirect
+
+        if event.button.id == "account_page_nav":
+            self.app.push_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.push_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.push_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "services_view_all_reset_button":
+            load_params = {"view_all_data": self.market_data, "view_all_search": ""}
+            load_aprx_time = "Approximately 5s."
+            load_screen_redirect = "view_all_search"
+            self.app.push_screen(load(), callback=self.update_log)
+        elif event.button.id == "services_view_all_search_button":
+            search_phrase = self.get_child_by_id("services_view_all_page").get_child_by_id("services_view_all_page_content").get_child_by_id("services_view_all_search_div").get_child_by_id("services_view_all_search_input").value
+            load_params = {"view_all_data": self.market_data, "view_all_search": search_phrase} 
+            load_aprx_time = "Approximately 5s."
+            load_screen_redirect = "view_all_search"
+            self.app.push_screen(load(), callback=self.update_log)
+        elif event.button.id == "services_view_all_back_button":
+            self.app.pop_screen() 
 
 class client_page(Screen):
     def compose(self) -> ComposeResult:

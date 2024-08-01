@@ -1805,7 +1805,7 @@ exit_page {
 
 #services_page_button_div {
     margin-left: 17;
-    margin-bottom: 10;
+    margin-bottom: 8;
     margin-top: 2;
 }
 
@@ -1820,6 +1820,14 @@ exit_page {
     padding-top: 3;
     padding-left: 9;
     padding-right: 9;
+}
+
+#services_view_all_button {
+    margin-left: 47;
+    padding-top: 3;
+    padding-left: 7;
+    padding-right: 7;
+    margin-bottom: 1;
 }
 
 /* Services metadata page */
@@ -3131,6 +3139,51 @@ exit_page {
 
 #delete_service_quiet_radio {
     margin-bottom: 2;
+}
+
+/* Services View All Page */
+#services_view_all_page_content {
+    align: center middle;
+}
+
+#services_view_all_title {
+    margin-left: 3;
+    margin-top: 2;
+    margin-bottom: 2;
+    text-style: bold underline;
+}
+
+#services_view_all_search_div {
+    align: center middle;
+    margin-bottom: 2;
+}
+
+#services_view_all_search_input {
+    width: 65w;
+    height: 1w;
+}
+
+#services_view_all_reset_button {
+    margin-left: 1;
+}
+
+#services_view_all_search_button {
+    margin-left: 1;
+}
+
+#services_view_all_log {
+    margin-left: 3;
+    margin-top: 1;
+    margin-bottom: 2;
+    width: 95w;
+    padding-left: 2;
+    padding-top: 1;
+    height: 80h;
+}
+
+#services_view_all_back_button {
+    margin-bottom: 1;
+    margin-left: 3;
 }
 
 /* Client page */
