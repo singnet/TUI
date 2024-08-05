@@ -3970,7 +3970,7 @@ class client_page(Screen):
             self.app.pop_screen() 
         elif channels == "retrieve_error":
             popup_output = "ERROR: Could not retrieve initialized channel information"
-            self.app.switch_screen(popup_output_page()) 
+            self.app.push_screen(popup_output_page()) 
         else:
             self.query_one("#client_page_info_log", expect_type=Log).write(f"My Initialized channels:\n\n{channels}"),
 
@@ -3978,7 +3978,7 @@ class client_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "Approximately 10s."
+        load_aprx_time = "Approximately 5s."
         load_screen_redirect = "client_page"
         self.app.push_screen(load(), callback=self.print_info)    
      
@@ -4364,6 +4364,8 @@ class channel_page(Screen):
             be.nav_sidebar_vert("client"),
             ScrollableContainer(
                 Label("Channel Page", id="channel_page_title"),
+                Label("Initialized Channels Info:", id="channel_page_log_label"),
+                Log(id="channel_page_info_log", auto_scroll=False),
                 Horizontal(
                     Button(label="Initialize/Open", id="channel_page_init_open_button", classes="channel_page_button"),
                     Button(label="Extend", id="channel_page_extend_button", classes="channel_page_button"),
@@ -4383,7 +4385,27 @@ class channel_page(Screen):
             ),
             id="channel_page"
         )
-    
+
+    def print_info(self, channels) -> None:
+        global popup_output 
+        
+        if channels == "cancel":
+            self.app.pop_screen() 
+        elif channels == "retrieve_error":
+            popup_output = "ERROR: Could not retrieve initialized channel information"
+            self.app.push_screen(popup_output_page()) 
+        else:
+            self.query_one("#channel_page_info_log", expect_type=Log).write(f"My Initialized channels:\n\n{channels}"),
+
+    def on_mount(self) -> None:
+        global load_aprx_time
+        global load_screen_redirect
+
+        load_aprx_time = "Approximately 5s."
+        load_screen_redirect = "client_page"
+        self.app.push_screen(load(), callback=self.print_info)    
+ 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_screen_redirect
 
@@ -4452,7 +4474,7 @@ class channel_init_open_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "channel_init_open_page_back_button":
-            self.app.pop_screen()
+            self.app.push_screen(channel_page())
         elif event.button.id == "channel_init_open_page_init_button":
             self.app.push_screen(channel_init_page())
         elif event.button.id == "channel_init_open_page_init_meta_button":
@@ -4943,7 +4965,7 @@ class channel_extend_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "channel_extend_page_back_button":
-            self.app.pop_screen()
+            self.app.push_screen(channel_page())
         elif event.button.id == "channel_extend_page_extend_add_button":
             self.app.push_screen(channel_extend_add_page())
         elif event.button.id == "channel_extend_page_extend_add_org_button":
@@ -5221,7 +5243,7 @@ class channel_print_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "channel_print_page_back_button":
-            self.app.pop_screen()
+            self.app.push_screen(channel_page())
         elif event.button.id == "channel_print_page_print_init_button":
             self.app.push_screen(channel_print_init_page())
         elif event.button.id == "channel_print_page_print_init_filter_org_button":
@@ -5786,7 +5808,7 @@ class channel_claim_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "channel_claim_page_back_button":
-            self.app.pop_screen()
+            self.app.push_screen(channel_page())
         elif event.button.id == "channel_claim_page_to_button":
             self.app.push_screen(channel_claim_to_page())
         elif event.button.id == "channel_claim_page_to_all_button":

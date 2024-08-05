@@ -3386,14 +3386,31 @@ exit_page {
 }
 
 /* Channel Page */
+#channel_page {
+    background: #f6d7b0;
+}
+
 #channel_page_content {
     align: left middle;
 }
 
 #channel_page_title {
     margin-left: 3;
-    margin-bottom: 4;
+    margin-bottom: 2;
+    margin-top: 1;
     text-style: bold underline;
+}
+
+#channel_page_log_label {
+    margin-left: 3;
+}
+
+#channel_page_info_log {
+    margin-left: 3;
+    margin-top: 1;
+    margin-bottom: 2;
+    width: 95w;
+    height: 30h;
 }
 
 .channel_page_div {
@@ -3423,6 +3440,7 @@ exit_page {
 
 #channel_page_back_button {
     margin-left: 3;
+    margin-bottom: 1;
 }
 
 /* Channel init open page */
