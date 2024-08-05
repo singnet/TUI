@@ -1634,7 +1634,7 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
     #     return "ERROR: Expiration must be a valid positive integer", 42, None
 
     # Construct command
-    command = f"snet --print-traceback channel open-init {org_id} {group_name} {agi_amount} {expr}"
+    command = f"snet channel open-init {org_id} {group_name} {agi_amount} {expr}"
     
     if registry and len(registry) > 0:
         command += f" --registry-at {registry}"
@@ -1698,7 +1698,7 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
         return "ERROR: Metadata file path is required", 42, None
 
     # Construct command
-    command = f"snet --print-traceback channel open-init-metadata {org_id} {group_name} {agi_amount} {expr} --metadata-file {metadata_file}"
+    command = f"snet channel open-init-metadata {org_id} {group_name} {agi_amount} {expr} --metadata-file {metadata_file}"
     
     if registry and len(registry) > 0:
         command += f" --registry-at {registry}"
