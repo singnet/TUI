@@ -190,11 +190,21 @@ def wallet_dict_create():
     else:
         return {}, 1
 
-def create_identity_cli(id_name, wallet_info, network, mnemonic):
-    if mnemonic:
-        output, errCode = run_shell_command(f"snet --print-traceback identity create {id_name} mnemonic --mnemonic {wallet_info} --network {network}")
-    else:
-        output, errCode = run_shell_command(f"snet --print-traceback identity create {id_name} key --private-key {wallet_info} --network {network}")
+def create_identity_cli(id_name, misc_inp, network, type):
+    # snet identity create [-h] [--mnemonic MNEMONIC] [--private-key PRIVATE_KEY]
+    #                  [--keystore-path KEYSTORE_PATH] [--network NETWORK]
+    #                  [--wallet-index WALLET_INDEX]
+    #                  IDENTITY_NAME IDENTITY_TYPE
+    command = f"snet --print-traceback identity create {id_name} {type} --network {network}"
+
+    if type == "mnemonic":
+        command += f" --mnemonic {misc_inp}"
+    elif type == "key":
+        command += f" --private-key {misc_inp}"
+    elif type == "keystore":
+        command += f" --keystore-path {misc_inp}"
+
+    output, errCode = run_shell_command(command)
     return output, errCode
 
 def delete_identity_cli(id_name):

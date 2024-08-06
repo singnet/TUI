@@ -223,23 +223,27 @@ exit_page {
 }
 
 #create_identity_page_name_label {
-    margin-right: 4;
+    margin-right: 5;
     margin-top: 1;
 }
 
-#create_identity_page_wallet_label { 
-    margin-right: 2;
+#create_identity_page_type_label {
+    margin-right: 8;
     margin-top: 1;
 }
 
 #create_identity_page_network_label {
-    margin-right: 4;
+    margin-right: 5;
+    margin-top: 1;
+}
+
+#create_identity_page_misc_label {
     margin-top: 1;
 }
 
 #create_identity_button_div {
     align: right middle;
-    margin-top: 13;
+    margin-top: 8;
 }
 
 #create_identity_back_button {

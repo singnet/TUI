@@ -1,4 +1,4 @@
-from textual import work
+from textual import work, on
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal, ScrollableContainer
 from textual.screen import Screen
@@ -239,9 +239,9 @@ class create_identity_page(Screen):
                         classes="create_identity_div"
                     ),
                     Horizontal(
-                        Label("Wallet Key", id="create_identity_page_wallet_label"),
-                        Input(placeholder="Private Key", id="wallet_info_input", password=True),
-                        id="create_identity_key_div",
+                        Label("Type", id="create_identity_page_type_label"),
+                        Select(options=(("RPC", "rpc"), ("Mnemonic", "mnemonic"), ("Key", "key"), ("Trezor", "trezor"), ("Ledger", "ledger"), ("Keystore", "keystore")), prompt="Select Identity Type", id="create_identity_type_select"),
+                        id="create_identity_type_div",
                         classes="create_identity_div"
                     ),
                     Horizontal(
@@ -250,6 +250,12 @@ class create_identity_page(Screen):
                         id="create_identity_network_div",
                         classes="create_identity_div"
                     ),
+                    Horizontal(
+                        Label("Misc.        ", id="create_identity_page_misc_label"),
+                        Input(placeholder="Please select your identity type first", id="create_identity_misc_input"),
+                        id="create_identity_misc_div",
+                        classes="create_identity_div"
+                    ),                    
                     Horizontal(
                         Button("Back", id="create_identity_back_button"),
                         Button("Create Identity", id="create_identity_button"),
@@ -280,47 +286,84 @@ class create_identity_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
+        self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_misc_div").get_child_by_id("create_identity_misc_input").visible = False
+        self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_misc_div").get_child_by_id("create_identity_page_misc_label").visible = False
+
         load_aprx_time = "Approximately 5s."
         load_screen_redirect = "net_list"
         self.app.push_screen(load(), callback=self.print_net_list)
 
+    @on(Select.Changed)
+    def on_select_changed(self, event: Select.Changed) -> None:
+        if event.select.id == "create_identity_type_select":
+            inpt: Input = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_misc_div").get_child_by_id("create_identity_misc_input")
+            label: Label = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_misc_div").get_child_by_id("create_identity_page_misc_label")
+            val = event.value
+
+            if val == "rpc":
+                inpt.visible = False
+                label.visible = False
+            elif val == "mnemonic":
+                inpt.visible = True
+                label.visible = True
+                inpt.placeholder = "BIP39 mnemonic seed phrase"
+                label.update("Seed Phrase  ")
+            elif val == "key":
+                inpt.visible = True
+                label.visible = True
+                inpt.placeholder = "Hex-encoded wallet private key" 
+                label.update("Private Key  ")
+            elif val == "trezor":
+                inpt.visible = False
+                label.visible = False
+            elif val == "ledger":
+                inpt.visible = False
+                label.visible = False
+            elif val == "keystore":
+                inpt.visible = True
+                label.visible = True
+                inpt.placeholder = "Path of the JSON encrypted keystore file"
+                label.update("Keystore path")
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
+        global error_exit_label
+
         if event.button.id == "create_identity_button":
             id_name = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_name_div").get_child_by_id("org_identity_input").value
             network = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_network_div").get_child_by_id("network_select").value
-            wallet_info = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_key_div").get_child_by_id("wallet_info_input").value
+            type = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_type_div").get_child_by_id("create_identity_type_select").value
+            misc_inp = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_misc_div").get_child_by_id("create_identity_misc_input").value
+
             if not isinstance(id_name, str) or len(id_name) == 0:
                 popup_output = "ERROR: Organization Identity cannot be blank."
                 self.app.push_screen(popup_output_page())
-            elif not isinstance(wallet_info, str):
-                popup_output = "ERROR: Wallet private key / seed phrase must be entered"
+            elif network == Select.BLANK:
+                popup_output = "ERROR: Please select an identity network"
+                self.app.push_screen(popup_output_page())
+            elif type == Select.BLANK:
+                popup_output = "ERROR: Please select an identity type" 
+                self.app.push_screen(popup_output_page())
+            if type in {"mnemonic", "key", "keystore"} and (not isinstance(misc_inp, str) or len(misc_inp) == 0):
+                popup_output = "ERROR: Please input the additional information (Wallet Key, or Seed Phrase, or Keystore Path) before proceeding"
                 self.app.push_screen(popup_output_page())
             else:
-                if network == Select.BLANK:
-                    network = "sepolia"
+                output, errCode = be.create_identity_cli(id_name, misc_inp, network, type)
+                if errCode == 0:
+                    popup_output = output
+                    if len(popup_output) == 0:
+                        popup_output = f"Identity '{id_name} created!'"
+                    self.app.push_screen(account_page())
+                    self.app.push_screen(popup_output_page())
                 else:
-                    network = network.lower()
-                self.create_identity(id_name, False, wallet_info, network)
+                    popup_output = output
+                    if len(popup_output) == 0:
+                        popup_output = "ERROR: There was an error while creating the identity"
+                    self.app.push_screen(identity_page())
+                    self.app.push_screen(popup_output_page()) 
         elif event.button.id == "create_identity_back_button":
             self.app.pop_screen()
                 
-    
-    def create_identity(self, id_name, mnemonic, wallet_info = None, network_select = "sepolia"):
-        global popup_output
-        global error_exit_label
-        
-        output, errCode = be.create_identity_cli(id_name, wallet_info, network_select, mnemonic)
-        if errCode == 0:
-            popup_output = output
-            if len(popup_output) == 0:
-                popup_output = f"Identity '{id_name} created!'"
-            self.app.push_screen(account_page())
-            self.app.push_screen(popup_output_page())
-        else:
-            error_exit_label = output
-            self.app.switch_screen(error_exit_page())
-
 class account_page(Screen):
     def compose(self) -> ComposeResult:
         global error_exit_label
