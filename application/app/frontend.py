@@ -1187,7 +1187,7 @@ class init_org_metadata_page(Screen):
                 ),
                 Horizontal(
                     Label("Metadata Path", id="init_org_metadata_meta_path_label", classes="init_org_metadata_page_label"),
-                    Input(placeholder="[OPTIONAL] Service metadata json file (default organization_metadata.json)", id="init_org_metadata_meta_path_input", classes="init_org_metadata_page_input"),
+                    Input(placeholder="[OPTIONAL] Organization metadata json file path (default 'organization_metadata.json' saved to TUI directory if unspecified)", id="init_org_metadata_meta_path_input", classes="init_org_metadata_page_input"),
                     id="init_org_metadata_page_meta_path_div",
                     classes="init_org_metadata_page_div"
                 ),
