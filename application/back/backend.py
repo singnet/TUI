@@ -1631,9 +1631,9 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
     
     try:
         if not agi_amount or float(agi_amount) <= 0:
-            return "ERROR: Amount of AGI must be greater than 0", 42, None
+            return "ERROR: Amount of AGIX must be greater than 0", 42, None
     except ValueError:
-        return "ERROR: Amount of AGI must be a valid number greater than 0", 42, None
+        return "ERROR: Amount of AGIX must be a valid number greater than 0", 42, None
     
     # try:
     #     if not expr or int(expr) <= 0:
@@ -1692,9 +1692,9 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
     
     try:
         if not agi_amount or float(agi_amount) <= 0:
-            return "ERROR: Amount of AGI must be greater than 0", 42, None
+            return "ERROR: Amount of AGIX must be greater than 0", 42, None
     except ValueError:
-        return "ERROR: Amount of AGI must be a valid number greater than 0", 42, None
+        return "ERROR: Amount of AGIX must be a valid number greater than 0", 42, None
     
     # try:
     #     if not expr or int(expr) <= 0:
@@ -1759,9 +1759,9 @@ def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, wallet_ind
     if agi_amount and len(agi_amount) > 0:
         try:
             if agi_amount and float(agi_amount) < 0:
-                return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
+                return "ERROR: Amount of AGIX must be greater than or equal to 0", 42, None
         except ValueError:
-            return "ERROR: Amount of AGI must be a valid number", 42, None
+            return "ERROR: Amount of AGIX must be a valid number", 42, None
         command += f" --amount {agi_amount}"
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"
@@ -1811,9 +1811,9 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
     if agi_amount and len(agi_amount) > 0:
         try:
             if agi_amount and float(agi_amount) < 0:
-                return "ERROR: Amount of AGI must be greater than or equal to 0", 42, None
+                return "ERROR: Amount of AGIX must be greater than or equal to 0", 42, None
         except ValueError:
-            return "ERROR: Amount of AGI must be a valid number", 42, None
+            return "ERROR: Amount of AGIX must be a valid number", 42, None
         command += f" --amount {agi_amount}"
     if mpe_addr and len(mpe_addr) > 0:
         command += f" --multipartyescrow-at {mpe_addr}"
