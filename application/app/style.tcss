@@ -3163,16 +3163,12 @@ exit_page {
 }
 
 #services_view_all_search_input {
-    width: 65w;
+    width: 75w;
     height: 1w;
 }
 
 #services_view_all_reset_button {
-    margin-left: 1;
-}
-
-#services_view_all_search_button {
-    margin-left: 1;
+    margin-left: 5;
 }
 
 #services_view_all_log {

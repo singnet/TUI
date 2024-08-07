@@ -160,6 +160,7 @@ class load(Screen[str]):
         elif load_screen_redirect == "view_all_init":
             self.services_view_all_init()
         elif load_screen_redirect == "view_all_search":
+            self.visible = False
             self.services_view_all_search()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -3904,9 +3905,8 @@ class services_view_all_page(Screen):
             ScrollableContainer(
                 Label("View All Page", id="services_view_all_title"),
                 Horizontal(
-                    Input(placeholder="Search", id="services_view_all_search_input"),
+                    Input(placeholder="Search for Organization or Service", id="services_view_all_search_input"),
                     Button(label="Reset", id="services_view_all_reset_button"),
-                    Button(label="Search", id="services_view_all_search_button"),
                     id="services_view_all_search_div"
                 ),
                 Log(id="services_view_all_log", auto_scroll=False),
@@ -3924,6 +3924,8 @@ class services_view_all_page(Screen):
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
             self.app.push_screen(popup_output_page())
         elif output != "cancel":
+            if len(output) == 0:
+                output = "Could not find any Organizations or Services with that search phrase"
             log = self.query_one("#services_view_all_log", expect_type=Log)
             log.clear()
             log.write(output)
@@ -3947,7 +3949,19 @@ class services_view_all_page(Screen):
         load_aprx_time = "Approximately 4 minutes"
         load_screen_redirect = "view_all_init"
         self.app.push_screen(load(), callback=self.init_print)
-    
+
+    @on(Input.Changed)
+    def on_input_changed(self, event: Input.Changed) -> None:
+        global load_params
+        global load_aprx_time
+        global load_screen_redirect
+        
+        search_phrase = self.get_child_by_id("services_view_all_page").get_child_by_id("services_view_all_page_content").get_child_by_id("services_view_all_search_div").get_child_by_id("services_view_all_search_input").value
+        load_params = {"view_all_data": self.market_data, "view_all_search": search_phrase, "invis": True} 
+        load_aprx_time = "Approximately 5s."
+        load_screen_redirect = "view_all_search"
+        self.app.push_screen(load(), callback=self.update_log)
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_params
         global load_aprx_time
@@ -3966,16 +3980,7 @@ class services_view_all_page(Screen):
         elif event.button.id == "exit_page_nav":
             self.app.push_screen(exit_page())
         elif event.button.id == "services_view_all_reset_button":
-            load_params = {"view_all_data": self.market_data, "view_all_search": ""}
-            load_aprx_time = "Approximately 5s."
-            load_screen_redirect = "view_all_search"
-            self.app.push_screen(load(), callback=self.update_log)
-        elif event.button.id == "services_view_all_search_button":
-            search_phrase = self.get_child_by_id("services_view_all_page").get_child_by_id("services_view_all_page_content").get_child_by_id("services_view_all_search_div").get_child_by_id("services_view_all_search_input").value
-            load_params = {"view_all_data": self.market_data, "view_all_search": search_phrase} 
-            load_aprx_time = "Approximately 5s."
-            load_screen_redirect = "view_all_search"
-            self.app.push_screen(load(), callback=self.update_log)
+            self.get_child_by_id("services_view_all_page").get_child_by_id("services_view_all_page_content").get_child_by_id("services_view_all_search_div").get_child_by_id("services_view_all_search_input").clear()            
         elif event.button.id == "services_view_all_back_button":
             self.app.pop_screen() 
 
