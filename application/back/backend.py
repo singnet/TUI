@@ -102,17 +102,15 @@ def run_shell_command(command, input_text=None, workdir=None):
         else:
             current_process = subprocess.Popen(args=command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        if input_text != None:
-            stdout, stderr = current_process.communicate(input=input_text)
-        else:
-           stdout, stderr = current_process.communicate() 
+        stdout, stderr = current_process.communicate(input=input_text)
+        return_code = current_process.returncode
         
         if stdout:
-            return stdout, 0
+            return stdout, return_code
         elif stderr:
-            return stderr, 1
+            return stderr, return_code
         else:
-            return stdout, 42
+            return "", return_code 
 
     except Exception as e:
         return str(e), 1
@@ -151,10 +149,10 @@ def check_account_balance():
 
 def identity_check():
     output, errCode = run_shell_command('snet --print-traceback account print')
-    if errCode == 0:
-        return True, output, errCode
-    else:
+    if "Please create your first" in output:
         return False, output, errCode
+    else:
+        return True, output, errCode
 
 def nav_sidebar_vert(focus_button) -> Vertical:
     ret_vert = Vertical(
