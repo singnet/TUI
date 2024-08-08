@@ -1476,6 +1476,8 @@ def client_call(org_id, serv_id, group_name, method, params, proto_serv=None, mp
     # Run command
     if view:
         output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
     else:
         output, errCode = run_shell_command(command=f"{command} --yes")
 
@@ -1667,6 +1669,8 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
     # Run command
     if view:
         output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
     else:
         output, errCode = run_shell_command(command=f"{command} --yes") 
 
@@ -1731,6 +1735,8 @@ def channel_open_init_metadata(org_id, group_name, agi_amount, expr, registry, f
     # Run command
     if view:
         output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
     else:
         output, errCode = run_shell_command(command=f"{command} --yes") 
 
@@ -1776,6 +1782,8 @@ def channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, wallet_ind
     # Run command
     if view:
         output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
     else:
         output, errCode = run_shell_command(command=f"{command} --yes") 
 
@@ -1832,6 +1840,8 @@ def channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, f
     # Run command
     if view:
         output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
     else:
         output, errCode = run_shell_command(command=f"{command} --yes") 
 
@@ -2041,6 +2051,8 @@ def channel_claim_timeout(channel_id, mpe_addr, wallet_index, quiet, verbose, vi
     # Run command
     if view:
         output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
     else:
         output, errCode = run_shell_command(command=f"{command} --yes") 
 
@@ -2069,6 +2081,8 @@ def channel_claim_timeout_all(mpe_addr, from_block, wallet_index, quiet, verbose
     # Run command
     if view:
         output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
     else:
         output, errCode = run_shell_command(command=f"{command} --yes") 
 
@@ -2107,8 +2121,12 @@ def custom_conditional_command(root, sub, args, cwd, traceback, view):
     if view:
         if cwd and len(cwd) > 0:
             output, errCode = run_shell_command(cmd, input_text="n\n", workdir=cwd)
+            if len(output) > 0 and "(y/n)" in output:
+                errCode = 0
         else:
             output, errCode = run_shell_command(cmd, input_text="n\n")
+            if len(output) > 0 and "(y/n)" in output:
+                errCode = 0
     else:
         if cwd and len(cwd) > 0:
             output, errCode = run_shell_command(command=f"{command} --yes", workdir=cwd) 
