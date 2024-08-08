@@ -46,7 +46,7 @@ class WelcomeScreen(Screen):
 
         if event.button.id == "start_button":
             load_screen_redirect = "welcome"
-            load_aprx_time = "Approximately 5s."
+            load_aprx_time = "5s."
             self.app.push_screen(load(), callback=self.switch)
 
 class load(Screen[str]):
@@ -137,11 +137,30 @@ class load(Screen[str]):
             ret = [output, be.format_marketplace_data(output)]
             self.app.call_from_thread(self.dismiss, ret)
 
+    @work(thread=True)
+    def create_id_page(self) -> None:
+        global load_params
+
+        try:
+            id_name = load_params["create_id_name"]
+            misc_inp = load_params["create_id_input"]
+            network = load_params["create_id_net"]
+            type = load_params["create_id_type"]
+
+            output, errCode = be.create_identity_cli(id_name, misc_inp, network, type)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
     def on_mount(self) -> None:
         global load_screen_redirect
         global load_aprx_time
-        
-        self.query_one(Label).update("Loading: " + load_aprx_time)
+
+        if not isinstance(load_aprx_time, str) or len(load_aprx_time) <= 0:
+            load_aprx_time = "5s."
+
+        self.query_one(Label).update("Loading: Approximately " + load_aprx_time)
+        load_aprx_time = None
 
         if load_screen_redirect == "welcome":
             self.welcome()
@@ -162,6 +181,8 @@ class load(Screen[str]):
         elif load_screen_redirect == "view_all_search":
             self.visible = False
             self.services_view_all_search()
+        elif load_screen_redirect == "create_id_page":
+            self.create_id_page()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "load_cancel_button":
@@ -211,14 +232,10 @@ class conditional_input_page(Screen):
             self.app.pop_screen()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        global load_aprx_time
         global load_screen_redirect
         
         if event.button.id == "conditional_input_accept_button":
-            # TODO: Redo conditional to just return yes or no
-            # TODO: Check where conditional command is ran, and redo apprx time
             load_screen_redirect = "conditional"
-            load_aprx_time = "Approximately 5s."  
             self.app.push_screen(load(), callback=self.print_output)
         elif event.button.id == "conditional_input_deny_button":
             self.app.pop_screen()
@@ -290,7 +307,7 @@ class create_identity_page(Screen):
         self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_misc_div").get_child_by_id("create_identity_misc_input").visible = False
         self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_misc_div").get_child_by_id("create_identity_page_misc_label").visible = False
 
-        load_aprx_time = "Approximately 5s."
+        load_aprx_time = "5s."
         load_screen_redirect = "net_list"
         self.app.push_screen(load(), callback=self.print_net_list)
 
@@ -326,9 +343,36 @@ class create_identity_page(Screen):
                 inpt.placeholder = "Path of the JSON encrypted keystore file"
                 label.update("Keystore path")
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page()) 
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            if errCode == 0:
+                popup_output = output
+                if len(popup_output) == 0:
+                    popup_output = f"Identity created!'"
+                self.app.push_screen(account_page())
+                self.app.push_screen(popup_output_page())
+            else:
+                popup_output = output
+                if len(popup_output) == 0:
+                    popup_output = "ERROR: There was an error while creating the identity"
+                self.app.push_screen(identity_page())
+                self.app.push_screen(popup_output_page()) 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global error_exit_label
+        global load_params
+        global load_aprx_time
+        global load_screen_redirect
 
         if event.button.id == "create_identity_button":
             id_name = self.get_child_by_id("create_identity").get_child_by_id("create_identity_outer_div").get_child_by_id("create_identity_right_div").get_child_by_id("create_identity_name_div").get_child_by_id("org_identity_input").value
@@ -349,19 +393,11 @@ class create_identity_page(Screen):
                 popup_output = "ERROR: Please input the additional information (Wallet Key, or Seed Phrase, or Keystore Path) before proceeding"
                 self.app.push_screen(popup_output_page())
             else:
-                output, errCode = be.create_identity_cli(id_name, misc_inp, network, type)
-                if errCode == 0:
-                    popup_output = output
-                    if len(popup_output) == 0:
-                        popup_output = f"Identity '{id_name} created!'"
-                    self.app.push_screen(account_page())
-                    self.app.push_screen(popup_output_page())
-                else:
-                    popup_output = output
-                    if len(popup_output) == 0:
-                        popup_output = "ERROR: There was an error while creating the identity"
-                    self.app.push_screen(identity_page())
-                    self.app.push_screen(popup_output_page()) 
+                load_params = {"create_id_name": id_name, "create_id_input": misc_inp, "create_id_type": type, "create_id_net": network}
+                load_aprx_time = "5s."
+                load_screen_redirect = "create_id_page"
+
+                self.app.push_screen(load(), callback=self.on_res)
         elif event.button.id == "create_identity_back_button":
             self.app.pop_screen()
                 
@@ -410,7 +446,7 @@ class account_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "Approximately 5s."
+        load_aprx_time = "5s."
         load_screen_redirect = "acc_info"
         self.app.push_screen(load(), callback=self.print_info)
 
@@ -719,7 +755,7 @@ class identity_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "Approximately 5s."
+        load_aprx_time = "5s."
         load_screen_redirect = "id_page"
         self.app.push_screen(load(), callback=self.id_list_update) 
 
@@ -1031,7 +1067,7 @@ class organization_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "Approximately 30s."
+        load_aprx_time = "30s."
         load_screen_redirect = "org_page"
         self.app.push_screen(load(), callback=self.print_info)
 
@@ -3946,7 +3982,7 @@ class services_view_all_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "Approximately 4 minutes"
+        load_aprx_time = "4 minutes"
         load_screen_redirect = "view_all_init"
         self.app.push_screen(load(), callback=self.init_print)
 
@@ -3957,14 +3993,13 @@ class services_view_all_page(Screen):
         global load_screen_redirect
         
         search_phrase = self.get_child_by_id("services_view_all_page").get_child_by_id("services_view_all_page_content").get_child_by_id("services_view_all_search_div").get_child_by_id("services_view_all_search_input").value
-        load_params = {"view_all_data": self.market_data, "view_all_search": search_phrase, "invis": True} 
-        load_aprx_time = "Approximately 5s."
+        load_params = {"view_all_data": self.market_data, "view_all_search": search_phrase} 
+        load_aprx_time = "5s."
         load_screen_redirect = "view_all_search"
         self.app.push_screen(load(), callback=self.update_log)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_params
-        global load_aprx_time
         global load_screen_redirect
 
         if event.button.id == "account_page_nav":
@@ -4026,7 +4061,7 @@ class client_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "Approximately 5s."
+        load_aprx_time = "5s."
         load_screen_redirect = "client_page"
         self.app.push_screen(load(), callback=self.print_info)    
      
@@ -4153,6 +4188,7 @@ class client_call_page(Screen):
         global conditional_command
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4188,6 +4224,7 @@ class client_call_page(Screen):
             if errCode == 0:
                 conditional_output = output
                 conditional_command = command
+                load_aprx_time = "10s."
                 self.app.push_screen(conditional_input_page())
             else:
                 popup_output = output
@@ -4449,7 +4486,7 @@ class channel_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "Approximately 5s."
+        load_aprx_time = "5s."
         load_screen_redirect = "client_page"
         self.app.push_screen(load(), callback=self.print_info)    
  
