@@ -211,6 +211,56 @@ class load(Screen[str]):
             self.app.call_from_thread(self.dismiss, [output, errCode])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def account_deposit(self) -> None:
+        global load_params
+
+        try:
+            agi = load_params["agi"]
+            contr_addr = load_params["cont_addr"]
+            mpe_addr = load_params["mpe_addr"]
+            wallet = load_params["wallet"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.account_deposit(agi, contr_addr, mpe_addr, wallet, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode]) 
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error") 
+
+    @work(thread=True)
+    def account_withdraw(self) -> None:
+        global load_params
+
+        try:
+            agi = load_params["agi"]
+            mpe_addr = load_params["mpe_addr"]
+            wallet = load_params["wallet"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.account_withdraw(agi, mpe_addr, wallet, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def account_transfer(self) -> None:
+        global load_params
+
+        try:
+            agi = load_params["agi"]
+            rec_addr = load_params["rec_addr"]
+            mpe_addr = load_params["mpe_addr"]
+            wallet = load_params["wallet"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.account_transfer(rec_addr, agi, mpe_addr, wallet, quiet, verbose) 
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")  
 
     def on_mount(self) -> None:
         global load_screen_redirect
@@ -251,6 +301,12 @@ class load(Screen[str]):
             self.treasurer_claim_expr()
         elif load_screen_redirect == "identity_delete":
             self.identity_delete()
+        elif load_screen_redirect == "account_deposit":
+            self.account_deposit()
+        elif load_screen_redirect == "account_withdraw":
+            self.account_withdraw()
+        elif load_screen_redirect == "account_transfer":
+            self.account_transfer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "load_cancel_button":
@@ -998,9 +1054,27 @@ class account_deposit_page(Screen):
             id="account_deposit_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            if errCode == 0:
+                self.app.push_screen(account_page())
+            self.app.push_screen(popup_output_page()) 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -1024,11 +1098,17 @@ class account_deposit_page(Screen):
             quiet = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_radio_set").get_child_by_id("account_deposit_quiet_radio").value
             verbose = self.get_child_by_id("account_deposit_page").get_child_by_id("account_deposit_page_content").get_child_by_id("account_deposit_radio_set").get_child_by_id("account_deposit_verbose_radio").value
 
-            output, errCode = be.account_deposit(agi_amount, contract_address, mpe_address, wallet_index, quiet, verbose)
-            popup_output = output
-            if errCode == 0:
-                self.app.push_screen(account_page())
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "agi": agi_amount, 
+                "cont_addr": contract_address,
+                "mpe_addr": mpe_address,
+                "wallet": wallet_index,
+                "quiet": quiet,
+                "verbose": verbose,
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "account_deposit"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class account_withdraw_page(Screen):
     def compose(self) -> ComposeResult:
@@ -1073,10 +1153,28 @@ class account_withdraw_page(Screen):
             id="account_withdraw_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            if errCode == 0:
+                self.app.push_screen(account_page())
+            self.app.push_screen(popup_output_page()) 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
-
+        global load_aprx_time
+        global load_params
+        
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -1098,11 +1196,16 @@ class account_withdraw_page(Screen):
             quiet = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_radio_set").get_child_by_id("account_withdraw_quiet_radio").value
             verbose = self.get_child_by_id("account_withdraw_page").get_child_by_id("account_withdraw_page_content").get_child_by_id("account_withdraw_radio_set").get_child_by_id("account_withdraw_verbose_radio").value
 
-            output, errCode = be.account_withdraw(agi_amount, mpe_address, wallet_index, quiet, verbose)
-            popup_output = output
-            if errCode == 0:
-                self.app.push_screen(account_page())
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "agi": agi_amount, 
+                "mpe_addr": mpe_address,
+                "wallet": wallet_index,
+                "quiet": quiet,
+                "verbose": verbose,
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "account_withdraw"
+            self.app.push_screen(load(), callback=self.on_res)            
 
 class account_transfer_page(Screen):
     def compose(self) -> ComposeResult:
@@ -1153,9 +1256,27 @@ class account_transfer_page(Screen):
             id="account_transfer_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            if errCode == 0:
+                self.app.push_screen(account_page())
+            self.app.push_screen(popup_output_page()) 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -1179,11 +1300,18 @@ class account_transfer_page(Screen):
             quiet = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_radio_set").get_child_by_id("account_transfer_quiet_radio").value
             verbose = self.get_child_by_id("account_transfer_page").get_child_by_id("account_transfer_page_content").get_child_by_id("account_transfer_radio_set").get_child_by_id("account_transfer_verbose_radio").value
 
-            output, errCode = be.account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet, verbose)
-            popup_output = output
-            if errCode == 0:
-                self.app.push_screen(account_page())
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "agi": agi_amount,
+                "rec_addr": reciever_addr,
+                "mpe_addr": mpe_address,
+                "wallet": wallet_index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "account_transfer"
+
+            self.app.push_screen(load(), callback=self.on_res)
 
 class organization_page(Screen):
     def compose(self) -> ComposeResult:
