@@ -7,6 +7,7 @@ from rich_pixels import Pixels, FullcellRenderer
 import back.backend as be
 import sys
 import os
+import time
 
 # Global variables for passing parameters between screens, as textual does not support this
 error_exit_label: str
@@ -151,6 +152,65 @@ class load(Screen[str]):
             self.app.call_from_thread(self.dismiss, [output, errCode])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def treasurer_claim(self) -> None:
+        global load_params
+
+        try:
+            channels = load_params["channels"]
+            endpoint = load_params["endpoint"]
+            wallet = load_params["wallet"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.treasurer_claim(channels, endpoint, wallet, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def treasurer_claim_all(self) -> None:
+        global load_params
+
+        try:
+            endpoint = load_params["ep"]
+            wallet = load_params["wallet"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.treasurer_claim_all(endpoint, wallet, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def treasurer_claim_expr(self) -> None:
+        global load_params
+
+        try:
+            threshold = load_params["thres"]
+            endpoint = load_params["ep"]
+            wallet = load_params["wallet"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.treasurer_claim_expr(threshold, endpoint, wallet, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def identity_delete(self) -> None:
+        global load_params
+
+        try:
+            id_name = load_params["id"]
+
+            output, errCode = be.delete_identity_cli(id_name)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
 
     def on_mount(self) -> None:
         global load_screen_redirect
@@ -183,6 +243,14 @@ class load(Screen[str]):
             self.services_view_all_search()
         elif load_screen_redirect == "create_id_page":
             self.create_id_page()
+        elif load_screen_redirect == "treasurer_claim":
+            self.treasurer_claim()
+        elif load_screen_redirect == "treasurer_claim_all":
+            self.treasurer_claim_all()
+        elif load_screen_redirect == "treasurer_claim_expr":
+            self.treasurer_claim_expr()
+        elif load_screen_redirect == "identity_delete":
+            self.identity_delete()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "load_cancel_button":
@@ -565,9 +633,25 @@ class treasurer_claim_page(Screen):
             id="treasurer_claim_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page()) 
+        elif result == "cancel":
+            pass
+        else: 
+            output = result[0]
+            errCode = result[1] 
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -590,9 +674,17 @@ class treasurer_claim_page(Screen):
             quiet = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_radio_set").get_child_by_id("treasurer_claim_quiet_radio").value
             verbose = self.get_child_by_id("treasurer_claim_page").get_child_by_id("treasurer_claim_page_content").get_child_by_id("treasurer_claim_radio_set").get_child_by_id("treasurer_claim_verbose_radio").value
 
-            output, errCode = be.treasurer_claim(channels, endpoint, wallet_index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            if not isinstance(channels, str) or len(channels) <= 0:
+                popup_output = "ERROR: Please input the channels to claim"
+                self.app.push_screen(popup_output_page())
+            elif not isinstance(endpoint, str) or len(endpoint) <= 0: 
+                popup_output = "ERROR: Please input daemon endpoint"
+                self.app.push_screen(popup_output_page())
+            else:
+                load_params = {"channels": channels, "endpoint": endpoint, "wallet": wallet_index, "quiet": quiet, "verbose": verbose}
+                load_aprx_time = "10s."
+                load_screen_redirect = "treasurer_claim"
+                self.app.push_screen(load(), callback=self.on_res) 
 
 class treasurer_claim_all_page(Screen):
     def compose(self) -> ComposeResult:
@@ -631,7 +723,26 @@ class treasurer_claim_all_page(Screen):
             id="treasurer_claim_all_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global load_params
+        global load_aprx_time
+        global load_screen_redirect
+        global popup_output
+
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -651,11 +762,16 @@ class treasurer_claim_all_page(Screen):
             wallet_index = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_index_div").get_child_by_id("treasurer_claim_all_index_input").value
             quiet = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_radio_set").get_child_by_id("treasurer_claim_all_quiet_radio").value
             verbose = self.get_child_by_id("treasurer_claim_all_page").get_child_by_id("treasurer_claim_all_page_content").get_child_by_id("treasurer_claim_all_radio_set").get_child_by_id("treasurer_claim_all_verbose_radio").value
-
-            output, errCode = be.treasurer_claim_all(endpoint, wallet_index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
-
+            
+            if not isinstance(endpoint, str) or len(endpoint) <= 0:
+                popup_output = "ERROR: Daemon endpoint is a required input"
+                self.app.push_screen(popup_output_page())
+            else:
+                load_params = {"ep": endpoint, "wallet": wallet_index, "quiet": quiet, "verbose": verbose}
+                load_aprx_time = "10s."
+                load_screen_redirect = "treasurer_claim_all"
+                self.app.push_screen(load(), callback=self.on_res)
+            
 class treasurer_claim_expr_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -699,7 +815,26 @@ class treasurer_claim_expr_page(Screen):
             id="treasurer_claim_expr_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        global load_aprx_time
+        global load_params
+        global load_screen_redirect
+        global popup_output
+        
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -721,9 +856,14 @@ class treasurer_claim_expr_page(Screen):
             quiet = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_radio_set").get_child_by_id("treasurer_claim_expr_quiet_radio").value
             verbose = self.get_child_by_id("treasurer_claim_expr_page").get_child_by_id("treasurer_claim_expr_page_content").get_child_by_id("treasurer_claim_expr_radio_set").get_child_by_id("treasurer_claim_expr_verbose_radio").value
 
-            output, errCode = be.treasurer_claim_expr(threshold, endpoint, wallet_index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            if not isinstance(endpoint, str) or len(endpoint) <= 0:
+                popup_output = "ERROR: Daemon endpoint is a required input"
+                self.app.push_screen(popup_output_page())
+            else:
+                load_params = {"thres": threshold, "ep": endpoint, "wallet": wallet_index, "quiet": quiet, "verbose": verbose}
+                load_aprx_time = "10s."
+                load_screen_redirect = "treasurer_claim_expr"
+                self.app.push_screen(load(), callback=self.on_res)
 
 class identity_page(Screen):
     def compose(self) -> ComposeResult:
@@ -758,10 +898,29 @@ class identity_page(Screen):
         load_aprx_time = "5s."
         load_screen_redirect = "id_page"
         self.app.push_screen(load(), callback=self.id_list_update) 
+    
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            if len(output) == 0 and errCode == 0:
+                output = f"Identity deleted!"
+            popup_output = output
+            self.app.switch_screen(identity_page())
+            self.app.push_screen(popup_output_page())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -785,12 +944,10 @@ class identity_page(Screen):
                 popup_output = "ERROR: Please enter the name of the Identity to be deleted"
                 self.app.push_screen(popup_output_page())
             else:
-                output, errcode = be.delete_identity_cli(id_name)
-                if len(output) == 0 and errcode == 0:
-                    output = f"Identity '{id_name}' deleted!"
-                popup_output = output
-                self.app.switch_screen(identity_page())
-                self.app.push_screen(popup_output_page())
+                load_params = {"id": id_name}
+                load_aprx_time = "5s."
+                load_screen_redirect = "identity_delete"
+                self.app.push_screen(load(),callback=self.on_res)
 
 class account_deposit_page(Screen):
     def compose(self) -> ComposeResult:
