@@ -374,6 +374,128 @@ class load(Screen[str]):
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")  
 
+    @work(thread=True)
+    def org_group_add(self) -> None:
+        global load_params
+
+        try:
+            name = load_params["name"]
+            pay_addr = load_params["pay_addr"]
+            eps = load_params["eps"]
+            expr_thres = load_params["expr_thres"]
+            store_type = load_params["store_type"]
+            conn_to = load_params["conn_to"]
+            req_to = load_params["req_to"]
+            reg_addr = load_params["reg_addr"]
+            file = load_params["file"]
+
+            output, errCode = be.add_org_metadata_group(name, pay_addr, eps, expr_thres, store_type, conn_to, req_to, file, reg_addr)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")  
+
+    @work(thread=True)
+    def org_group_update(self) -> None:
+        global load_params
+
+        try:
+            name = load_params["name"]
+            pay_addr = load_params["pay_addr"]
+            eps = load_params["eps"]
+            expr_thres = load_params["expr_thres"]
+            store_type = load_params["store_type"]
+            conn_to = load_params["conn_to"]
+            req_to = load_params["req_to"]
+            reg_addr = load_params["reg_addr"]
+            file = load_params["file"]
+
+            output, errCode = be.update_org_metadata_group(name, pay_addr, eps, expr_thres, store_type, conn_to, req_to, file, reg_addr)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")  
+
+    @work(thread=True)
+    def org_members_add(self) -> None:
+        global load_params
+
+        try:
+            id = load_params["id"]
+            mems = load_params["mems"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.add_org_members(id, mems, index, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def org_members_remove(self) -> None:
+        global load_params
+
+        try:
+            id = load_params["id"]
+            mems = load_params["mems"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.remove_org_members(id, mems, index, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def org_change_owner(self) -> None:
+        global load_params
+
+        try:
+            id = load_params["id"]
+            addr = load_params["addr"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.change_org_owner(id, addr, index, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def org_create(self) -> None:
+        global load_params
+
+        try:
+            id = load_params["id"]
+            addr = load_params["reg_addr"]
+            file = load_params["file"]
+            mems = load_params["mems"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.create_organization(id, file, mems, index, quiet, verbose, addr)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def org_delete(self) -> None:
+        global load_params
+
+        try:
+            id = load_params["id"]
+            addr = load_params["reg_addr"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.delete_organization(id, index, quiet, verbose, addr)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+    
     def on_mount(self) -> None:
         global load_screen_redirect
         global load_aprx_time
@@ -435,6 +557,20 @@ class load(Screen[str]):
             self.org_contacts_remove()
         elif load_screen_redirect == "update_org_meta":
             self.update_org_meta()
+        elif load_screen_redirect == "org_group_add":
+            self.org_group_add()
+        elif load_screen_redirect == "org_group_update":
+            self.org_group_update()
+        elif load_screen_redirect == "org_members_add":
+            self.org_members_add()
+        elif load_screen_redirect == "org_members_delete":
+            self.org_members_remove()
+        elif load_screen_redirect == "change_org_owner":
+            self.org_change_owner()
+        elif load_screen_redirect == "org_create":
+            self.org_create()
+        elif load_screen_redirect == "org_delete":
+            self.org_delete()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "load_cancel_button":
@@ -2231,10 +2367,28 @@ class add_org_group_page(Screen):
             ),
             id="add_org_group_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            if errCode == 0:
+                self.app.push_screen(organization_page())
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -2261,13 +2415,21 @@ class add_org_group_page(Screen):
             reg_addr = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_registry_div").get_child_by_id("add_org_group_registry_input").value
             metadata_file = self.get_child_by_id("add_org_group_page").get_child_by_id("add_org_group_content").get_child_by_id("add_org_group_metadata_file_div").get_child_by_id("add_org_group_metadata_file_input").value
 
-            output, errCode = be.add_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
-            popup_output = output
-            if errCode == 0:
-                self.app.push_screen(organization_page())
-            self.app.push_screen(popup_output_page())
-        
-
+            load_params = {
+                "name": group_name,
+                "pay_addr": pay_addr,
+                "eps": endpoints,
+                "expr_thres": payment_expiration_threshold,
+                "store_type": pay_chann_storage_type,
+                "conn_to": pay_chann_conn_to,
+                "req_to": pay_chann_req_to,
+                "reg_addr": reg_addr,
+                "file": metadata_file
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "org_group_add"
+            self.app.push_screen(load(), callback=self.on_res)
+            
 class update_org_group_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -2340,10 +2502,28 @@ class update_org_group_page(Screen):
             ),
             id="update_org_group_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            if errCode == 0:
+                self.app.push_screen(organization_page())
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -2370,11 +2550,20 @@ class update_org_group_page(Screen):
             reg_addr = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_registry_div").get_child_by_id("update_org_group_registry_input").value
             metadata_file = self.get_child_by_id("update_org_group_page").get_child_by_id("update_org_group_content").get_child_by_id("update_org_group_metadata_file_div").get_child_by_id("update_org_group_metadata_file_input").value
 
-            output, errCode = be.update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiration_threshold, pay_chann_storage_type, pay_chann_conn_to, pay_chann_req_to, metadata_file, reg_addr)
-            popup_output = output
-            if errCode == 0:
-                self.app.push_screen(organization_page())
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "name": group_name,
+                "pay_addr": pay_addr,
+                "eps": endpoints,
+                "expr_thres": payment_expiration_threshold,
+                "store_type": pay_chann_storage_type,
+                "conn_to": pay_chann_conn_to,
+                "req_to": pay_chann_req_to,
+                "reg_addr": reg_addr,
+                "file": metadata_file
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "org_group_update"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class members_page(Screen):
     def compose(self) -> ComposeResult:
@@ -2462,9 +2651,25 @@ class manage_members_page(Screen):
             id="manage_members_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         org_id = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_id_div").get_child_by_id("manage_members_id_input").value
         mem_list = self.get_child_by_id("manage_members_page").get_child_by_id("manage_members_page_content").get_child_by_id("manage_members_mem_list_div").get_child_by_id("manage_members_mem_list_input").value
@@ -2487,13 +2692,27 @@ class manage_members_page(Screen):
         elif event.button.id == "manage_members_back_button":
             self.app.pop_screen()
         elif event.button.id == "manage_members_add_button":
-            output, errCode = be.add_org_members(org_id, mem_list, index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "id": org_id,
+                "mems": mem_list,
+                "index": index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "org_members_add"
+            self.app.push_screen(load(), callback=self.on_res)
         elif event.button.id == "manage_members_remove_button":
-            output, errCode = be.remove_org_members(org_id, mem_list, index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "id": org_id,
+                "mems": mem_list,
+                "index": index,
+                "quiet": quiet,
+                "verbose": verbose 
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "org_members_delete"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class change_org_owner_page(Screen):
     def compose(self) -> ComposeResult:
@@ -2538,9 +2757,25 @@ class change_org_owner_page(Screen):
             id="change_org_owner_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time 
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -2563,9 +2798,16 @@ class change_org_owner_page(Screen):
             quiet = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_radio_set").get_child_by_id("change_org_owner_quiet_radio").value
             verbose = self.get_child_by_id("change_org_owner_page").get_child_by_id("change_org_owner_page_content").get_child_by_id("change_org_owner_radio_set").get_child_by_id("change_org_owner_verbose_radio").value
 
-            output, errCode = be.change_org_owner(org_id, new_addr, index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "id": org_id,
+                "addr": new_addr,
+                "index": index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "change_org_owner"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class org_manage_page(Screen):
     def compose(self) -> ComposeResult:
@@ -2663,9 +2905,25 @@ class org_manage_create_page(Screen):
             id="org_manage_create_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -2690,9 +2948,18 @@ class org_manage_create_page(Screen):
             quiet = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_quiet_radio").value
             verbose = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_verbose_radio").value
 
-            output, errCode = be.create_organization(org_id, file_name, mem_list, index, quiet, verbose, reg_addr)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "id": org_id,
+                "reg_addr": reg_addr,
+                "file": file_name,
+                "mems": mem_list,
+                "index": index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "org_create"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class org_manage_delete_page(Screen):
     def compose(self) -> ComposeResult:
@@ -2737,9 +3004,25 @@ class org_manage_delete_page(Screen):
             id="org_manage_delete_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -2762,9 +3045,16 @@ class org_manage_delete_page(Screen):
             quiet = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_radio_set").get_child_by_id("org_manage_delete_quiet_radio").value
             verbose = self.get_child_by_id("org_manage_delete_page").get_child_by_id("org_manage_delete_page_content").get_child_by_id("org_manage_delete_radio_set").get_child_by_id("org_manage_delete_verbose_radio").value
 
-            output, errCode = be.delete_organization(org_id, index, quiet, verbose, reg_addr)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "id": org_id,
+                "index": index,
+                "reg_addr": reg_addr,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "org_delete"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class services_page(Screen):
     def compose(self) -> ComposeResult:
