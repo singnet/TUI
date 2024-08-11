@@ -495,7 +495,336 @@ class load(Screen[str]):
             self.app.call_from_thread(self.dismiss, [output, errCode])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def client_call(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            serv_id = load_params["serv_id"]
+            group_name = load_params["group_name"]
+            method = load_params["method"]
+            params = load_params["params"]
+            proto_serv = load_params["proto_serv"]
+            mpe_addr = load_params["mpe_addr"]
+            file_name = load_params["file"]
+            endpoint = load_params["ep"]
+            channel_id = load_params["chan_id"]
+            from_block = load_params["block"]
+            wallet_index = load_params["wallet"]
+            skip_update = load_params["skip"]
+
+            output, errCode, command = be.client_call(org_id, serv_id, group_name, method, params, proto_serv, mpe_addr, file_name, endpoint, channel_id, from_block, skip_update, wallet_index, True) 
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def client_call_low(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            serv_id = load_params["serv_id"]
+            group_name = load_params["group_name"]
+            chann_id = load_params["chan_id"]
+            nonce = load_params["nonce"]
+            cogs = load_params["cogs"]
+            method = load_params["method"]
+            params = load_params["params"]
+            proto_serv = load_params["proto_serv"]
+            mpe_addr = load_params["mpe_addr"]
+            file_name = load_params["file"]
+            endpoint = load_params["ep"]
+            wallet_index = load_params["wallet"]
+
+            output, errCode = be.client_low_call(org_id, serv_id, group_name, chann_id, nonce, cogs, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
     
+    @work(thread=True)
+    def get_channel_state(self) -> None:
+        global load_params
+
+        try:
+            channel_id = load_params["chan_id"]
+            endpoint = load_params["ep"]
+            mpe_addr = load_params["addr"]
+            wallet = load_params["wallet"]
+
+            output, errCode = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def init_channel(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            group = load_params["group"]
+            channel_id = load_params["chan_id"]
+            registry = load_params["registry"]
+            mpe_addr = load_params["addr"]
+
+            output, errCode = be.channel_init(org_id, group, channel_id, registry, mpe_addr)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def channel_init_meta(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            group = load_params["group"]
+            channel_id = load_params["chan_id"]
+            registry = load_params["registry"]
+            mpe_addr = load_params["addr"]
+            meta_file = load_params["file"]
+            wallet = load_params["wallet"]
+            
+            output, errCode = be.channel_init_metadata(org_id, group, channel_id, registry, mpe_addr, meta_file, wallet)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def channel_open_init(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            group = load_params["group"]
+            agi = load_params["agi"]
+            expr = load_params["expr"]
+            registry = load_params["registry"]
+            mpe_addr = load_params["addr"]
+            signer = load_params["signer"]
+            block = load_params["block"]
+            force = load_params["force"]
+            open_any = load_params["open"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"] 
+            wallet = load_params["wallet"]
+
+            output, errCode, command = be.channel_open_init(org_id, group, agi, expr, registry, force, signer, mpe_addr, open_any, block, wallet, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def channel_open_init_meta(self) -> None:
+        global load_params
+
+        try:
+            org_id= load_params["id"]
+            group= load_params["group"]
+            agi_amount= load_params["agi"]
+            expr= load_params["expr"]
+            registry= load_params["reg"]
+            force= load_params["force"]
+            signer= load_params["signer"]
+            mpe_addr= load_params["addr"]
+            open_anyway= load_params["open"]
+            block= load_params["block"]
+            meta_path= load_params["path"]
+            wallet_index= load_params["wallet"]
+            quiet= load_params["quiet"]
+            verbose= load_params["verbose"]
+            
+            output, errCode, command = be.channel_open_init_metadata(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, meta_path, wallet_index, quiet, verbose, True) 
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error") 
+    
+    @work(thread=True)
+    def channel_extend_add(self) -> None:
+        global load_params
+
+        try:
+            channel_id= load_params["id"]
+            agi_amount= load_params["agi"]
+            expr= load_params["expr"]
+            force= load_params["force"]
+            mpe_addr= load_params["addr"]
+            wallet_index= load_params["wallet"]
+            quiet= load_params["quiet"]
+            verbose= load_params["verbose"]
+
+            output, errCode, command = be.channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, wallet_index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error") 
+    
+    @work(thread=True)
+    def channel_extend_add_org(self) -> None:
+        global load_params
+        
+        try:
+            org_id = load_params["id"]
+            group_name = load_params["group"]
+            registry = load_params["reg"]
+            mpe_addr = load_params["addr"]
+            channel_id = load_params["chan_id"]
+            from_block = load_params["block"]
+            expr = load_params["expr"]
+            force = load_params["force"]
+            agi_amount = load_params["agi"]
+            wallet_index = load_params["wallet"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode, command = be.channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, wallet_index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def channel_print_initialized(self) -> None:
+        global load_params
+        
+        try:
+            only_id = load_params["only_id"]
+            filter_sender = load_params["filter_sender"]
+            filter_signer = load_params["filter_signer"]
+            filter_my = load_params["filter_my"]
+            mpe_addr = load_params["mpe_addr"]
+            registry = load_params["registry"]
+            wallet_index = load_params["wallet_index"]
+
+            output, errCode = be.channel_print_initialized(only_id, filter_sender, filter_signer, filter_my, mpe_addr, registry, wallet_index)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def channel_print_initialized_filter_org(self) -> None:
+        global load_params
+        
+        try:
+            org_id = load_params["org_id"]
+            group = load_params["group"]
+            registry = load_params["registry"]
+            only_id = load_params["only_id"]
+            filter_sender = load_params["filter_sender"]
+            filter_signer = load_params["filter_signer"]
+            filter_my = load_params["filter_my"]
+            mpe_addr = load_params["mpe_addr"]
+            wallet_index = load_params["wallet_index"]
+
+            output, errCode = be.channel_print_initialized_filter_org(org_id, group, registry, only_id, filter_sender, filter_signer, filter_my, mpe_addr, wallet_index)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def channel_print_all_filter_sender(self) -> None:
+        global load_params
+        
+        try:
+            only_id = load_params["only_id"]
+            mpe_addr = load_params["mpe_addr"]
+            from_block = load_params["from_block"]
+            sender = load_params["sender"]
+            wallet_index = load_params["wallet_index"]
+
+            output, errCode = be.channel_print_all_filter_sender(only_id, mpe_addr, from_block, sender, wallet_index)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def channel_print_all_filter_recipient(self) -> None:
+        global load_params
+        
+        try:
+            only_id = load_params["only_id"]
+            mpe_addr = load_params["mpe_addr"]
+            from_block = load_params["from_block"]
+            recipient = load_params["recipient"]
+            wallet_index = load_params["wallet_index"]
+
+            output, errCode = be.channel_print_all_filter_recipient(only_id, mpe_addr, from_block, recipient, wallet_index)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error") 
+
+    @work(thread=True)
+    def channel_print_all_filter_group(self) -> None:
+        global load_params
+        
+        try:
+            org_id = load_params["org_id"]
+            group = load_params["group"]
+            registry = load_params["registry"]
+            only_id = load_params["only_id"]
+            mpe_addr = load_params["mpe_addr"]
+            from_block = load_params["from_block"]
+            wallet_index = load_params["wallet_index"]
+
+            output, errCode = be.channel_print_all_filter_group(org_id, group, registry, only_id, mpe_addr, from_block, wallet_index)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def channel_print_all_filter_group_sender(self) -> None:
+        global load_params
+        
+        try:
+            org_id = load_params["org_id"]
+            group = load_params["group"]
+            registry = load_params["registry"]
+            only_id = load_params["only_id"]
+            mpe_addr = load_params["mpe_addr"]
+            from_block = load_params["from_block"]
+            sender = load_params["sender"]
+            wallet_index = load_params["wallet_index"]
+
+            output, errCode = be.channel_print_all_filter_group_sender(org_id, group, registry, only_id, mpe_addr, from_block, sender, wallet_index)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def channel_claim_timeout(self) -> None:
+        global load_params
+        
+        try:
+            channel_id = load_params["channel_id"]
+            mpe_addr = load_params["mpe_addr"]
+            wallet_index = load_params["wallet_index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode, command = be.channel_claim_timeout(channel_id, mpe_addr, wallet_index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def channel_claim_timeout_all(self) -> None:
+        global load_params
+
+        try:
+            mpe_addr = load_params["mpe_addr"]
+            from_block = load_params["block"]
+            wallet_index = load_params["wallet_index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode, command = be.channel_claim_timeout_all(mpe_addr, from_block, wallet_index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+
+
     def on_mount(self) -> None:
         global load_screen_redirect
         global load_aprx_time
@@ -571,6 +900,40 @@ class load(Screen[str]):
             self.org_create()
         elif load_screen_redirect == "org_delete":
             self.org_delete()
+        elif load_screen_redirect == "client_call":
+            self.client_call()
+        elif load_screen_redirect == "client_call_low":
+            self.client_call_low()
+        elif load_screen_redirect == "get_channel_state":
+            self.get_channel_state()
+        elif load_screen_redirect == "channel_init":
+            self.init_channel()
+        elif load_screen_redirect == "channel_init_meta":
+            self.channel_init_meta()
+        elif load_screen_redirect == "channel_open_init":
+            self.channel_open_init()
+        elif load_screen_redirect == "channel_oepn_init_meta":
+            self.channel_open_init_meta()
+        elif load_screen_redirect == "channel_extend_add":
+            self.channel_extend_add()
+        elif load_screen_redirect == "channel_extend_add_org":
+            self.channel_extend_add_org()
+        elif load_screen_redirect == "channel_print_initialized":
+            self.channel_print_initialized()
+        elif load_screen_redirect == "channel_print_initialized_filter_org":
+            self.channel_print_initialized_filter_org()
+        elif load_screen_redirect == "channel_print_all_filter_sender":
+            self.channel_print_all_filter_sender()
+        elif load_screen_redirect == "channel_print_all_filter_recipient":
+            self.channel_print_all_filter_recipient()
+        elif load_screen_redirect == "channel_print_all_filter_group":
+            self.channel_print_all_filter_group()
+        elif load_screen_redirect == "channel_print_all_filter_group_sender":
+            self.channel_print_all_filter_group_sender()
+        elif load_screen_redirect == "channel_claim_timeout":
+            self.channel_claim_timeout()
+        elif load_screen_redirect == "channel_claim_timeout_all":
+            self.channel_claim_timeout_all()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "load_cancel_button":
@@ -5021,13 +5384,38 @@ class client_call_page(Screen):
             ),
             id="client_call_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "1 minute"
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global conditional_output
         global conditional_command
         global popup_output
         global load_screen_redirect
         global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5058,16 +5446,24 @@ class client_call_page(Screen):
             wallet_index = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_page_wallet_index_div").get_child_by_id("client_call_wallet_index_input").value
             skip_update = self.get_child_by_id("client_call_page").get_child_by_id("client_call_page_content").get_child_by_id("client_call_skip_update_check_radio").value
 
-            output, errCode, command = be.client_call(org_id, serv_id, group_name, method, params, proto_serv, mpe_addr, file_name, endpoint, channel_id, from_block, skip_update, wallet_index, True)
-
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                load_aprx_time = "10s."
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                self.app.push_screen(popup_output_page())
+            load_params = {
+                "org_id": org_id,
+                "serv_id": serv_id,
+                "group_name": group_name,
+                "method": method,
+                "params": params,
+                "proto_serv": proto_serv,
+                "mpe_addr": mpe_addr,
+                "file": file_name,
+                "ep": endpoint,
+                "chan_id": channel_id,
+                "block": from_block,
+                "wallet": wallet_index,
+                "skip": skip_update
+            }
+            load_aprx_time = "1 minute"
+            load_screen_redirect = "client_call"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class client_call_low_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5165,12 +5561,28 @@ class client_call_low_page(Screen):
             ),
             id="client_call_low_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global conditional_command
         global conditional_output
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5201,9 +5613,24 @@ class client_call_low_page(Screen):
             endpoint = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_page_endpoint_div").get_child_by_id("client_call_low_endpoint_input").value
             wallet_index = self.get_child_by_id("client_call_low_page").get_child_by_id("client_call_low_page_content").get_child_by_id("client_call_low_page_wallet_index_div").get_child_by_id("client_call_low_wallet_index_input").value
 
-            output, errCode = be.client_low_call(org_id, serv_id, group_name, channel_id, nonce, cog_amt, method, params, proto_serv, mpe_addr, file_name, endpoint, wallet_index)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "org_id": org_id,
+                "serv_id": serv_id,
+                "group_name": group_name,
+                "chan_id": channel_id,
+                "nonce": nonce,
+                "cogs": cog_amt,
+                "method": method,
+                "params": params,
+                "proto_serv": proto_serv,
+                "mpe_addr": mpe_addr,
+                "file": file_name,
+                "ep": endpoint,
+                "wallet": wallet_index,
+            }
+            load_aprx_time = "1 minute"
+            load_screen_redirect = "client_call_low"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class client_channel_state_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5250,12 +5677,28 @@ class client_channel_state_page(Screen):
             ),
             id="client_channel_state_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global conditional_command
         global conditional_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5277,9 +5720,15 @@ class client_channel_state_page(Screen):
             mpe_addr = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_mpe_addr_div").get_child_by_id("client_channel_state_mpe_addr_input").value
             wallet_index = self.get_child_by_id("client_channel_state_page").get_child_by_id("client_channel_state_page_content").get_child_by_id("client_channel_state_page_wallet_index_div").get_child_by_id("client_channel_state_wallet_index_input").value
 
-            output, errCode = be.get_channel_state(channel_id, endpoint, mpe_addr, wallet_index)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "chan_id": channel_id,
+                "ep": endpoint,
+                "addr": mpe_addr,
+                "wallet": wallet_index
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "get_channel_state"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5456,10 +5905,26 @@ class channel_init_page(Screen):
             ),
             id="channel_init_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5481,13 +5946,18 @@ class channel_init_page(Screen):
             channel_id = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_channel_id_div").get_child_by_id("channel_init_page_channel_id_input").value
             registry = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_registry_div").get_child_by_id("channel_init_page_registry_input").value
             mpe_addr = self.get_child_by_id("channel_init_page").get_child_by_id("channel_init_content_page").get_child_by_id("channel_init_page_mpe_addr_div").get_child_by_id("channel_init_page_mpe_addr_input").value
+            self.get_child_by_id("channel_init_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
 
-            client_nav_button = self.get_child_by_id("channel_init_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_init(org_id, group, channel_id, registry, mpe_addr)
-            popup_output = output
-            client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "org_id": org_id,
+                "group": group,
+                "chan_id": channel_id,
+                "registry": registry,
+                "addr": mpe_addr
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "channel_init"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_init_metadata_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5549,10 +6019,26 @@ class channel_init_metadata_page(Screen):
             ),
             id="channel_init_metadata_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5576,13 +6062,21 @@ class channel_init_metadata_page(Screen):
             meta_file = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_file_path_div").get_child_by_id("channel_init_metadata_page_file_path_input").value
             mpe_addr = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_mpe_addr_div").get_child_by_id("channel_init_metadata_page_mpe_addr_input").value
             wallet_index = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("channel_init_metadata_content_page").get_child_by_id("channel_init_metadata_page_wallet_index_div").get_child_by_id("channel_init_metadata_page_wallet_index_input").value
-
             client_nav_button = self.get_child_by_id("channel_init_metadata_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_init_metadata(org_id, group, channel_id, registry, mpe_addr, meta_file, wallet_index)
-            popup_output = output
             client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+
+            load_params = {
+                "org_id": org_id,
+                "group": group,
+                "chan_id": channel_id,
+                "registry": registry,
+                "addr": mpe_addr,
+                "file": meta_file,
+                "wallet": wallet_index
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_init_meta"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_open_init_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5664,7 +6158,31 @@ class channel_open_init_page(Screen):
             ),
             id="channel_open_init_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_screen_redirect
 
@@ -5686,7 +6204,10 @@ class channel_open_init_page(Screen):
             global conditional_command
             global conditional_output
             global popup_output
-
+            global load_params
+            global load_aprx_time
+            global load_screen_redirect
+            
             org_id = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_org_id_div").get_child_by_id("channel_open_init_page_org_id_input").value
             group = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_group_div").get_child_by_id("channel_open_init_page_group_input").value
             agi_amount = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_agi_amount_div").get_child_by_id("channel_open_init_page_agi_amount_input").value
@@ -5700,20 +6221,27 @@ class channel_open_init_page(Screen):
             open_anyway = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_new_anyway_radio").value
             quiet = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_quiet_verbose_set").get_child_by_id("channel_open_init_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_open_init_page").get_child_by_id("channel_open_init_content_page").get_child_by_id("channel_open_init_page_quiet_verbose_set").get_child_by_id("channel_open_init_page_verbose_radio").value
-
             client_nav_button = self.get_child_by_id("channel_open_init_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode, command = be.channel_open_init(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, wallet_index, quiet, verbose, True)
-
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                client_nav_button.focus()
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                client_nav_button.focus()
-                self.app.push_screen(popup_output_page())
+            client_nav_button.focus()
+            
+            load_params = {
+                "org_id": org_id,
+                "group": group,
+                "agi": agi_amount,
+                "expr": expr,
+                "registry": registry,
+                "addr": mpe_addr,
+                "signer": signer,
+                "block": block,
+                "force": force,
+                "open": open_anyway, 
+                "quiet": quiet,
+                "verbose": verbose,
+                "wallet": wallet_index,
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_open_init"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_open_init_meta_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5801,7 +6329,31 @@ class channel_open_init_meta_page(Screen):
             ),
             id="channel_open_init_meta_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "20s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_screen_redirect
 
@@ -5823,6 +6375,9 @@ class channel_open_init_meta_page(Screen):
             global conditional_command
             global conditional_output
             global popup_output
+            global load_params
+            global load_aprx_time
+            global load_screen_redirect
 
             org_id = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_org_id_div").get_child_by_id("channel_open_init_meta_page_org_id_input").value
             group = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_group_div").get_child_by_id("channel_open_init_meta_page_group_input").value
@@ -5838,20 +6393,27 @@ class channel_open_init_meta_page(Screen):
             open_anyway = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_new_anyway_radio").value
             quiet = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_quiet_verbose_set").get_child_by_id("channel_open_init_meta_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("channel_open_init_meta_content_page").get_child_by_id("channel_open_init_meta_page_quiet_verbose_set").get_child_by_id("channel_open_init_meta_page_verbose_radio").value
-
-            client_nav_button = self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode, command = be.channel_open_init_metadata(org_id, group, agi_amount, expr, registry, force, signer, mpe_addr, open_anyway, block, meta_path, wallet_index, quiet, verbose, True)
-
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                client_nav_button.focus()
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                client_nav_button.focus()
-                self.app.push_screen(popup_output_page())
+            self.get_child_by_id("channel_open_init_meta_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
+            
+            load_params = {
+                "id": org_id,
+                "group": group,
+                "agi": agi_amount,
+                "expr": expr,
+                "path": meta_path,
+                "reg": registry,
+                "addr": mpe_addr,
+                "signer": signer,
+                "block": block,
+                "wallet": wallet_index,
+                "force": force,
+                "open": open_anyway,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "channel_open_init_meta"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_extend_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5950,12 +6512,39 @@ class channel_extend_add_page(Screen):
             ),
             id="channel_extend_add_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s." 
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                
+                self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global conditional_command
         global conditional_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5980,20 +6569,22 @@ class channel_extend_add_page(Screen):
             force = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_force_radio").value
             quiet = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_quiet_verbose_set").get_child_by_id("channel_extend_add_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_extend_add_page").get_child_by_id("channel_extend_add_content_page").get_child_by_id("channel_extend_add_page_quiet_verbose_set").get_child_by_id("channel_extend_add_page_verbose_radio").value
-
             client_nav_button = self.get_child_by_id("channel_extend_add_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode, command = be.channel_extend_add(channel_id, mpe_addr, expr, force, agi_amount, wallet_index, quiet, verbose, True)
+            client_nav_button.focus()
             
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                client_nav_button.focus()
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                client_nav_button.focus()
-                self.app.push_screen(popup_output_page())
+            load_params = {
+                "id": channel_id,
+                "expr": expr,
+                "agi": agi_amount,
+                "addr": mpe_addr,
+                "wallet": wallet_index,
+                "force": force,
+                "quiet": quiet,
+                "verbsoe": verbose
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_extend_add"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_extend_add_org_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6074,12 +6665,36 @@ class channel_extend_add_org_page(Screen):
             ),
             id="channel_extend_add_org_page"
         )
+    
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode, command = result
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global conditional_command
         global conditional_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6108,20 +6723,25 @@ class channel_extend_add_org_page(Screen):
             force = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_force_radio").value
             quiet = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_quiet_verbose_set").get_child_by_id("channel_extend_add_org_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("channel_extend_add_org_content_page").get_child_by_id("channel_extend_add_org_page_quiet_verbose_set").get_child_by_id("channel_extend_add_org_page_verbose_radio").value
+            self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
 
-            client_nav_button = self.get_child_by_id("channel_extend_add_org_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode, command = be.channel_extend_add_org(org_id, group_name, registry, mpe_addr, channel_id, from_block, expr, force, agi_amount, wallet_index, quiet, verbose, True)
-
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                client_nav_button.focus()
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                client_nav_button.focus()
-                self.app.push_screen(popup_output_page())
+            load_params = {
+                "id": org_id,
+                "group": group_name,
+                "reg": registry,
+                "addr": mpe_addr,
+                "chan_id": channel_id,
+                "block": from_block,
+                "expr": expr,
+                "force": force,
+                "agi": agi_amount,
+                "wallet": wallet_index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_extend_add_org"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_print_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6226,9 +6846,24 @@ class channel_print_init_page(Screen):
             id="channel_print_initialized_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6252,13 +6887,21 @@ class channel_print_init_page(Screen):
             mpe_addr = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_mpe_addr_div").get_child_by_id("channel_print_initialized_page_mpe_addr_input").value
             registry = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_registry_div").get_child_by_id("channel_print_initialized_page_registry_input").value
             wallet_index = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("channel_print_initialized_content_page").get_child_by_id("channel_print_initialized_page_wallet_index_div").get_child_by_id("channel_print_initialized_page_wallet_index_input").value
+            self.get_child_by_id("channel_print_initialized_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
 
-            client_nav_button = self.get_child_by_id("channel_print_initialized_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_print_initialized(only_id, filter_sender, filter_signer, filter_my, mpe_addr, registry, wallet_index)
-            popup_output = output
-            client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "only_id": only_id,
+                "filter_sender": filter_sender,
+                "filter_signer": filter_signer,
+                "filter_my": filter_my,
+                "mpe_addr": mpe_addr,
+                "registry": registry,
+                "wallet_index": wallet_index
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_print_initialized"
+            self.app.push_screen(load(), callback=self.on_res)
+            
 
 class channel_print_init_filter_org_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6317,9 +6960,24 @@ class channel_print_init_filter_org_page(Screen):
             id="channel_print_initialized_filter_org_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6345,13 +7003,22 @@ class channel_print_init_filter_org_page(Screen):
             filter_sender = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_filter_set").get_child_by_id("channel_print_initialized_filter_org_page_filter_sender_radio").value
             filter_signer = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_filter_set").get_child_by_id("channel_print_initialized_filter_org_page_filter_signer_radio").value
             filter_my = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("channel_print_initialized_filter_org_content_page").get_child_by_id("channel_print_initialized_filter_org_page_filter_set").get_child_by_id("channel_print_initialized_filter_org_page_filter_my_radio").value
-
-            client_nav_button = self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_print_initialized_filter_org(org_id, group, registry, only_id, filter_sender, filter_signer, filter_my, mpe_addr, wallet_index)
-            popup_output = output
-            client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+            self.get_child_by_id("channel_print_initialized_filter_org_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
+            
+            load_params = {
+                "org_id": org_id,
+                "group": group,
+                "registry": registry,
+                "only_id": only_id,
+                "filter_sender": filter_sender,
+                "filter_signer": filter_signer,
+                "filter_my": filter_my,
+                "mpe_addr": mpe_addr,
+                "wallet_index": wallet_index
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_print_initialized_filter_org"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_print_all_filter_sender_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6398,9 +7065,24 @@ class channel_print_all_filter_sender_page(Screen):
             id="channel_print_all_filter_sender_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6422,13 +7104,18 @@ class channel_print_all_filter_sender_page(Screen):
             from_block = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_block_div").get_child_by_id("channel_print_all_filter_sender_page_block_input").value
             sender = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_sender_div").get_child_by_id("channel_print_all_filter_sender_page_sender_input").value
             wallet_index = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("channel_print_all_filter_sender_content_page").get_child_by_id("channel_print_all_filter_sender_page_wallet_index_div").get_child_by_id("channel_print_all_filter_sender_page_wallet_index_input").value
+            self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
 
-            client_nav_button = self.get_child_by_id("channel_print_all_filter_sender_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_print_all_filter_sender(only_id, mpe_addr, from_block, sender, wallet_index)
-            popup_output = output
-            client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "only_id": only_id,
+                "mpe_addr": mpe_addr,
+                "from_block": from_block,
+                "sender": sender,
+                "wallet_index": wallet_index
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_print_all_filter_sender"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class channel_print_all_filter_recipient_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6475,9 +7162,24 @@ class channel_print_all_filter_recipient_page(Screen):
             id="channel_print_all_filter_recipient_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6499,13 +7201,18 @@ class channel_print_all_filter_recipient_page(Screen):
             from_block = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_block_div").get_child_by_id("channel_print_all_filter_recipient_page_block_input").value
             recipient = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_recipient_div").get_child_by_id("channel_print_all_filter_recipient_page_recipient_input").value
             wallet_index = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("channel_print_all_filter_recipient_content_page").get_child_by_id("channel_print_all_filter_recipient_page_wallet_index_div").get_child_by_id("channel_print_all_filter_recipient_page_wallet_index_input").value
+            self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
 
-            client_nav_button = self.get_child_by_id("channel_print_all_filter_recipient_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_print_all_filter_recipient(only_id, mpe_addr, from_block, recipient, wallet_index)
-            popup_output = output
-            client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "only_id": only_id,
+                "mpe_addr": mpe_addr,
+                "from_block": from_block,
+                "recipient": recipient,
+                "wallet_index": wallet_index
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_print_all_filter_recipient"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_print_all_filter_group_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6564,9 +7271,24 @@ class channel_print_all_filter_group_page(Screen):
             id="channel_print_all_filter_group_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6590,13 +7312,20 @@ class channel_print_all_filter_group_page(Screen):
             wallet_index = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_wallet_index_div").get_child_by_id("channel_print_all_filter_group_page_wallet_index_input").value
             mpe_addr = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_mpe_addr_div").get_child_by_id("channel_print_all_filter_group_page_mpe_addr_input").value
             only_id = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("channel_print_all_filter_group_content_page").get_child_by_id("channel_print_all_filter_group_page_only_id_radio").value
+            self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
 
-            client_nav_button = self.get_child_by_id("channel_print_all_filter_group_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_print_all_filter_group(org_id, group, registry, only_id, mpe_addr, from_block, wallet_index)
-            popup_output = output
-            client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "org_id": org_id,
+                "group": group,
+                "registry": registry,
+                "only_id": only_id,
+                "mpe_addr": mpe_addr,
+                "from_block": from_block,
+                "wallet_index": wallet_index
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_print_all_filter_group"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_print_all_filter_group_sender_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6661,9 +7390,24 @@ class channel_print_all_filter_group_sender_page(Screen):
             id="channel_print_all_filter_group_sender_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6688,13 +7432,21 @@ class channel_print_all_filter_group_sender_page(Screen):
             sender = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_sender_div").get_child_by_id("channel_print_all_filter_group_sender_page_sender_input").value
             wallet_index = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_wallet_index_div").get_child_by_id("channel_print_all_filter_group_sender_page_wallet_index_input").value
             only_id = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("channel_print_all_filter_group_sender_content_page").get_child_by_id("channel_print_all_filter_group_sender_page_only_id_radio").value
-
-            client_nav_button = self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode = be.channel_print_all_filter_group_sender(org_id, group, registry, only_id, mpe_addr, from_block, sender, wallet_index)
-            popup_output = output
-            client_nav_button.focus()
-            self.app.push_screen(popup_output_page())
+            self.get_child_by_id("channel_print_all_filter_group_sender_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
+            
+            load_params = {
+                "org_id": org_id,
+                "group": group,
+                "registry": registry,
+                "only_id": only_id,
+                "mpe_addr": mpe_addr,
+                "from_block": from_block,
+                "sender": sender,
+                "wallet_index": wallet_index
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_print_all_filter_group_sender"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class channel_claim_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6780,12 +7532,36 @@ class channel_claim_to_page(Screen):
             ),
             id="channel_claim_timeout_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode, command = result
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "20s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global conditional_command
         global conditional_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6807,20 +7583,18 @@ class channel_claim_to_page(Screen):
             wallet_index = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_wallet_index_div").get_child_by_id("channel_claim_timeout_page_wallet_index_input").value
             quiet = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("channel_claim_timeout_content_page").get_child_by_id("channel_claim_timeout_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_page_verbose_radio").value
+            self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
 
-            client_nav_button = self.get_child_by_id("channel_claim_timeout_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode, command = be.channel_claim_timeout(channel_id, mpe_addr, wallet_index, quiet, verbose, True)
-            
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                client_nav_button.focus()
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                client_nav_button.focus()
-                self.app.push_screen(popup_output_page())
+            load_params = {
+                "channel_id": channel_id,
+                "mpe_addr": mpe_addr,
+                "wallet_index": wallet_index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "channel_claim_timeout"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class channel_claim_to_all_page(Screen):
     def compose(self) -> ComposeResult:
@@ -6864,12 +7638,38 @@ class channel_claim_to_all_page(Screen):
             ),
             id="channel_claim_timeout_all_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
+        
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global conditional_command
         global conditional_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -6891,21 +7691,19 @@ class channel_claim_to_all_page(Screen):
             wallet_index = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_wallet_index_div").get_child_by_id("channel_claim_timeout_all_page_wallet_index_input").value
             quiet = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_all_page_quiet_radio").value
             verbose = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("channel_claim_timeout_all_content_page").get_child_by_id("channel_claim_timeout_all_page_quiet_verbose_set").get_child_by_id("channel_claim_timeout_all_page_verbose_radio").value
-
-            client_nav_button = self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav")
-
-            output, errCode, command = be.channel_claim_timeout_all(mpe_addr, from_block, wallet_index, quiet, verbose, True)
+            self.get_child_by_id("channel_claim_timeout_all_page").get_child_by_id("nav_sidebar").get_child_by_id("client_page_nav").focus()
             
-            if errCode == 0:
-                conditional_output = output
-                conditional_command = command
-                client_nav_button.focus()
-                self.app.push_screen(conditional_input_page())
-            else:
-                popup_output = output
-                client_nav_button.focus()
-                self.app.push_screen(popup_output_page())
-
+            load_params = {
+                "mpe_addr": mpe_addr,
+                "block": from_block,
+                "wallet_index": wallet_index,
+                "quiet": quiet,
+                "verbose": verbose
+            }            
+            load_aprx_time = "10s."
+            load_screen_redirect = "channel_claim_timeout_all"
+            self.app.push_screen(load(), callback=self.on_res)
+            
 class custom_command_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
