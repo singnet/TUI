@@ -1671,6 +1671,8 @@ def channel_open_init(org_id, group_name, agi_amount, expr, registry, force, sig
         output, errCode = run_shell_command(command=command, input_text="n\n")
         if len(output) > 0 and "(y/n)" in output:
             errCode = 0
+        elif "already exists" in output:
+            errCode = 1
     else:
         output, errCode = run_shell_command(command=f"{command} --yes") 
 
