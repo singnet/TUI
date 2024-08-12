@@ -1876,6 +1876,43 @@ def channel_print_initialized(only_id=None, filter_sender=None, filter_signer=No
 
     # Run command
     output, errCode = run_shell_command(command)
+
+    # Format output
+    if errCode == 0:
+        lines = output.strip().split('\n')
+        if len(lines) > 1:
+            header = lines[0]
+            data_lines = lines[1:]
+
+            # Split the header
+            header_cols = header.split()
+
+            # Function to split data lines correctly
+            def split_line(line):
+                parts = line.split(maxsplit=7)  # Split into 8 parts max
+                if len(parts) < 8:
+                    # If service_id is missing, insert an empty string
+                    parts.insert(1, '')
+                return parts
+
+            # Split the data lines
+            data_cols = [split_line(line) for line in data_lines]
+
+            # Determine the maximum width for each column
+            col_widths = [max(len(str(row[i])) for row in [header_cols] + data_cols) for i in range(len(header_cols))]
+
+            # Format the header
+            formatted_header = " | ".join(col.ljust(width) for col, width in zip(header_cols, col_widths))
+
+            # Format the data rows
+            formatted_data = [" | ".join(col.ljust(width) for col, width in zip(row, col_widths)) for row in data_cols]
+
+            # Combine everything
+            separator = "-" * len(formatted_header)
+            formatted_output = f"{formatted_header}\n{separator}\n" + "\n".join(formatted_data)
+
+            return formatted_output, errCode
+        
     return output, errCode
 
 def channel_print_initialized_filter_org(org_id, group_name, registry, only_id, filter_sender, filter_signer, filter_my, mpe_addr, wallet_index):
