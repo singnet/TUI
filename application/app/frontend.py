@@ -1146,7 +1146,27 @@ class load(Screen[str]):
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
+    @work(thread=True)
+    def custom_command(self) -> None:
+        global load_params
 
+        try:
+            root = load_params["root"]
+            sub = load_params["sub"]
+            args = load_params["args"] 
+            cwd = load_params["cwd"] 
+            traceback = load_params["trace"] 
+
+            conditionalCheck = be.custom_conditional_check(root, sub)
+
+            if conditionalCheck:
+                output, errCode, command = be.custom_conditional_command(root, sub, args, cwd, traceback, True)     
+                self.app.call_from_thread(self.dismiss, [conditionalCheck, output, errCode, command])
+            else:
+                output, errCode = be.custom_command(root, sub, args, cwd, traceback)
+                self.app.call_from_thread(self.dismiss, [conditionalCheck, output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
 
     def on_mount(self) -> None:
         global load_screen_redirect
@@ -1295,6 +1315,8 @@ class load(Screen[str]):
             self.channel_claim_timeout()
         elif load_screen_redirect == "channel_claim_timeout_all":
             self.channel_claim_timeout_all()
+        elif load_screen_redirect == "custom_command":
+            self.custom_command()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "load_cancel_button":
@@ -8533,12 +8555,41 @@ class custom_command_page(Screen):
             ),
             id="custom_command_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        global conditional_command
+        global conditional_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            conditionalCheck = result[0]
+            output = result[1]
+            errCode = result[2]
+            if conditionalCheck:
+                command = result[3]
+                if errCode == 0:
+                    conditional_output = output
+                    conditional_command = command
+                    self.app.push_screen(conditional_input_page())
+                else:
+                    popup_output = output
+                    self.app.push_screen(popup_output_page())
+            else: 
+                popup_output = output
+                self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global conditional_command
         global conditional_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -8558,28 +8609,18 @@ class custom_command_page(Screen):
             args = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_command_args_div").get_child_by_id("custom_command_args_input").value
             cwd = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_command_dir_div").get_child_by_id("custom_cwd_input").value
             traceback = self.get_child_by_id("custom_command_page").get_child_by_id("custom_command_page_content").get_child_by_id("custom_command_traceback_radio").value
+            self.get_child_by_id("custom_command_page").get_child_by_id("nav_sidebar").get_child_by_id("custom_command_page_nav").focus()
 
-            custom_comm_nav_button = self.get_child_by_id("custom_command_page").get_child_by_id("nav_sidebar").get_child_by_id("custom_command_page_nav")
-
-            conditionalCheck = be.custom_conditional_check(root, sub)
-
-            if conditionalCheck:
-                output, errCode, command = be.custom_conditional_command(root, sub, args, cwd, traceback, True)
-
-                if errCode == 0:
-                    conditional_output = output
-                    conditional_command = command
-                    custom_comm_nav_button.focus()
-                    self.app.push_screen(conditional_input_page())
-                else:
-                    popup_output = output
-                    custom_comm_nav_button.focus()
-                    self.app.push_screen(popup_output_page())
-            else:
-                output, errCode = be.custom_command(root, sub, args, cwd, traceback)
-                popup_output = output
-                custom_comm_nav_button.focus()
-                self.app.push_screen(popup_output_page())
+            load_params = {
+                "root": root,
+                "sub": sub,
+                "args": args,
+                "cwd": cwd,
+                "trace": traceback
+            }
+            load_screen_redirect = "custom_command"
+            load_aprx_time = "Unknown"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class exit_page(Screen):
     def compose(self) -> ComposeResult:
