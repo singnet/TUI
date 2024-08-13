@@ -495,7 +495,330 @@ class load(Screen[str]):
             self.app.call_from_thread(self.dismiss, [output, errCode])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def init_service_metadata(self) -> None:
+        global load_params
+        
+        try:
+            service_path = load_params["service_path"]
+            proto_path = load_params["proto_path"]
+            service_display = load_params["service_display"]
+            metadata_file = load_params["metadata_file"]
+            mpe_addr = load_params["mpe_addr"]
+            pay_group_name = load_params["pay_group_name"]
+            endpoints = load_params["endpoints"]
+            fixed_price = load_params["fixed_price"]
+            enc_type = load_params["enc_type"]
+            serv_type = load_params["serv_type"]
+            
+            output, errCode = be.init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
 
+    @work(thread=True)
+    def service_metadata_set_model(self) -> None:
+        global load_params
+        
+        try:
+            proto_dir = load_params["proto_dir"]
+            metadata_file = load_params["metadata_file"]
+            
+            output, errCode = be.service_metadata_set_model(proto_dir, metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error") 
+    
+    @work(thread=True)
+    def service_metadata_set_fixed_price(self) -> None:
+        global load_params
+        
+        try:
+            group_name = load_params["group_name"]
+            price = load_params["price"]
+            metadata_file = load_params["metadata_file"]
+            
+            output, errCode = be.service_metadata_set_fixed_price(group_name, price, metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_set_method_price(self) -> None:
+        global load_params
+        
+        try:
+            group_name = load_params["group_name"]
+            package_name = load_params["package_name"]
+            service_name = load_params["service_name"]
+            method_name = load_params["method_name"]
+            price = load_params["price"]
+            metadata_file = load_params["metadata_file"]
+            
+            output, errCode = be.service_metadata_set_method_price(group_name, package_name, service_name, method_name, price, metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_set_free_calls(self) -> None:
+        global load_params
+        
+        try:
+            group_name = load_params["group_name"]
+            free_calls = load_params["free_calls"]
+            metadata_file = load_params["metadata_file"]
+            
+            output, errCode = be.service_metadata_set_free_calls(group_name, free_calls, metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_set_freecall_signer(self) -> None:
+        global load_params
+        
+        try:
+            group_name = load_params["group_name"]
+            signer_addr = load_params["signer_addr"]
+            metadata_file = load_params["metadata_file"]
+            
+            output, errCode = be.service_metadata_set_freecall_signer_addr(group_name, signer_addr, metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+     
+    @work(thread=True)
+    def add_desc_service_metadata(self) -> None:
+        global load_params
+        
+        try:
+            long_desc = load_params["long_desc"]
+            short_desc = load_params["short_desc"]
+            url = load_params["url"]
+            metadata_file = load_params["metadata_file"]
+            
+            output, errCode = be.add_service_metadata_desc(long_desc, short_desc, url, metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_add_remove_group(self) -> None:
+        global load_params
+        
+        try:
+            group_name = load_params["group_name"]
+            metadata_file = load_params["metadata_file"]
+            operation = load_params["operation"]
+            
+            if operation == "add":
+                output, errCode = be.service_metadata_add_group(group_name, metadata_file)
+            elif operation == "remove":
+                output, errCode = be.service_metadata_remove_group(group_name, metadata_file)
+            else:
+                self.app.call_from_thread(self.dismiss, "param_error") 
+                return
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_add_remove_daemon_addr(self) -> None:
+        global load_params
+        
+        try:
+            group_name = load_params["group_name"]
+            daemon_addr = load_params["daemon_addr"]
+            metadata_file = load_params["metadata_file"]
+            operation = load_params["operation"]
+            
+            if operation == "add":
+                output, errCode = be.service_metadata_add_daemon_addr(group_name, daemon_addr, metadata_file)
+            elif operation == "remove":
+                output, errCode = be.service_metadata_remove_daemon_addr(group_name, daemon_addr, metadata_file)
+            else:
+                self.app.call_from_thread(self.dismiss, "param_error")
+                return
+            
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_add_remove_assets(self) -> None:
+        global load_params
+        
+        try:
+            asset_type = load_params["asset_type"]
+            metadata_file = load_params["metadata_file"]
+            operation = load_params["operation"]
+            
+            if operation == "add":
+                asset_path = load_params["asset_path"]
+                output, errCode = be.service_metadata_add_assets(asset_path, asset_type, metadata_file)
+            elif operation == "remove":
+                output, errCode = be.service_metadata_remove_assets(asset_type, metadata_file)
+            else:
+                self.app.call_from_thread(self.dismiss, "param_error")
+                return
+            
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_media_operation(self) -> None:
+        global load_params
+
+        try:
+            operation = load_params["operation"]
+            metadata_file = load_params["file"]
+
+            if operation == "remove":
+                output, errCode = be.service_metadata_remove_media(metadata_file)
+            elif operation == "add":
+                url = load_params["url"]
+                hero_image = load_params["hero"]
+                output, errCode = be.service_metadata_add_media(url, hero_image, metadata_file)
+            else:
+                self.app.call_from_thread(self.dismiss, "param_error")
+                return 
+
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_update_daemon_addr(self) -> None:
+        global load_params
+
+        try:
+            group_name = load_params["group_name"]
+            daemon_addr = load_params["daemon_addr"]
+            metadata_file = load_params["file"]
+
+            output, errCode = be.service_metadata_update_daemon_addr(group_name, daemon_addr, metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def service_metadata_update_validate_metadata(self) -> None:
+        global load_params
+
+        try:
+            metadata_file = load_params["file"]
+
+            output, errCode = be.service_metadata_update_validate_metadata(metadata_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def service_metadata_update_metadata(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            service_id = load_params["service_id"]
+            metadata_file = load_params["metadata_file"]
+            reg_addr = load_params["reg_addr"]
+            mpe_addr = load_params["mpe_addr"]
+            update_mpe = load_params["update_mpe"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.service_metadata_update_update_metadata(
+                org_id, service_id, metadata_file, reg_addr, mpe_addr, 
+                update_mpe, index, quiet, verbose
+            )
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def get_service_status(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            serv_id = load_params["service_id"]
+            reg_addr = load_params["reg_addr"]
+            group = load_params["group"]
+
+            output, errCode = be.print_service_status(org_id, serv_id, group, reg_addr)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def get_api_metadata(self) -> None:
+        global load_params
+
+        try:
+            proto_dir = load_params["proto"]
+            meta_file = load_params["file"]
+
+            output, errCode = be.print_service_api_metadata(proto_dir, meta_file)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+    
+    @work(thread=True)
+    def get_api_registry(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            serv_id = load_params["service_id"]
+            reg_addr = load_params["reg_addr"]
+            proto_dir = load_params["proto"]
+
+            output, errCode = be.print_service_api_registry(org_id, serv_id, reg_addr, proto_dir)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def publish_service(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            serv_id = load_params["serv_id"]
+            reg_addr = load_params["reg_addr"]
+            meta_file = load_params["file"]
+            mpe_addr = load_params["mpe_addr"]
+            update_mpe = load_params["update_mpe"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"]
+
+            output, errCode = be.publish_service(org_id, serv_id, meta_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+    @work(thread=True)
+    def delete_service(self) -> None:
+        global load_params
+
+        try:
+            org_id = load_params["org_id"]
+            serv_id = load_params["serv_id"]
+            reg_addr = load_params["reg_addr"]
+            index = load_params["index"]
+            quiet = load_params["quiet"]
+            verbose = load_params["verbose"] 
+            
+            output, errCode = be.delete_service(org_id, serv_id, reg_addr, index, quiet, verbose)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+            
     @work(thread=True)
     def client_call(self) -> None:
         global load_params
@@ -900,6 +1223,44 @@ class load(Screen[str]):
             self.org_create()
         elif load_screen_redirect == "org_delete":
             self.org_delete()
+        elif load_screen_redirect == "init_service_metadata":
+            self.init_service_metadata()
+        elif load_screen_redirect == "service_metadata_set_model":
+            self.service_metadata_set_model()
+        elif load_screen_redirect == "service_metadata_set_fixed_price":
+            self.service_metadata_set_fixed_price()
+        elif load_screen_redirect == "service_metadata_set_method_price":
+            self.service_metadata_set_method_price()
+        elif load_screen_redirect == "service_metadata_set_free_calls":
+            self.service_metadata_set_free_calls()
+        elif load_screen_redirect == "service_metadata_set_freecall_signer":
+            self.service_metadata_set_freecall_signer()
+        elif load_screen_redirect == "add_desc_service_metadata":
+            self.add_desc_service_metadata()
+        elif load_screen_redirect == "service_metadata_add_remove_group":
+            self.service_metadata_add_remove_group()
+        elif load_screen_redirect == "service_metadata_add_remove_daemon_addr":
+            self.service_metadata_add_remove_daemon_addr()
+        elif load_screen_redirect == "service_metadata_add_remove_assets":
+            self.service_metadata_add_remove_assets()
+        elif load_screen_redirect == "service_metadata_media_operation":
+            self.service_metadata_media_operation()
+        elif load_screen_redirect == "service_metadata_update_daemon_addr":
+            self.service_metadata_update_daemon_addr()
+        elif load_screen_redirect == "service_metadata_update_validate_metadata":
+            self.service_metadata_update_validate_metadata()
+        elif load_screen_redirect == "service_metadata_update_metadata":
+            self.service_metadata_update_metadata()
+        elif load_screen_redirect == "get_service_status":
+            self.get_service_status()
+        elif load_screen_redirect == "get_api_metadata":
+            self.get_api_metadata()
+        elif load_screen_redirect == "get_api_registry":
+            self.get_api_registry()
+        elif load_screen_redirect == "publish_service":
+            self.publish_service()
+        elif load_screen_redirect == "delete_service":
+            self.delete_service()
         elif load_screen_redirect == "client_call":
             self.client_call()
         elif load_screen_redirect == "client_call_low":
@@ -3464,7 +3825,6 @@ class services_page(Screen):
             self.app.push_screen(services_view_all_page())
 
 class services_metadata_page(Screen):
-    # TODO: Check all subpages and make them scrollable
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
@@ -3597,10 +3957,25 @@ class init_service_metadata_page(Screen):
             ),
             id="init_service_metadata_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -3632,10 +4007,21 @@ class init_service_metadata_page(Screen):
             if serv_type == Select.BLANK:
                 serv_type = "grpc"
             
-            output, errCode = be.init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
-
+            load_params = {
+                "service_path": service_path,
+                "proto_path": proto_path,
+                "service_display": service_display,
+                "metadata_file": metadata_file,
+                "mpe_addr": mpe_addr,
+                "pay_group_name": pay_group_name,
+                "endpoints": endpoints,
+                "fixed_price": fixed_price,
+                "enc_type": enc_type,
+                "serv_type": serv_type
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "init_service_metadata"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class service_metadata_set_page(Screen):
     def compose(self) -> ComposeResult:
@@ -3724,9 +4110,23 @@ class service_metadata_set_model_page(Screen):
             id="service_metadata_set_model_page"
         )
 
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -3746,9 +4146,13 @@ class service_metadata_set_model_page(Screen):
             proto_dir = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_proto_dir_div").get_child_by_id("service_metadata_set_model_proto_dir_input").value
             metadata_file = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_file_div").get_child_by_id("service_metadata_set_model_file_input").value
 
-            output, errCode = be.service_metadata_set_model(proto_dir, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "proto_dir": proto_dir,
+                "metadata_file": metadata_file
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_set_model"
+            self.app.push_screen(load(), callback=self.on_res)
 
 
 class service_metadata_set_fixed_price_page(Screen):
@@ -3787,10 +4191,24 @@ class service_metadata_set_fixed_price_page(Screen):
             ),
             id="service_metadata_set_fixed_price_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page()) 
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -3811,9 +4229,14 @@ class service_metadata_set_fixed_price_page(Screen):
             price = self.get_child_by_id("service_metadata_set_fixed_price_page").get_child_by_id("service_metadata_set_fixed_price_page_content").get_child_by_id("service_metadata_set_fixed_price_amount_div").get_child_by_id("service_metadata_set_fixed_price_amount_input").value
             metadata_file = self.get_child_by_id("service_metadata_set_fixed_price_page").get_child_by_id("service_metadata_set_fixed_price_page_content").get_child_by_id("service_metadata_set_fixed_price_file_div").get_child_by_id("service_metadata_set_fixed_price_file_input").value
 
-            output, errCode = be.service_metadata_set_fixed_price(group_name, price, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "price": price,
+                "metadata_file": metadata_file
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_set_fixed_price"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class service_metadata_set_method_price_page(Screen):
     def compose(self) -> ComposeResult:
@@ -3869,10 +4292,24 @@ class service_metadata_set_method_price_page(Screen):
             ),
             id="service_metadata_set_method_price_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -3896,9 +4333,17 @@ class service_metadata_set_method_price_page(Screen):
             price = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_amount_div").get_child_by_id("service_metadata_set_method_price_amount_input").value
             metadata_file = self.get_child_by_id("service_metadata_set_method_price_page").get_child_by_id("service_metadata_set_method_price_page_content").get_child_by_id("service_metadata_set_method_price_file_div").get_child_by_id("service_metadata_set_method_price_file_input").value
             
-            output, errCode = be.service_metadata_set_method_price(group_name, package_name, service_name, method_name, price, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "package_name": package_name,
+                "service_name": service_name,
+                "method_name": method_name,
+                "price": price,
+                "metadata_file": metadata_file
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_set_method_price"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_set_free_calls_page(Screen):
     def compose(self) -> ComposeResult:
@@ -3936,10 +4381,24 @@ class service_metadata_set_free_calls_page(Screen):
             ),
             id="service_metadata_set_free_calls_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -3960,9 +4419,14 @@ class service_metadata_set_free_calls_page(Screen):
             free_calls = self.get_child_by_id("service_metadata_set_free_calls_page").get_child_by_id("service_metadata_set_free_calls_page_content").get_child_by_id("service_metadata_set_free_calls_num_div").get_child_by_id("service_metadata_set_free_calls_num_input").value
             metadata_file = self.get_child_by_id("service_metadata_set_free_calls_page").get_child_by_id("service_metadata_set_free_calls_page_content").get_child_by_id("service_metadata_set_free_calls_file_div").get_child_by_id("service_metadata_set_free_calls_file_input").value
             
-            output, errCode = be.service_metadata_set_free_calls(group_name, free_calls, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "free_calls": free_calls,
+                "metadata_file": metadata_file
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "service_metadata_set_free_calls"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_set_freecall_signer_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4000,10 +4464,24 @@ class service_metadata_set_freecall_signer_page(Screen):
             ),
             id="service_metadata_set_freecall_signer_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4024,9 +4502,14 @@ class service_metadata_set_freecall_signer_page(Screen):
             signer_addr = self.get_child_by_id("service_metadata_set_freecall_signer_page").get_child_by_id("service_metadata_set_freecall_signer_page_content").get_child_by_id("service_metadata_set_freecall_signer_addr_div").get_child_by_id("service_metadata_set_freecall_signer_addr_input").value
             metadata_file = self.get_child_by_id("service_metadata_set_freecall_signer_page").get_child_by_id("service_metadata_set_freecall_signer_page_content").get_child_by_id("service_metadata_set_freecall_signer_file_div").get_child_by_id("service_metadata_set_freecall_signer_file_input").value
             
-            output, errCode = be.service_metadata_set_freecall_signer_addr(group_name, signer_addr, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "signer_addr": signer_addr,
+                "metadata_file": metadata_file
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_set_freecall_signer"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class service_metadata_add_remove_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4126,10 +4609,24 @@ class add_desc_service_metadata_page(Screen):
             ),
             id="add_desc_service_metadata_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4151,9 +4648,15 @@ class add_desc_service_metadata_page(Screen):
             url = self.get_child_by_id("add_desc_service_metadata_page").get_child_by_id("add_desc_service_metadata_page_content").get_child_by_id("add_desc_service_metadata_url_div").get_child_by_id("add_desc_service_metadata_url_input").value
             metadata_file = self.get_child_by_id("add_desc_service_metadata_page").get_child_by_id("add_desc_service_metadata_page_content").get_child_by_id("add_desc_service_metadata_meta_file_div").get_child_by_id("add_desc_service_metadata_meta_file_input").value
             
-            output, errCode = be.add_service_metadata_desc(long_desc, short_desc, url, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "long_desc": long_desc,
+                "short_desc": short_desc,
+                "url": url,
+                "metadata_file": metadata_file
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "add_desc_service_metadata"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_add_remove_group_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4186,10 +4689,24 @@ class service_metadata_add_remove_group_page(Screen):
             ),
             id="service_metadata_add_remove_group_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         group_name = self.get_child_by_id("service_metadata_add_remove_group_page").get_child_by_id("service_metadata_add_remove_group_page_content").get_child_by_id("service_metadata_add_remove_group_group_div").get_child_by_id("service_metadata_add_remove_group_group_input").value
         metadata_file = self.get_child_by_id("service_metadata_add_remove_group_page").get_child_by_id("service_metadata_add_remove_group_page_content").get_child_by_id("service_metadata_add_remove_group_file_div").get_child_by_id("service_metadata_add_remove_group_file_input").value
@@ -4209,13 +4726,23 @@ class service_metadata_add_remove_group_page(Screen):
         elif event.button.id == "service_metadata_add_remove_group_back_button":
             self.app.pop_screen()
         elif event.button.id == "service_metadata_add_remove_group_add_button":
-            output, errCode = be.service_metadata_add_group(group_name, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "metadata_file": metadata_file,
+                "operation": "add"
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "service_metadata_add_remove_group"
+            self.app.push_screen(load(), callback=self.on_res)
         elif event.button.id == "service_metadata_add_remove_group_remove_button":
-            output, errCode = be.service_metadata_remove_group(group_name, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "metadata_file": metadata_file,
+                "operation": "remove"
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "service_metadata_add_remove_group"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class service_metadata_add_remove_daemon_addr_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4254,10 +4781,24 @@ class service_metadata_add_remove_daemon_addr_page(Screen):
             ),
             id="service_metadata_add_remove_daemon_addr_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         group_name = self.get_child_by_id("service_metadata_add_remove_daemon_addr_page").get_child_by_id("service_metadata_add_remove_daemon_addr_page_content").get_child_by_id("service_metadata_add_remove_daemon_addr_group_div").get_child_by_id("service_metadata_add_remove_daemon_addr_group_input").value
         daemon_addr = self.get_child_by_id("service_metadata_add_remove_daemon_addr_page").get_child_by_id("service_metadata_add_remove_daemon_addr_page_content").get_child_by_id("service_metadata_add_remove_daemon_addr_endpoint_div").get_child_by_id("service_metadata_add_remove_daemon_addr_endpoint_input").value
@@ -4278,13 +4819,25 @@ class service_metadata_add_remove_daemon_addr_page(Screen):
         elif event.button.id == "service_metadata_add_remove_daemon_addr_back_button":
             self.app.pop_screen()
         elif event.button.id == "service_metadata_add_remove_daemon_addr_add_button":
-            output, errCode = be.service_metadata_add_daemon_addr(group_name, daemon_addr, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "daemon_addr": daemon_addr,
+                "metadata_file": metadata_file,
+                "operation": "add"
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_add_remove_daemon_addr"
+            self.app.push_screen(load(), callback=self.on_res)
         elif event.button.id == "service_metadata_add_remove_daemon_addr_remove_button":
-            output, errCode = be.service_metadata_remove_daemon_addr(group_name, daemon_addr, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "daemon_addr": daemon_addr,
+                "metadata_file": metadata_file,
+                "operation": "remove"
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_add_remove_daemon_addr"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_add_remove_assets_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4323,10 +4876,24 @@ class service_metadata_add_remove_assets_page(Screen):
             ),
             id="service_metadata_add_remove_assets_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output, errCode = result
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         asset_type = self.get_child_by_id("service_metadata_add_remove_assets_page").get_child_by_id("service_metadata_add_remove_assets_page_content").get_child_by_id("service_metadata_add_remove_assets_type_div").get_child_by_id("service_metadata_add_remove_assets_type_select").value
         metadata_file = self.get_child_by_id("service_metadata_add_remove_assets_page").get_child_by_id("service_metadata_add_remove_assets_page_content").get_child_by_id("service_metadata_add_remove_assets_file_div").get_child_by_id("service_metadata_add_remove_assets_file_input").value
@@ -4347,13 +4914,24 @@ class service_metadata_add_remove_assets_page(Screen):
             self.app.pop_screen()
         elif event.button.id == "service_metadata_add_remove_assets_add_button":
             asset_path = self.get_child_by_id("service_metadata_add_remove_assets_page").get_child_by_id("service_metadata_add_remove_assets_page_content").get_child_by_id("service_metadata_add_remove_assets_path_div").get_child_by_id("service_metadata_add_remove_assets_path_input").value
-            output, errCode = be.service_metadata_add_assets(asset_path, asset_type, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "asset_path": asset_path,
+                "asset_type": asset_type,
+                "metadata_file": metadata_file,
+                "operation": "add"
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_add_remove_assets"
+            self.app.push_screen(load(), callback=self.on_res)
         elif event.button.id == "service_metadata_add_remove_assets_remove_button":
-            output, errCode = be.service_metadata_remove_assets(asset_type, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "asset_type": asset_type,
+                "metadata_file": metadata_file,
+                "operation": "remove"
+            }
+            load_aprx_time = "5s."
+            load_screen_redirect = "service_metadata_add_remove_assets"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_add_remove_media_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4388,10 +4966,26 @@ class service_metadata_add_remove_media_page(Screen):
             ),
             id="service_metadata_add_remove_media_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         metadata_file = self.get_child_by_id("service_metadata_add_remove_media_page").get_child_by_id("service_metadata_add_remove_media_page_content").get_child_by_id("service_metadata_add_remove_media_file_div").get_child_by_id("service_metadata_add_media_file_input").value
 
@@ -4410,15 +5004,25 @@ class service_metadata_add_remove_media_page(Screen):
         elif event.button.id == "service_metadata_add_remove_media_back_button":
             self.app.pop_screen()
         elif event.button.id == "service_metadata_add_remove_media_remove_button":
-            output, errCode = be.service_metadata_remove_media(metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "operation": "remove", 
+                "file": metadata_file
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "service_metadata_media_operation"
+            self.app.push_screen(load(), callback=self.on_res)
         elif event.button.id == "service_metadata_add_remove_media_add_button":
             url = self.get_child_by_id("service_metadata_add_remove_media_page").get_child_by_id("service_metadata_add_remove_media_page_content").get_child_by_id("service_metadata_add_remove_media_url_div").get_child_by_id("service_metadata_add_media_url_input").value
             hero_image = self.get_child_by_id("service_metadata_add_remove_media_page").get_child_by_id("service_metadata_add_remove_media_page_content").get_child_by_id("service_metadata_add_remove_media_hero_div").get_child_by_id("service_metadata_add_media_hero_radio").value
-            output, errCode = be.service_metadata_add_media(url, hero_image, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "operation": "add",
+                "url": url, 
+                "hero": hero_image, 
+                "file": metadata_file
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "service_metadata_media_operation"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_update_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4502,9 +5106,25 @@ class service_metadata_update_daemon_addr_page(Screen):
             id="service_metadata_update_daemon_addr_page"
         )
     
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4525,9 +5145,14 @@ class service_metadata_update_daemon_addr_page(Screen):
             daemon_addr = self.get_child_by_id("service_metadata_update_daemon_addr_page").get_child_by_id("service_metadata_update_daemon_addr_page_content").get_child_by_id("service_metadata_update_daemon_addr_endpoint_div").get_child_by_id("service_metadata_update_daemon_addr_endpoint_input").value
             metadata_file = self.get_child_by_id("service_metadata_update_daemon_addr_page").get_child_by_id("service_metadata_update_daemon_addr_page_content").get_child_by_id("service_metadata_update_daemon_addr_file_div").get_child_by_id("service_metadata_update_daemon_addr_file_input").value
 
-            output, errCode = be.service_metadata_update_daemon_addr(group_name, daemon_addr, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "group_name": group_name,
+                "daemon_addr": daemon_addr,
+                "file": metadata_file
+            }
+            load_aprx_time = "10s."
+            load_screen_redirect = "service_metadata_update_daemon_addr"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_update_validate_metadata_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4553,10 +5178,26 @@ class service_metadata_update_validate_metadata_page(Screen):
             ),
             id="service_metadata_update_validate_metadata_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4574,9 +5215,13 @@ class service_metadata_update_validate_metadata_page(Screen):
             self.app.pop_screen()
         elif event.button.id == "service_metadata_update_validate_metadata_validate_button":
             metadata_file = self.get_child_by_id("service_metadata_update_validate_metadata_page").get_child_by_id("service_metadata_update_validate_metadata_page_content").get_child_by_id("service_metadata_update_validate_metadata_file_div").get_child_by_id("service_metadata_update_validate_metadata_file_input").value
-            output, errCode = be.service_metadata_update_validate_metadata(metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+
+            load_params = {
+                "file": metadata_file
+            }
+            load_aprx_time = "15s."
+            load_screen_redirect = "service_metadata_update_validate_metadata"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class service_metadata_update_metadata_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4639,10 +5284,26 @@ class service_metadata_update_metadata_page(Screen):
             ),
             id="service_metadata_update_metadata_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4669,9 +5330,20 @@ class service_metadata_update_metadata_page(Screen):
             quiet = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_quiet_radio").value
             verbose = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_verbose_radio").value
             
-            output, errCode = be.service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "org_id": org_id,
+                "service_id": service_id,
+                "metadata_file": metadata_file,
+                "reg_addr": reg_addr,
+                "mpe_addr": mpe_addr,
+                "update_mpe": update_mpe,
+                "index": index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "30s."
+            load_screen_redirect = "service_metadata_update_metadata"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class service_metadata_get_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4760,10 +5432,26 @@ class service_metadata_get_service_status_page(Screen):
             ),
             id="service_metadata_get_service_status_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4784,10 +5472,16 @@ class service_metadata_get_service_status_page(Screen):
             service_id = self.get_child_by_id("service_metadata_get_service_status_page").get_child_by_id("service_metadata_get_service_status_page_content").get_child_by_id("service_metadata_get_service_status_service_id_div").get_child_by_id("service_metadata_get_service_status_service_id_input").value
             reg_addr = self.get_child_by_id("service_metadata_get_service_status_page").get_child_by_id("service_metadata_get_service_status_page_content").get_child_by_id("service_metadata_get_service_status_reg_contract_div").get_child_by_id("service_metadata_get_service_status_reg_contract_input").value
             pay_group = self.get_child_by_id("service_metadata_get_service_status_page").get_child_by_id("service_metadata_get_service_status_page_content").get_child_by_id("service_metadata_get_service_status_group_div").get_child_by_id("service_metadata_get_service_status_group_input").value
-            
-            output, errCode = be.print_service_status(org_id, service_id, pay_group, reg_addr)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+
+            load_params = {
+                "org_id": org_id,
+                "service_id": service_id,
+                "reg_addr": reg_addr,
+                "group": pay_group,
+            }           
+            load_aprx_time = "10s."
+            load_screen_redirect = "get_service_status"
+            self.app.push_screen(load(), callback=self.on_res) 
 
 class service_metadata_get_api_metadata_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4819,11 +5513,27 @@ class service_metadata_get_api_metadata_page(Screen):
             ),
             id="service_metadata_get_api_metadata_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
-
+        global load_params
+        global load_aprx_time
+        
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
         elif event.button.id == "organization_page_nav":
@@ -4841,10 +5551,13 @@ class service_metadata_get_api_metadata_page(Screen):
         elif event.button.id == "service_metadata_get_api_metadata_confirm_button":
             proto_dir = self.get_child_by_id("service_metadata_get_api_metadata_page").get_child_by_id("service_metadata_get_api_metadata_page_content").get_child_by_id("service_metadata_get_api_metadata_proto_dir_div").get_child_by_id("service_metadata_get_api_metadata_proto_dir_input").value
             metadata_file = self.get_child_by_id("service_metadata_get_api_metadata_page").get_child_by_id("service_metadata_get_api_metadata_page_content").get_child_by_id("service_metadata_get_api_metadata_file_div").get_child_by_id("service_metadata_get_api_metadata_file_input").value
-            
-            output, errCode = be.print_service_api_metadata(proto_dir, metadata_file)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            load_params = {
+                "proto": proto_dir,
+                "file": metadata_file
+            }       
+            load_aprx_time = "15s."
+            load_screen_redirect = "get_api_metadata"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class service_metadata_get_api_registry_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4888,10 +5601,26 @@ class service_metadata_get_api_registry_page(Screen):
             ),
             id="service_metadata_get_api_registry_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -4912,10 +5641,16 @@ class service_metadata_get_api_registry_page(Screen):
             service_id = self.get_child_by_id("service_metadata_get_api_registry_page").get_child_by_id("service_metadata_get_api_registry_page_content").get_child_by_id("service_metadata_get_api_registry_service_id_div").get_child_by_id("service_metadata_get_api_registry_service_id_input").value
             proto_dir = self.get_child_by_id("service_metadata_get_api_registry_page").get_child_by_id("service_metadata_get_api_registry_page_content").get_child_by_id("service_metadata_get_api_registry_proto_dir_div").get_child_by_id("service_metadata_get_api_registry_proto_dir_input").value
             reg_addr = self.get_child_by_id("service_metadata_get_api_registry_page").get_child_by_id("service_metadata_get_api_registry_page_content").get_child_by_id("service_metadata_get_api_registry_reg_contract_div").get_child_by_id("service_metadata_get_api_registry_reg_contract_input").value
-            
-            output, errCode = be.print_service_api_registry(org_id, service_id, reg_addr, proto_dir)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+
+            load_params = {
+                "org_id": org_id,
+                "service_id": service_id,
+                "reg_addr": reg_addr,
+                "proto": proto_dir,           
+            }            
+            load_aprx_time = "15s."
+            load_screen_redirect = "get_api_registry"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class services_manage_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5019,10 +5754,26 @@ class publish_service_page(Screen):
             ),
             id="publish_service_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_params
+        global load_aprx_time
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5048,10 +5799,21 @@ class publish_service_page(Screen):
             index = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_index_div").get_child_by_id("publish_service_index_input").value
             quiet = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_quiet_radio").value
             verbose = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_verbose_radio").value
-            
-            output, errCode = be.publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+
+            load_params = {
+                "org_id": org_id,
+                "serv_id": service_id,
+                "file": metadata_file,
+                "reg_addr": reg_addr,
+                "mpe_addr": mpe_addr,
+                "update_mpe": update_mpe,
+                "index": index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "publish_service"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class delete_service_page(Screen):
     def compose(self) -> ComposeResult:
@@ -5101,10 +5863,26 @@ class delete_service_page(Screen):
             ),
             id="delete_service_page"
         )
-    
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "param_error":
+            popup_output = "DEV ERROR: Did not supply correct parameters for load"
+            self.app.push_screen(popup_output_page())
+        elif result == "cancel":
+            pass
+        else:
+            output = result[0]
+            errCode = result[1]
+            popup_output = output
+            self.app.push_screen(popup_output_page())
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
         global load_screen_redirect
+        global load_aprx_time
+        global load_params
 
         if event.button.id == "account_page_nav":
             self.app.push_screen(account_page())
@@ -5127,10 +5905,18 @@ class delete_service_page(Screen):
             index = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_index_div").get_child_by_id("delete_service_index_input").value
             quiet = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_radio_set").get_child_by_id("delete_service_quiet_radio").value
             verbose = self.get_child_by_id("delete_service_page").get_child_by_id("delete_service_page_content").get_child_by_id("delete_service_radio_set").get_child_by_id("delete_service_verbose_radio").value
-            
-            output, errCode = be.delete_service(org_id, service_id, reg_addr, index, quiet, verbose)
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+
+            load_params = {
+                "org_id": org_id,
+                "serv_id": service_id,
+                "reg_addr": reg_addr,
+                "index": index,
+                "quiet": quiet,
+                "verbose": verbose
+            }
+            load_aprx_time = "20s."
+            load_screen_redirect = "delete_service"
+            self.app.push_screen(load(), callback=self.on_res)
 
 class services_view_all_page(Screen):
 
