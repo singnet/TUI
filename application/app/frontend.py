@@ -1363,7 +1363,8 @@ class conditional_input_page(Screen):
             popup_output = output
             self.app.switch_screen(popup_output_page())
         else:
-            self.app.pop_screen()
+            popup_output = "ERROR: The TUI has attempted to cancel the request. Please note, depending on how much of your request was already processed, you may have been charged. Please double check your account" 
+            self.app.switch_screen(popup_output_page())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_screen_redirect
@@ -1717,7 +1718,7 @@ class treasurer_claim_page(Screen):
             if errCode == 0:
                 conditional_output = output
                 conditional_command = command
-                load_aprx_time = "1 minute"
+                load_aprx_time = "10s."
                 self.app.push_screen(conditional_input_page())
             else:
                 popup_output = output
@@ -1919,7 +1920,7 @@ class treasurer_claim_expr_page(Screen):
             if errCode == 0:
                 conditional_output = output
                 conditional_command = command
-                load_aprx_time = "1 minute"
+                load_aprx_time = "10s."
                 self.app.push_screen(conditional_input_page())
             else:
                 popup_output = output
@@ -3479,7 +3480,7 @@ class manage_members_page(Screen):
             if errCode == 0:
                 conditional_output = output
                 conditional_command = command
-                load_aprx_time = "1 minute"
+                load_aprx_time = "10s."
                 self.app.push_screen(conditional_input_page())
             else:
                 popup_output = output
@@ -3862,7 +3863,7 @@ class org_manage_delete_page(Screen):
             if errCode == 0:
                 conditional_output = output
                 conditional_command = command
-                load_aprx_time = "10s."
+                load_aprx_time = "20s."
                 self.app.push_screen(conditional_input_page())
             else:
                 popup_output = output
