@@ -6097,19 +6097,6 @@ class services_view_all_page(Screen):
             id="services_view_all_page"
         )
 
-    def update_log(self, output) -> None:
-        global popup_output
-
-        if output == "param_error":
-            popup_output = "DEV ERROR: Did not supply correct parameters for load"
-            self.app.push_screen(popup_output_page())
-        elif output != "cancel":
-            if len(output) == 0:
-                output = "Could not find any Organizations or Services with that search phrase"
-            log = self.query_one("#services_view_all_log", expect_type=Log)
-            log.clear()
-            log.write(output)
-
     def init_print(self, output) -> None:
         global popup_output
 
@@ -6137,10 +6124,15 @@ class services_view_all_page(Screen):
         global load_screen_redirect
         
         search_phrase = self.get_child_by_id("services_view_all_page").get_child_by_id("services_view_all_page_content").get_child_by_id("services_view_all_search_div").get_child_by_id("services_view_all_search_input").value
-        load_params = {"view_all_data": self.market_data, "view_all_search": search_phrase} 
-        load_aprx_time = "5s."
-        load_screen_redirect = "view_all_search"
-        self.app.push_screen(load(), callback=self.update_log)
+        output = be.search_organizations_and_services(self.market_data, search_phrase)
+        if len(output) == 0:
+            output = "Could not find any Organizations or Services with that search phrase"
+        else:
+            output = be.format_marketplace_data(output)
+        log = self.query_one("#services_view_all_log", expect_type=Log)
+        log.clear()
+        log.write(output)
+
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_params
