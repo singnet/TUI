@@ -209,7 +209,7 @@ def delete_identity_cli(id_name):
     output, errCode = run_shell_command(f"snet --print-traceback identity delete {id_name}")
     return output, errCode
 
-def account_deposit(agi_amount, contract_address, mpe_address, wallet_index, quiet, verbose):
+def account_deposit(agi_amount, contract_address, mpe_address, wallet_index, quiet, verbose, view=False):
     # snet account deposit [-h] [--singularitynettoken-at SINGULARITYNETTOKEN_AT]
     #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
     #                  [--wallet-index WALLET_INDEX]
@@ -233,12 +233,19 @@ def account_deposit(agi_amount, contract_address, mpe_address, wallet_index, qui
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
     command += f" {agi_amount}"
 
-    return run_shell_command(command)
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
 
-def account_withdraw(agi_amount, mpe_address, wallet_index, quiet, verbose):
+    return output, errCode, command 
+
+def account_withdraw(agi_amount, mpe_address, wallet_index, quiet, verbose, view=False):
     # snet account withdraw [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
     #                   [--wallet-index WALLET_INDEX]
     #                   [--yes] [--quiet | --verbose]
@@ -259,12 +266,19 @@ def account_withdraw(agi_amount, mpe_address, wallet_index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
     command += f" {agi_amount}"
 
-    return run_shell_command(command)
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
 
-def account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet, verbose):
+    return output, errCode, command 
+
+def account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet, verbose, view=False):
     # snet account transfer [-h] [--multipartyescrow-at MULTIPARTYESCROW_AT]
     #                   [--wallet-index WALLET_INDEX]
     #                   [--yes] [--quiet | --verbose]
@@ -287,11 +301,18 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
     command += f" {reciever_addr}"
     command += f" {agi_amount}"
 
-    return run_shell_command(command)
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+
+    return output, errCode, command 
 
 def print_org_metadata(org_id):
     # snet organization print-metadata [-h] org_id
@@ -414,7 +435,7 @@ def remove_org_metadata_contacts(metadata_file):
         output = "Successfully deleted all contacts!"
     return output, errCode
 
-def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose):
+def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose, view=False):
     # snet organization update-metadata [-h] [--metadata-file METADATA_FILE]
     #                               [--members ORG_MEMBERS]
     #                               [--wallet-index WALLET_INDEX] [--yes]
@@ -436,14 +457,19 @@ def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Organization metadata successfully updated!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Organization metadata successfully updated!"
+    return output, errCode, command 
 
-def create_organization(org_id, metadata_file, members, index, quiet, verbose, registry_address):
+def create_organization(org_id, metadata_file, members, index, quiet, verbose, registry_address, view=False):
     # snet organization create [-h] [--metadata-file METADATA_FILE]
     #                      [--members ORG_MEMBERS] 
     #                      [--wallet-index WALLET_INDEX] [--yes]
@@ -467,95 +493,19 @@ def create_organization(org_id, metadata_file, members, index, quiet, verbose, r
         command += " --verbose"
     if registry_address and len(registry_address) > 0:
         command += f" --registry-at {registry_address}"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Organization successfully created!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Organization successfully created!"
+    return output, errCode, command 
 
-def change_organization_owner(org_id, owner_address, wallet_index, quiet, verbose, registry_address):
-    # snet organization change-owner [-h] 
-    #                            [--wallet-index WALLET_INDEX] [--yes]
-    #                            [--quiet | --verbose]
-    #                            [--registry-at REGISTRY_ADDRESS]
-    #                            ORG_ID OWNER_ADDRESS
-
-    if not org_id or len(org_id) <= 0:
-        return "ERROR: Must enter organization identity", 42
-    if not owner_address or len(owner_address) <= 0:
-        return "ERROR: Must enter owner address", 42
-    command = f"snet --print-traceback organization change-owner {org_id} {owner_address}"
-    if wallet_index and len(wallet_index) > 0:
-        command += f" --wallet-index {wallet_index}"
-    if quiet:
-        command += " --quiet"
-    elif verbose:
-        command += " --verbose"
-    if registry_address and len(registry_address) > 0:
-        command += f" --registry-at {registry_address}"
-    command += " --yes"
-
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Organization owner successfully changed!"
-    return output, errCode
-
-def add_org_metadata_members(org_id, org_members, wallet_index, quiet, verbose, registry_address):
-    # snet organization add-members [-h] 
-    #                           [--wallet-index WALLET_INDEX] [--yes]
-    #                           [--quiet | --verbose]
-    #                           [--registry-at REGISTRY_ADDRESS]
-    #                           ORG_ID ORG_MEMBERS
-    
-    if not org_id or len(org_id) <= 0:
-        return "ERROR: Must enter organization identity", 42
-    if not org_members or len(org_members) <= 0:
-        return "ERROR: Must enter organization members", 42
-    command = f"snet --print-traceback organization add-members {org_id} [{org_members}]"
-    if wallet_index and len(wallet_index) > 0:
-        command += f" --wallet-index {wallet_index}"
-    if quiet:
-        command += " --quiet"
-    elif verbose:
-        command += " --verbose"
-    if registry_address and len(registry_address) > 0:
-        command += f" --registry-at {registry_address}"
-    command += " --yes"
-
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Members successfully added to organization!"
-    return output, errCode
-
-def remove_org_metadata_members(org_id, org_members, wallet_index, quiet, verbose, registry_address):
-    # snet organization rem-members [-h] 
-    #                           [--wallet-index WALLET_INDEX] [--yes]
-    #                           [--quiet | --verbose]
-    #                           [--registry-at REGISTRY_ADDRESS]
-    #                           ORG_ID ORG_MEMBERS
-    
-    if not org_id or len(org_id) <= 0:
-        return "ERROR: Must enter organization identity", 42
-    if not org_members or len(org_members) <= 0:
-        return "ERROR: Must enter organization members", 42
-    command = f"snet --print-traceback organization rem-members {org_id} [{org_members}]"
-    if wallet_index and len(wallet_index) > 0:
-        command += f" --wallet-index {wallet_index}"
-    if quiet:
-        command += " --quiet"
-    elif verbose:
-        command += " --verbose"
-    if registry_address and len(registry_address) > 0:
-        command += f" --registry-at {registry_address}"
-    command += " --yes"
-
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Members successfully removed from organization!"
-    return output, errCode
-
-def delete_organization(org_id, wallet_index, quiet, verbose, registry_address):
+def delete_organization(org_id, wallet_index, quiet, verbose, registry_address, view=False):
     # snet organization delete [-h] 
     #                      [--wallet-index WALLET_INDEX] [--yes]
     #                      [--quiet | --verbose]
@@ -573,12 +523,17 @@ def delete_organization(org_id, wallet_index, quiet, verbose, registry_address):
         command += " --verbose"
     if registry_address and len(registry_address) > 0:
         command += f" --registry-at {registry_address}"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Organization successfully deleted!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Organization successfully deleted!"
+    return output, errCode, command 
 
 def print_organization_info(registry_address=None, wallet_index=None):
     # snet organization list-my [-h] [--registry-at REGISTRY_ADDRESS]
@@ -730,7 +685,7 @@ def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
         output = "Service description successfully added!"
     return output, errCode
 
-def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose):
+def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, view=False):
     # snet service publish [-h] [--metadata-file METADATA_FILE]
     #                  [--update-mpe-address]
     #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
@@ -758,14 +713,19 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Service successfully published!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Service successfully published!"
+    return output, errCode, command 
 
-def delete_service(org_id, service_id, reg_addr, index, quiet, verbose):
+def delete_service(org_id, service_id, reg_addr, index, quiet, verbose, view=False):
     # snet service delete [-h] [--registry-at REGISTRY_AT] 
     #                 [--wallet-index WALLET_INDEX] [--yes]
     #                 [--quiet | --verbose]
@@ -785,12 +745,17 @@ def delete_service(org_id, service_id, reg_addr, index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Service successfully deleted!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Service successfully deleted!"
+    return output, errCode, command 
 
 def get_all_organizations_and_services():
     org_list, err_code = run_shell_command("snet organization list")
@@ -842,7 +807,7 @@ def format_marketplace_data(data):
         output.append("")
     return "\n".join(output)
 
-def add_org_members(org_id, mem_list, index, quiet, verbose):
+def add_org_members(org_id, mem_list, index, quiet, verbose, view=False):
     # snet organization add-members [-h] 
     #                           [--wallet-index WALLET_INDEX] [--yes]
     #                           [--quiet | --verbose]
@@ -859,14 +824,19 @@ def add_org_members(org_id, mem_list, index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Members successfully added to the organization!"
-    return output, errCode
-
-def remove_org_members(org_id, mem_list, index, quiet, verbose):
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Members successfully added to the organization!"
+    return output, errCode, command 
+        
+def remove_org_members(org_id, mem_list, index, quiet, verbose, view=False):
     # snet organization rem-members [-h] 
     #                           [--wallet-index WALLET_INDEX] [--yes]
     #                           [--quiet | --verbose]
@@ -883,14 +853,19 @@ def remove_org_members(org_id, mem_list, index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Members successfully removed from the organization!"
-    return output, errCode
+     # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Members successfully removed from the organization!"
+    return output, errCode, command  
 
-def change_org_owner(org_id, new_addr, index, quiet, verbose):
+def change_org_owner(org_id, new_addr, index, quiet, verbose, view=False):
     # snet organization change-owner [-h] 
     #                            [--wallet-index WALLET_INDEX] [--yes]
     #                            [--quiet | --verbose]
@@ -909,12 +884,17 @@ def change_org_owner(org_id, new_addr, index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Organization owner successfully changed!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Organization owner successfully changed!"
+    return output, errCode, command 
 
 # def print_unclaimed_payments(endpoint):
 #     # snet treasurer print-unclaimed [-h] --endpoint ENDPOINT
@@ -926,7 +906,7 @@ def change_org_owner(org_id, new_addr, index, quiet, verbose):
 #     output, errCode = run_shell_command(command)
 #     return output, errCode
 
-def treasurer_claim(channels, endpoint, wallet_index, quiet, verbose):
+def treasurer_claim(channels, endpoint, wallet_index, quiet, verbose, view=False):
     # snet treasurer claim [-h] --endpoint ENDPOINT 
     #                  [--wallet-index WALLET_INDEX] [--yes]
     #                  [--quiet | --verbose]
@@ -943,14 +923,19 @@ def treasurer_claim(channels, endpoint, wallet_index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Payments successfully claimed from channels!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Payments successfully claimed from channels!"
+    return output, errCode, command 
 
-def treasurer_claim_all(endpoint, wallet_index, quiet, verbose):
+def treasurer_claim_all(endpoint, wallet_index, quiet, verbose, view=False):
     # snet treasurer claim-all [-h] --endpoint ENDPOINT 
     #                      [--wallet-index WALLET_INDEX] [--yes]
     #                      [--quiet | --verbose]
@@ -964,14 +949,19 @@ def treasurer_claim_all(endpoint, wallet_index, quiet, verbose):
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "All available payments successfully claimed!"
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "All available payments successfully claimed!"
+    return output, errCode, command 
 
-def treasurer_claim_expr(threshold: str, endpoint, wallet_index, quiet, verbose):
+def treasurer_claim_expr(threshold: str, endpoint, wallet_index, quiet, verbose, view=False):
     # snet treasurer claim-expired [-h]
     #                          [--expiration-threshold EXPIRATION_THRESHOLD]
     #                          --endpoint ENDPOINT 
@@ -997,12 +987,17 @@ def treasurer_claim_expr(threshold: str, endpoint, wallet_index, quiet, verbose)
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        return "Claimed expired payments!", errCode
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Claimed expired payments!" 
+    return output, errCode, command 
 
 def service_metadata_set_model(proto_dir, metadata_file):
     # snet service metadata-set-model [-h] [--metadata-file METADATA_FILE] PROTO_DIR
@@ -1331,7 +1326,7 @@ def service_metadata_update_validate_metadata(metadata_file):
 
     return output, errCode
 
-def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose):
+def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, view=False):
     # snet service update-metadata [-h] [--metadata-file METADATA_FILE]
     #                          [--update-mpe-address]
     #                          [--multipartyescrow-at MULTIPARTYESCROW_AT]
@@ -1363,14 +1358,17 @@ def service_metadata_update_update_metadata(org_id, service_id, metadata_file, r
         command += " --quiet"
     elif verbose:
         command += " --verbose"
-    command += " --yes"
 
-    # Execute the command
-    output, errCode = run_shell_command(command)
-    if len(output) == 0 and errCode == 0:
-        output = "Service metadata successfully updated!"
-
-    return output, errCode
+    # Run command
+    if view:
+        output, errCode = run_shell_command(command=command, input_text="n\n")
+        if len(output) > 0 and "(y/n)" in output:
+            errCode = 0
+    else:
+        output, errCode = run_shell_command(command=f"{command} --yes")
+        if len(output) == 0 and errCode == 0:
+            output = "Service metadata successfully updated!"
+    return output, errCode, command 
 
 def print_service_status(org_id, service_id, pay_group, reg_addr):
     # snet service print-service-status [-h] [--registry-at REGISTRY_AT]

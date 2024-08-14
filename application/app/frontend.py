@@ -164,8 +164,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.treasurer_claim(channels, endpoint, wallet, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.treasurer_claim(channels, endpoint, wallet, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -179,8 +179,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.treasurer_claim_all(endpoint, wallet, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.treasurer_claim_all(endpoint, wallet, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -195,8 +195,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.treasurer_claim_expr(threshold, endpoint, wallet, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.treasurer_claim_expr(threshold, endpoint, wallet, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -224,8 +224,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.account_deposit(agi, contr_addr, mpe_addr, wallet, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode]) 
+            output, errCode, command = be.account_deposit(agi, contr_addr, mpe_addr, wallet, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command]) 
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error") 
 
@@ -240,8 +240,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.account_withdraw(agi, mpe_addr, wallet, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.account_withdraw(agi, mpe_addr, wallet, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -257,8 +257,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.account_transfer(rec_addr, agi, mpe_addr, wallet, quiet, verbose) 
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.account_transfer(rec_addr, agi, mpe_addr, wallet, quiet, verbose, True) 
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")  
     
@@ -369,8 +369,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.update_org_metadata(id, file, mems, index, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.update_org_metadata(id, file, mems, index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")  
 
@@ -425,8 +425,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.add_org_members(id, mems, index, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.add_org_members(id, mems, index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -441,8 +441,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.remove_org_members(id, mems, index, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.remove_org_members(id, mems, index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -457,8 +457,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.change_org_owner(id, addr, index, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.change_org_owner(id, addr, index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -475,8 +475,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.create_organization(id, file, mems, index, quiet, verbose, addr)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.create_organization(id, file, mems, index, quiet, verbose, addr, view=True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -491,8 +491,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.delete_organization(id, index, quiet, verbose, addr)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.delete_organization(id, index, quiet, verbose, addr, view=True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
     
@@ -731,11 +731,11 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.service_metadata_update_update_metadata(
+            output, errCode, command = be.service_metadata_update_update_metadata(
                 org_id, service_id, metadata_file, reg_addr, mpe_addr, 
-                update_mpe, index, quiet, verbose
+                update_mpe, index, quiet, verbose, True
             )
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -797,8 +797,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
 
-            output, errCode = be.publish_service(org_id, serv_id, meta_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.publish_service(org_id, serv_id, meta_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
 
@@ -814,8 +814,8 @@ class load(Screen[str]):
             quiet = load_params["quiet"]
             verbose = load_params["verbose"] 
             
-            output, errCode = be.delete_service(org_id, serv_id, reg_addr, index, quiet, verbose)
-            self.app.call_from_thread(self.dismiss, [output, errCode])
+            output, errCode, command = be.delete_service(org_id, serv_id, reg_addr, index, quiet, verbose, True)
+            self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
             
@@ -1701,17 +1701,27 @@ class treasurer_claim_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
-            self.app.push_screen(popup_output_page()) 
+            self.app.push_screen(popup_output_page())
         elif result == "cancel":
             pass
-        else: 
+        else:
             output = result[0]
-            errCode = result[1] 
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            errCode = result[1]
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "1 minute"
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -1791,6 +1801,9 @@ class treasurer_claim_all_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -1800,8 +1813,15 @@ class treasurer_claim_all_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_params
@@ -1883,6 +1903,9 @@ class treasurer_claim_expr_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -1892,8 +1915,15 @@ class treasurer_claim_expr_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "1 minute"
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global load_aprx_time
@@ -2066,6 +2096,9 @@ class account_deposit_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -2075,10 +2108,15 @@ class account_deposit_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
+            command = result[2]
             if errCode == 0:
-                self.app.push_screen(account_page())
-            self.app.push_screen(popup_output_page()) 
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())     
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -2165,6 +2203,9 @@ class account_withdraw_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -2174,10 +2215,15 @@ class account_withdraw_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
+            command = result[2]
             if errCode == 0:
-                self.app.push_screen(account_page())
-            self.app.push_screen(popup_output_page()) 
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -2268,6 +2314,9 @@ class account_transfer_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global load_aprx_time
+        global conditional_command
+        global conditional_output
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -2277,10 +2326,15 @@ class account_transfer_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
+            command = result[2]
             if errCode == 0:
-                self.app.push_screen(account_page())
-            self.app.push_screen(popup_output_page()) 
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -2948,6 +3002,9 @@ class update_org_metadata_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -2957,8 +3014,15 @@ class update_org_metadata_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())        
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -3399,6 +3463,9 @@ class manage_members_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -3408,8 +3475,15 @@ class manage_members_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "1 minute"
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -3505,6 +3579,9 @@ class change_org_owner_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -3514,8 +3591,15 @@ class change_org_owner_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())   
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -3653,6 +3737,9 @@ class org_manage_create_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global load_aprx_time
+        global conditional_command
+        global conditional_output
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -3662,8 +3749,15 @@ class org_manage_create_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "30s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -3703,7 +3797,7 @@ class org_manage_create_page(Screen):
                 "quiet": quiet,
                 "verbose": verbose
             }
-            load_aprx_time = "20s."
+            load_aprx_time = "30s."
             load_screen_redirect = "org_create"
             self.app.push_screen(load(), callback=self.on_res)
 
@@ -3752,6 +3846,9 @@ class org_manage_delete_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global load_aprx_time
+        global conditional_output
+        global conditional_command
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -3761,8 +3858,15 @@ class org_manage_delete_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "10s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -5309,6 +5413,9 @@ class service_metadata_update_metadata_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -5318,8 +5425,15 @@ class service_metadata_update_metadata_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "1 minute"
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -5779,6 +5893,9 @@ class publish_service_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -5788,8 +5905,15 @@ class publish_service_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "20s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())    
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -5888,6 +6012,9 @@ class delete_service_page(Screen):
 
     def on_res(self, result) -> None:
         global popup_output
+        global conditional_command
+        global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -5897,8 +6024,15 @@ class delete_service_page(Screen):
         else:
             output = result[0]
             errCode = result[1]
-            popup_output = output
-            self.app.push_screen(popup_output_page())
+            command = result[2]
+            if errCode == 0:
+                conditional_output = output
+                conditional_command = command
+                load_aprx_time = "20s."
+                self.app.push_screen(conditional_input_page())
+            else:
+                popup_output = output
+                self.app.push_screen(popup_output_page())   
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         global popup_output
@@ -6071,7 +6205,7 @@ class client_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "5s."
+        load_aprx_time = "10s."
         load_screen_redirect = "client_page"
         self.app.push_screen(load(), callback=self.print_info)    
      
@@ -6582,7 +6716,7 @@ class channel_page(Screen):
         global load_aprx_time
         global load_screen_redirect
 
-        load_aprx_time = "5s."
+        load_aprx_time = "10s."
         load_screen_redirect = "client_page"
         self.app.push_screen(load(), callback=self.print_info)    
  
@@ -8560,6 +8694,7 @@ class custom_command_page(Screen):
         global popup_output
         global conditional_command
         global conditional_output
+        global load_aprx_time
 
         if result == "param_error":
             popup_output = "DEV ERROR: Did not supply correct parameters for load"
@@ -8575,6 +8710,7 @@ class custom_command_page(Screen):
                 if errCode == 0:
                     conditional_output = output
                     conditional_command = command
+                    load_aprx_time = "Unknown"
                     self.app.push_screen(conditional_input_page())
                 else:
                     popup_output = output

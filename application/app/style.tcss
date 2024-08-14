@@ -310,7 +310,7 @@ exit_page {
 .content_page Input {
     border: heavy black;
     padding: 0;
-    height: 2w;
+    height: 3w;
 }
 
 .content_page Horizontal {
