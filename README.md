@@ -21,7 +21,7 @@ For further information about the SingularityNET CLI, please visit the following
 
 ## What is the TUI?
 
-The SingularityNET text-user-interface (TUI) is a [mouse-centric](documentation/faq/#i-want-to-use-my-keyboard-instead-of-my-mouse), minimalistic text overlay for the SingularityNET CLI. The sole purpose of this application is to make interacting with the CLI, and by extension the SingularityNET platform, a little bit more user friendly (mouse/menu interaction, command parameter delineation, etc.)
+The SingularityNET text-user-interface (TUI) is a [mouse-centric](documentation/faq/i-want-to-use-my-keyboard-instead-of-my-mouse), minimalistic text overlay for the SingularityNET CLI. The sole purpose of this application is to make interacting with the CLI, and by extension the SingularityNET platform, a little bit more user friendly (mouse/menu interaction, command parameter delineation, etc.)
 
 <figure><img src=".gitbook/assets/Screenshot 2024-06-30 at 8.16.20 AM.png" alt=""><figcaption><p>Start Screen</p></figcaption></figure>
 
