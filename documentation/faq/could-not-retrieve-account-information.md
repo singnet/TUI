@@ -26,13 +26,13 @@ You then need to utilize this CLI command to create a new, valid, identity:
 # NOTE 2: For network choose mainnet or sepolia for testnet
 
 # Format for wallet private key: 
-snet identity create &#x3C;Identity_Name> &#x3C;Identity_Type> --network &#x3C;mainnet | sepolia> --key &#x3C;Wallet_Private_Key>
+snet identity create &#x3C;Identity_Name> key --network &#x3C;mainnet | sepolia> --key &#x3C;Wallet_Private_Key>
 
 # Format for mnemonic:
-snet identity create &#x3C;Identity_Name> &#x3C;Identity_Type> --network &#x3C;mainnet | sepolia> --mnemonic &#x3C;24_word_seed_phrase>
+snet identity create &#x3C;Identity_Name> mnemonic --network &#x3C;mainnet | sepolia> --mnemonic &#x3C;24_word_seed_phrase>
 
 <strong># Format for keystore:
-</strong>snet identity create &#x3C;Identity_Name> &#x3C;Identity_Type> --network &#x3C;mainnet | sepolia> --keystore-path &#x3C;Path_to_Keystore_File>
+</strong>snet identity create &#x3C;Identity_Name> keystore --network &#x3C;mainnet | sepolia> --keystore-path &#x3C;Path_to_Keystore_File>
 
 # Format for trezor:
 # NOTE: You obviously need your device plugged in for this
