@@ -10,7 +10,9 @@ Once you are all setup, you can dive into the tutorials below!
 
 
 
-[adding-funds-to-wallet.md](adding-funds-to-wallet.md "mention")
+[Adding funds to wallet](adding-funds-to-wallet.md "mention")
 
-[invoke-a-service-with-the-tui.md](invoke-a-service-with-the-tui.md "mention")
+[Invoke a service with the TUI](invoke-a-service-with-the-tui.md "mention")
+
+[Opening and Initializing a channel](opening-and-initializing-a-payment-channel.md "mention")
 
