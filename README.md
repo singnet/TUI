@@ -1,66 +1,35 @@
-# sNET-TUI
+# Introduction
 
-Welcome to the sNET Terminal User Interface, a Python-based application that allows users to interact with the SingularityNET command-line-interface. This guide will help you set up and run the application on your local machine.
+## Welcome
 
-## Prerequisites
+Welcome to the SingularityNET TUI documentation.&#x20;
 
-Before starting, ensure you have the following installed:
+Continue reading for some introductory information about the app, or jump right in with [getting-started](getting-started/ "mention")
 
-- Git
+## What is the CLI?
 
-The run script will prompt you to install the following dependancies (if required):
+The SingularityNET command line interface (CLI) is an essential tool for interacting with the SingularityNET platform, particularly its smart contracts, service management, and fund handling. This CLI is designed for both service providers and consumers, offering a comprehensive suite of commands to interface with the platform blockchain effectively.
 
-- [Python](https://www.python.org) >= 3.10
+For further information about the SingularityNET CLI, please visit the following websites:
 
-- [pip](https://pypi.org/project/pip/) **_Python package manager_**
+* [Command Documentation](https://snet-cli-docs.singularitynet.io/)
+* [Service Invocation Documentation](https://dev.singularitynet.io/docs/ai-consumers/invoke-service-snet-cli/)
+* [GitHub](https://github.com/singnet/snet-cli)
+* [PyPi Package](https://pypi.org/project/snet.cli/)
 
-- [venv](https://docs.python.org/3/library/venv.html) **_Python virtual-environment manager_**
+## What is the TUI?
 
-- [Homebrew](https://brew.sh) **_Package manager (MacOS only)_**
+The SingularityNET text-user-interface (TUI) is a [mouse-centric](faq/#i-want-to-use-my-keyboard-instead-of-my-mouse), minimalistic text overlay for the SingularityNET CLI. The sole purpose of this application is to make interacting with the CLI, and by extension the SingularityNET platform, a little bit more user friendly (mouse/menu interaction, command parameter delineation, etc.)
 
-- [Chocolatey](https://chocolatey.org) **_Package manager (Windows only)_**
+<figure><img src=".gitbook/assets/Screenshot 2024-06-30 at 8.16.20 AM.png" alt=""><figcaption><p>Start Screen</p></figcaption></figure>
 
-## Installation
+The TUI is structured to offer an intuitive user experience, enabling interactions primarily through a "GUI-like" experience. It constructs CLI commands from user input, then executes them in the background. Post-execution, the output is presented to the user in a clear and concise notification box. The interface is designed to be straightforward, with a persistent sidebar that allows the user quick navigation through the 5 "primary" menus.
 
-To get started with sNET-TUI, follow these steps:
+**Key Features of the SingularityNET CLI/TUI:**
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/vbrltech/sNET-TUI.git
-   ```
-2. Navigate to the cloned directory:
-   ```bash
-   cd sNET-TUI
-   ```
+* **Account Management**: Create and manage identities for secure interactions on the platform.
+* **Registry Management**: Register and manage organizations, members, services, types, and tags within the SingularityNET Registry.
+* **Fund Management**: Handle customer payments using Multi-Party Escrow (MPE) and payment channels.
+* **Metadata and Protobuf Management**: Read and write metadata and Protobuf specifications about AI services, stored on IPFS, with basic parameters accessible from Blockchain contracts.
+* **Network Connectivity**: Connect to various networks including the Sepolia testnet, and the Ethereum mainnet.
 
-## Running the application
-
-**For Linux Operating Systems (Bash):**
-
-```bash
-bash linux_run.sh
-```
-
-**For MacOS (Zsh/Bash):**
-
-```bash
-sh macos_run.sh
-```
-
-**For Windows Operating Systems (CMD):**
-
-**_Double click the "windows_run.sh" file, or run the following in CMD_**
-
-```powershell
-windows_run.bat
-```
-
-Upon the chocolatey dependancy install
-   - Restart your command prompt. 
-Upon the python dependancy install
-   - Restart your machine. 
-Ensure you pay attention to the terminal output. Chocolatey will let you know if you need to restart your command prompt, restart your machine, or if the install has failed and needs to be done manually.
-
-**NOTE:**
-
-First startup will take longer than usual, as the script will check and install base dependancies, generate a virtual environment and install the python requirements. The scripts are simple and commented, please read through them so you understand what is being done on your machine.
