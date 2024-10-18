@@ -314,6 +314,12 @@ def account_transfer(reciever_addr, agi_amount, mpe_address, wallet_index, quiet
 
     return output, errCode, command 
 
+def set_filecoin_api_key(filecoin_key):
+    # snet set [-h] filecoin_api_key VALUE
+    command = f"snet --print-traceback set filecoin_api_key {filecoin_key}"
+    output, errCode = run_shell_command(command)
+    return output, errCode
+
 def print_org_metadata(org_id):
     # snet organization print-metadata [-h] org_id
     command = "snet organization print-metadata"
@@ -324,7 +330,7 @@ def print_org_metadata(org_id):
 
     return run_shell_command(command)
 
-def init_org_metadata(org_name, org_id, org_type, reg_addr, meta_file):
+def init_org_metadata(org_name, org_id, org_type, reg_addr, meta_file, ipfs, filecoin):
     # snet organization metadata-init [-h] [--registry-at REGISTRY_AT]
     #                             [--metadata-file METADATA_FILE]
     #                             ORG_NAME ORG_ID ORG_TYPE
@@ -344,6 +350,11 @@ def init_org_metadata(org_name, org_id, org_type, reg_addr, meta_file):
     command += f" {org_name}"
     command += f" {org_id}"
     command += f" {org_type}"
+    if ipfs:
+        command += " --storage ipfs"
+    elif filecoin:
+        command += " --storage filecoin"
+
     output, errCode = run_shell_command(command)
     if len(output) == 0 and errCode == 0:
         output = f"Successfully initialized organization metadata!"
@@ -435,7 +446,7 @@ def remove_org_metadata_contacts(metadata_file):
         output = "Successfully deleted all contacts!"
     return output, errCode
 
-def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose, view=False):
+def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose, ipfs, filecoin, view=False):
     # snet organization update-metadata [-h] [--metadata-file METADATA_FILE]
     #                               [--members ORG_MEMBERS]
     #                               [--wallet-index WALLET_INDEX] [--yes]
@@ -457,6 +468,10 @@ def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose, view
         command += " --quiet"
     elif verbose:
         command += " --verbose"
+    if ipfs:
+        command += " --storage ipfs"
+    elif filecoin:
+        command += " --storage filecoin"
 
     # Run command
     if view:
@@ -469,7 +484,7 @@ def update_org_metadata(org_id, file_name, mem_list, index, quiet, verbose, view
             output = "Organization metadata successfully updated!"
     return output, errCode, command 
 
-def create_organization(org_id, metadata_file, members, index, quiet, verbose, registry_address, view=False):
+def create_organization(org_id, metadata_file, members, index, quiet, verbose, registry_address, ipfs, filecoin, view=False):
     # snet organization create [-h] [--metadata-file METADATA_FILE]
     #                      [--members ORG_MEMBERS] 
     #                      [--wallet-index WALLET_INDEX] [--yes]
@@ -493,6 +508,10 @@ def create_organization(org_id, metadata_file, members, index, quiet, verbose, r
         command += " --verbose"
     if registry_address and len(registry_address) > 0:
         command += f" --registry-at {registry_address}"
+    if ipfs:
+        command += " --storage ipfs"
+    elif filecoin:
+        command += " --storage filecoin"
 
     # Run command
     if view:
@@ -623,7 +642,7 @@ def update_org_metadata_group(group_name, pay_addr, endpoints, payment_expiratio
         output = "Group in organization metadata successfully updated!"
     return output, errCode
 
-def init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type):
+def init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type, ipfs, filecoin):
     # snet service metadata-init [-h] [--metadata-file METADATA_FILE]
     #                        [--multipartyescrow-at MULTIPARTYESCROW_AT]
     #                        [--group-name GROUP_NAME]
@@ -655,6 +674,10 @@ def init_service_metadata(service_path, proto_path, service_display, metadata_fi
         command += f" --encoding {enc_type}"
     if serv_type:
         command += f" --service-type {serv_type}"
+    if ipfs:
+        command += " --storage ipfs"
+    elif filecoin:
+        command += " --storage filecoin"
 
     output, errCode = run_shell_command(command, workdir=service_path)
     if len(output) == 0 and errCode == 0:
@@ -685,7 +708,7 @@ def add_service_metadata_desc(long_desc, short_desc, url, metadata_file):
         output = "Service description successfully added!"
     return output, errCode
 
-def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, view=False):
+def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, ipfs, filecoin, view=False):
     # snet service publish [-h] [--metadata-file METADATA_FILE]
     #                  [--update-mpe-address]
     #                  [--multipartyescrow-at MULTIPARTYESCROW_AT]
@@ -713,6 +736,10 @@ def publish_service(org_id, service_id, metadata_file, reg_addr, mpe_addr, updat
         command += " --quiet"
     elif verbose:
         command += " --verbose"
+    if ipfs:
+        command += " --storage ipfs"
+    elif filecoin:
+        command += " --storage filecoin"
 
     # Run command
     if view:
@@ -999,7 +1026,7 @@ def treasurer_claim_expr(threshold: str, endpoint, wallet_index, quiet, verbose,
             output = "Claimed expired payments!" 
     return output, errCode, command 
 
-def service_metadata_set_model(proto_dir, metadata_file):
+def service_metadata_set_model(proto_dir, metadata_file, ipfs, filecoin):
     # snet service metadata-set-model [-h] [--metadata-file METADATA_FILE] PROTO_DIR
 
     # Check for required parameters
@@ -1010,6 +1037,10 @@ def service_metadata_set_model(proto_dir, metadata_file):
 
     # Construct the command
     command = f"snet --print-traceback service metadata-set-model {proto_dir} --metadata-file {metadata_file}"
+    if ipfs:
+        command += " --storage ipfs"
+    elif filecoin:
+        command += " --storage filecoin"
 
     # Execute the command
     output, errCode = run_shell_command(command)
@@ -1326,7 +1357,7 @@ def service_metadata_update_validate_metadata(metadata_file):
 
     return output, errCode
 
-def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, view=False):
+def service_metadata_update_update_metadata(org_id, service_id, metadata_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, ipfs, filecoin, view=False):
     # snet service update-metadata [-h] [--metadata-file METADATA_FILE]
     #                          [--update-mpe-address]
     #                          [--multipartyescrow-at MULTIPARTYESCROW_AT]
@@ -1358,6 +1389,10 @@ def service_metadata_update_update_metadata(org_id, service_id, metadata_file, r
         command += " --quiet"
     elif verbose:
         command += " --verbose"
+    if ipfs:
+        command += " --storage ipfs"
+    elif filecoin:
+        command += " --storage filecoin"
 
     # Run command
     if view:
