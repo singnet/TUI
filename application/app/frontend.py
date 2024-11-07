@@ -2440,7 +2440,7 @@ class filecoin_key_page(Screen):
         if result == "cancel":
             pass
         else:
-            popup_output = result
+            popup_output = str(result)
             self.app.push_screen(popup_output_page())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
