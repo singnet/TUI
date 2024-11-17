@@ -2704,12 +2704,10 @@ class init_org_metadata_page(Screen):
                     classes="init_org_metadata_page_div"
                 ),
                 Label("File Storage Selection", id="init_org_metadata_file_storage_label", classes="init_org_metadata_page_label"),
-                Horizontal(
-                    RadioSet(
-                        RadioButton(label="IPFS", id="init_org_metadata_file_storage_ipfs_radio", classes="init_org_metadata_page_radio", value=True),
-                        RadioButton(label="Filecoin", id="init_org_metadata_file_storage_filecoin_radio", classes="init_org_metadata_page_radio"),
-                        id="init_org_metadata_file_storage_radio_set"
-                    )
+                RadioSet(
+                    RadioButton(label="IPFS", id="init_org_metadata_file_storage_ipfs_radio", classes="init_org_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="init_org_metadata_file_storage_filecoin_radio", classes="init_org_metadata_page_radio"),
+                    id="init_org_metadata_file_storage_radio_set"
                 ),
                 Horizontal(
                     Button(label="Back", id="init_org_metadata_back_button"),
@@ -3097,12 +3095,10 @@ class update_org_metadata_page(Screen):
                     id="update_org_metadata_radio_set"
                 ),
                 Label("File Storage Selection", id="update_org_metadata_file_storage_label", classes="update_org_metadata_page_label"),
-                Horizontal(
-                    RadioSet(
-                        RadioButton(label="IPFS", id="update_org_metadata_file_storage_ipfs_radio", classes="update_org_metadata_page_radio", value=True),
-                        RadioButton(label="Filecoin", id="update_org_metadata_file_storage_filecoin_radio", classes="update_org_metadata_page_radio"),
-                        id="update_org_metadata_file_storage_radio_set"
-                    )
+                RadioSet(
+                    RadioButton(label="IPFS", id="update_org_metadata_file_storage_ipfs_radio", classes="update_org_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="update_org_metadata_file_storage_filecoin_radio", classes="update_org_metadata_page_radio"),
+                    id="update_org_metadata_file_storage_radio_set"
                 ),
                 Horizontal(
                     Button(label="Back", id="update_org_metadata_back_button"),
@@ -3844,12 +3840,10 @@ class org_manage_create_page(Screen):
                     id="org_manage_create_radio_set"
                 ),
                 Label("File Storage Selection", id="org_manage_create_file_storage_label", classes="org_manage_create_page_label"),
-                Horizontal(
-                    RadioSet(
-                        RadioButton(label="IPFS", id="org_manage_create_file_storage_ipfs_radio", classes="org_manage_create_page_radio", value=True),
-                        RadioButton(label="Filecoin", id="org_manage_create_file_storage_filecoin_radio", classes="org_manage_create_page_radio"),
-                        id="org_manage_create_file_storage_radio_set"
-                    )
+                RadioSet(
+                    RadioButton(label="IPFS", id="org_manage_create_file_storage_ipfs_radio", classes="org_manage_create_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="org_manage_create_file_storage_filecoin_radio", classes="org_manage_create_page_radio"),
+                    id="org_manage_create_file_storage_radio_set"
                 ),
                 Horizontal(
                     Button(label="Back", id="org_manage_create_back_button"),
@@ -4208,12 +4202,10 @@ class init_service_metadata_page(Screen):
                     classes="init_service_metadata_page_div"
                 ),
                 Label("File Storage Selection", id="init_service_metadata_file_storage_label", classes="init_service_metadata_page_label"),
-                Horizontal(
-                    RadioSet(
-                        RadioButton(label="IPFS", id="init_service_metadata_file_storage_ipfs_radio", classes="init_service_metadata_page_radio", value=True),
-                        RadioButton(label="Filecoin", id="init_service_metadata_file_storage_filecoin_radio", classes="init_service_metadata_page_radio"),
-                        id="init_service_metadata_file_storage_radio_set"
-                    )
+                RadioSet(
+                    RadioButton(label="IPFS", id="init_service_metadata_file_storage_ipfs_radio", classes="init_service_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="init_service_metadata_file_storage_filecoin_radio", classes="init_service_metadata_page_radio"),
+                    id="init_service_metadata_file_storage_radio_set"
                 ),
                 Horizontal(
                     Button(label="Back", id="init_service_metadata_back_button"),
@@ -4373,12 +4365,10 @@ class service_metadata_set_model_page(Screen):
                     classes="service_metadata_set_model_page_div"
                 ),
                 Label("File Storage Selection", id="service_metadata_set_model_file_storage_label", classes="service_metadata_set_model_page_label"),
-                Horizontal(
-                    RadioSet(
-                        RadioButton(label="IPFS", id="service_metadata_set_model_file_storage_ipfs_radio", classes="service_metadata_set_model_page_radio", value=True),
-                        RadioButton(label="Filecoin", id="service_metadata_set_model_file_storage_filecoin_radio", classes="service_metadata_set_model_page_radio"),
-                        id="service_metadata_set_model_file_storage_radio_set"
-                    )
+                RadioSet(
+                    RadioButton(label="IPFS", id="service_metadata_set_model_file_storage_ipfs_radio", classes="service_metadata_set_model_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="service_metadata_set_model_file_storage_filecoin_radio", classes="service_metadata_set_model_page_radio"),
+                    id="service_metadata_set_model_file_storage_radio_set"
                 ),
                 Horizontal(
                     Button("Back", id="service_metadata_set_model_back_button"),
@@ -5560,12 +5550,10 @@ class service_metadata_update_metadata_page(Screen):
                     id="service_metadata_update_metadata_radio_set"
                 ),
                 Label("File Storage Selection", id="service_metadata_update_metadata_file_storage_label", classes="service_metadata_update_metadata_page_label"),
-                Horizontal(
-                    RadioSet(
-                        RadioButton(label="IPFS", id="service_metadata_update_metadata_file_storage_ipfs_radio", classes="service_metadata_update_metadata_page_radio", value=True),
-                        RadioButton(label="Filecoin", id="service_metadata_update_metadata_file_storage_filecoin_radio", classes="service_metadata_update_metadata_page_radio"),
-                        id="service_metadata_update_metadata_file_storage_radio_set"
-                    )
+                RadioSet(
+                    RadioButton(label="IPFS", id="service_metadata_update_metadata_file_storage_ipfs_radio", classes="service_metadata_update_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="service_metadata_update_metadata_file_storage_filecoin_radio", classes="service_metadata_update_metadata_page_radio"),
+                    id="service_metadata_update_metadata_file_storage_radio_set"
                 ),
                 Horizontal(
                     Button(label="Back", id="service_metadata_update_metadata_back_button"),
@@ -6052,12 +6040,10 @@ class publish_service_page(Screen):
                     id="publish_service_radio_set"
                 ),
                 Label("File Storage Selection", id="publish_service_file_storage_label", classes="publish_service_page_label"),
-                Horizontal(
-                    RadioSet(
-                        RadioButton(label="IPFS", id="publish_service_file_storage_ipfs_radio", classes="publish_service_page_radio", value=True),
-                        RadioButton(label="Filecoin", id="publish_service_file_storage_filecoin_radio", classes="publish_service_page_radio"),
-                        id="publish_service_file_storage_radio_set"
-                    )
+                RadioSet(
+                    RadioButton(label="IPFS", id="publish_service_file_storage_ipfs_radio", classes="publish_service_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="publish_service_file_storage_filecoin_radio", classes="publish_service_page_radio"),
+                    id="publish_service_file_storage_radio_set"
                 ),
                 Horizontal(
                     Button(label="Back", id="publish_service_back_button"),
