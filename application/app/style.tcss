@@ -870,6 +870,52 @@ exit_page {
     background: #05b9fa;
 }
 
+/* Filecoin Key Page */
+#filecoin_key_page_content {
+    align: left middle;
+}
+
+#filecoin_key_page_title {
+    margin-left: 3;
+    margin-top: 2;
+    margin-bottom: 9;
+    text-style: bold underline;
+}
+
+.filecoin_key_page_label {
+    margin-left: 3;
+    margin-top: 1;
+}
+
+.filecoin_key_page_input {
+    margin-left: 4;
+    width: 220vh;
+    margin-bottom: 8;
+}
+
+#filecoin_key_page_button_div {
+    align: right middle;
+    margin-bottom: 1;
+}
+
+#filecoin_key_page_set_button {
+    margin-left: 5;
+    margin-right: 2;
+    background: #0185b5;
+    border: none;
+    padding: 1;
+    color: #f6d7b0;
+}
+
+#filecoin_key_page_set_button:hover {
+    background: #05b9fa;
+}
+
+#filecoin_key_page_back_button {
+    margin-left: 3;
+    margin-right: 2;
+}
+
 /* Organization Page */
 #organization_page_content {
     align: left middle;
@@ -933,6 +979,12 @@ exit_page {
     padding-top: 3;
     padding-left: 9;
     padding-right: 9;
+}
+
+#organization_page_filecoin_key_button {
+    margin-left: 2;
+    margin-bottom: 1;
+    margin-top: 2;
 }
 
 /* Organization metadata page */
@@ -1080,6 +1132,20 @@ exit_page {
     align: right middle;
     margin-bottom: 1;
     margin-top: 5;
+}
+
+#init_org_metadata_file_storage_label {
+    margin-left: 2;
+    margin-bottom: 1;
+}
+
+#init_org_metadata_file_storage_radio_set {
+    border: black solid;
+    margin-left: 2;
+}
+
+#init_org_metadata_file_storage_ipfs_radio {
+    margin-bottom: 2;
 }
 
 #init_org_metadata_confirm_button {
@@ -1330,6 +1396,21 @@ exit_page {
 }
 
 #update_org_metadata_quiet_radio {
+    margin-bottom: 2;
+}
+
+#update_org_metadata_file_storage_label {
+    margin-left: 3;
+    margin-bottom: 1;
+}
+
+#update_org_metadata_file_storage_radio_set {
+    border: black solid;
+    margin-left: 3;
+    margin-bottom: 2;
+}
+
+#update_org_metadata_file_storage_ipfs_radio {
     margin-bottom: 2;
 }
 
@@ -1719,6 +1800,21 @@ exit_page {
     margin-bottom: 2;
 }
 
+#org_manage_create_file_storage_label {
+    margin-left: 2;
+    margin-bottom: 1;
+}
+
+#org_manage_create_file_storage_radio_set {
+    border: black solid;
+    margin-left: 2;
+    margin-bottom: 2;
+}
+
+#org_manage_create_file_storage_ipfs_radio {
+    margin-bottom: 2;
+}
+
 #org_manage_create_confirm_button {
     margin-left: 5;
     margin-right: 2;
@@ -1834,6 +1930,12 @@ exit_page {
     margin-bottom: 1;
 }
 
+#services_page_filecoin_key_button {
+    margin-left: 2;
+    margin-bottom: 1;
+    margin-top: 1;
+}
+
 /* Services metadata page */
 #manage_services_metadata_page_title{
     margin-left: 3;
@@ -1921,6 +2023,22 @@ exit_page {
     margin-bottom: 1;
 }
 
+#init_service_metadata_file_storage_label {
+    margin-left: 3;
+    margin-bottom: 1;
+    margin-top: 3;
+}
+
+#init_service_metadata_file_storage_radio_set {
+    border: black solid;
+    margin-left: 3;
+    margin-bottom: 2;
+}
+
+#init_service_metadata_file_storage_ipfs_radio {
+    margin-bottom: 2;
+}
+
 #init_service_metadata_confirm_button {
     margin-left: 5;
     margin-right: 2;
@@ -2002,7 +2120,7 @@ exit_page {
 #service_metadata_set_model_page_title {
     margin-left: 2;
     margin-top: 2;
-    margin-bottom: 10;
+    margin-bottom: 5;
     text-style: bold underline;
 }
 
@@ -2023,7 +2141,22 @@ exit_page {
 .service_metadata_set_model_page_div {
     align: right middle;
     margin-bottom: 1;
-    margin-top: 8;
+    margin-top: 4;
+}
+
+#service_metadata_set_model_file_storage_label {
+    margin-left: 3;
+    margin-bottom: 1;
+    margin-top: 4;
+}
+
+#service_metadata_set_model_file_storage_radio_set {
+    border: black solid;
+    margin-left: 3;
+}
+
+#service_metadata_set_model_file_storage_ipfs_radio {
+    margin-bottom: 2;
 }
 
 #service_metadata_set_model_confirm_button {
@@ -2619,7 +2752,7 @@ exit_page {
     padding-top: 3;
 }
 
-#serivce_metadata_update_back_button {
+#service_metadata_update_back_button {
     margin-left: 3;
 }
 
@@ -2774,6 +2907,21 @@ exit_page {
 #service_metadata_update_metadata_update_mpe_radio {
     margin-left: 2;
     border: black solid;
+}
+
+#service_metadata_update_metadata_file_storage_label {
+    margin-left: 2;
+    margin-bottom: 1;
+}
+
+#service_metadata_update_metadata_file_storage_radio_set {
+    border: black solid;
+    margin-left: 2;
+    margin-bottom: 2;
+}
+
+#service_metadata_update_metadata_file_storage_ipfs_radio {
+    margin-bottom: 2;
 }
 
 #service_metadata_update_metadata_confirm_button {
@@ -3059,6 +3207,21 @@ exit_page {
 #publish_service_update_mpe_radio{
     border: black solid;
     margin-left: 3;
+}
+
+#publish_service_file_storage_label {
+    margin-left: 3;
+    margin-bottom: 1;
+}
+
+#publish_service_file_storage_radio_set {
+    border: black solid;
+    margin-left: 3;
+    margin-bottom: 2;
+}
+
+#publish_service_file_storage_ipfs_radio {
+    margin-bottom: 2;
 }
 
 #publish_service_confirm_button {

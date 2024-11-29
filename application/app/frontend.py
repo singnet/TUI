@@ -261,7 +261,21 @@ class load(Screen[str]):
             self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")  
-    
+
+    @work(thread=True)
+    def filecoin_key_set(self) -> None:
+        global load_params
+
+        try:
+            filecoin_key = load_params["filecoin_key"]
+
+            output, errCode = be.set_filecoin_api_key(filecoin_key)
+            self.app.call_from_thread(self.dismiss, [output, errCode])
+        except KeyError:
+            self.app.call_from_thread(self.dismiss, "param_error")
+
+        pass
+
     @work(thread=True)
     def print_org_meta(self) -> None:
         global load_params
@@ -284,8 +298,10 @@ class load(Screen[str]):
             org_type = load_params["type"]
             reg = load_params["reg"]
             file = load_params["file"]
+            ipfs = load_params["ipfs"]
+            filecoin = load_params["filecoin"]
 
-            output, errCode = be.init_org_metadata(name, id, org_type, reg, file)
+            output, errCode = be.init_org_metadata(name, id, org_type, reg, file, ipfs, filecoin)
             self.app.call_from_thread(self.dismiss, [output, errCode])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")  
@@ -368,8 +384,10 @@ class load(Screen[str]):
             index = load_params["index"]
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
+            ipfs = load_params["ipfs"]
+            filecoin = load_params["filecoin"]
 
-            output, errCode, command = be.update_org_metadata(id, file, mems, index, quiet, verbose, True)
+            output, errCode, command = be.update_org_metadata(id, file, mems, index, quiet, verbose, ipfs, filecoin, True)
             self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")  
@@ -474,8 +492,10 @@ class load(Screen[str]):
             index = load_params["index"]
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
+            ipfs = load_params["ipfs"]
+            filecoin = load_params["filecoin"]
 
-            output, errCode, command = be.create_organization(id, file, mems, index, quiet, verbose, addr, view=True)
+            output, errCode, command = be.create_organization(id, file, mems, index, quiet, verbose, addr, ipfs, filecoin, view=True)
             self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
@@ -511,8 +531,10 @@ class load(Screen[str]):
             fixed_price = load_params["fixed_price"]
             enc_type = load_params["enc_type"]
             serv_type = load_params["serv_type"]
+            ipfs = load_params["ipfs"]
+            filecoin = load_params["filecoin"]
             
-            output, errCode = be.init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type)
+            output, errCode = be.init_service_metadata(service_path, proto_path, service_display, metadata_file, mpe_addr, pay_group_name, endpoints, fixed_price, enc_type, serv_type, ipfs, filecoin)
             self.app.call_from_thread(self.dismiss, [output, errCode])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
@@ -524,8 +546,10 @@ class load(Screen[str]):
         try:
             proto_dir = load_params["proto_dir"]
             metadata_file = load_params["metadata_file"]
-            
-            output, errCode = be.service_metadata_set_model(proto_dir, metadata_file)
+            ipfs = load_params["ipfs"]
+            filecoin = load_params["filecoin"]
+
+            output, errCode = be.service_metadata_set_model(proto_dir, metadata_file, ipfs, filecoin)
             self.app.call_from_thread(self.dismiss, [output, errCode])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error") 
@@ -730,10 +754,12 @@ class load(Screen[str]):
             index = load_params["index"]
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
+            ipfs = load_params["ipfs"]
+            filecoin = load_params["filecoin"]
 
             output, errCode, command = be.service_metadata_update_update_metadata(
                 org_id, service_id, metadata_file, reg_addr, mpe_addr, 
-                update_mpe, index, quiet, verbose, True
+                update_mpe, index, quiet, verbose, ipfs, filecoin, True
             )
             self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
@@ -796,8 +822,10 @@ class load(Screen[str]):
             index = load_params["index"]
             quiet = load_params["quiet"]
             verbose = load_params["verbose"]
+            ipfs = load_params["ipfs"]
+            filecoin = load_params["filecoin"]
 
-            output, errCode, command = be.publish_service(org_id, serv_id, meta_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, True)
+            output, errCode, command = be.publish_service(org_id, serv_id, meta_file, reg_addr, mpe_addr, update_mpe, index, quiet, verbose, ipfs, filecoin, True)
             self.app.call_from_thread(self.dismiss, [output, errCode, command])
         except KeyError:
             self.app.call_from_thread(self.dismiss, "param_error")
@@ -1213,6 +1241,8 @@ class load(Screen[str]):
             self.account_withdraw()
         elif load_screen_redirect == "account_transfer":
             self.account_transfer()
+        elif load_screen_redirect == "filecoin_key":
+            self.filecoin_key_set()
         elif load_screen_redirect == "print_org_metadata":
             self.print_org_meta()
         elif load_screen_redirect == "init_org_metadata":
@@ -2378,6 +2408,68 @@ class account_transfer_page(Screen):
 
             self.app.push_screen(load(), callback=self.on_res)
 
+class filecoin_key_page(Screen):
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Horizontal(
+            be.nav_sidebar_vert(""),
+            ScrollableContainer(
+                Label("FileCoin API Key Set Page", id="filecoin_key_page_title"),
+                Horizontal(
+                    Label("FileCoin API Key", id="filecoin_key_page_key_label", classes="filecoin_key_page_label"),
+                    Input(placeholder="FileCoin API Key", id="filecoin_key_page_key_input", classes="filecoin_key_page_input"),
+                    id="filecoin_key_page_key_div",
+                    classes="filecoin_key_page_div"
+                ),
+                Horizontal(
+                    Button(label="Back", id="filecoin_key_page_back_button"),
+                    Button(label="Set Key", id="filecoin_key_page_set_button"),
+                    id="filecoin_key_page_button_div",
+                    classes="filecoin_key_page_div"
+                ),
+                id="filecoin_key_page_content",
+                classes="content_page"
+            ),
+            id="filecoin_key_page"
+        )
+
+    def on_res(self, result) -> None:
+        global popup_output
+
+        if result == "cancel":
+            pass
+        else:
+            popup_output = str(result)
+            self.app.push_screen(popup_output_page())
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        global load_screen_redirect
+        global load_params
+        global load_aprx_time
+
+        if event.button.id == "account_page_nav":
+            self.app.push_screen(account_page())
+        elif event.button.id == "organization_page_nav":
+            self.app.push_screen(organization_page())
+        elif event.button.id == "services_page_nav":
+            self.app.switch_screen(services_page())
+        elif event.button.id == "client_page_nav":
+            self.app.push_screen(client_page())
+        elif event.button.id == "custom_command_page_nav":
+            self.app.switch_screen(custom_command_page())
+        elif event.button.id == "exit_page_nav":
+            self.app.push_screen(exit_page())
+        elif event.button.id == "filecoin_key_page_back_button":
+            self.app.pop_screen()
+        elif event.button.id == "filecoin_key_page_set_button":
+            filecoin_key = self.get_child_by_id("filecoin_key_page").get_child_by_id("filecoin_key_page_content").get_child_by_id("filecoin_key_page_key_div").get_child_by_id("filecoin_key_page_key_input").value
+            
+            load_params = {"filecoin_key": filecoin_key}
+            load_aprx_time = "5s."
+            load_screen_redirect = "filecoin_key"
+            self.app.push_screen(load(), callback=self.on_res)
+
 class organization_page(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -2399,6 +2491,7 @@ class organization_page(Screen):
                     id="organization_page_bottom_button_div",
                     classes="organization_page_button_div"
                 ),
+                Button(label="FileCoin Key", id="organization_page_filecoin_key_button"),
                 id="organization_page_content",
                 classes="content_page"
             ),
@@ -2444,6 +2537,8 @@ class organization_page(Screen):
             self.app.push_screen(members_page())
         elif event.button.id == "organization_page_create_delete_button":
             self.app.push_screen(org_manage_page())
+        elif event.button.id == "organization_page_filecoin_key_button":
+            self.app.push_screen(filecoin_key_page())
 
 
 class org_metadata_page(Screen):
@@ -2608,6 +2703,12 @@ class init_org_metadata_page(Screen):
                     id="init_org_metadata_page_type_div",
                     classes="init_org_metadata_page_div"
                 ),
+                Label("File Storage Selection", id="init_org_metadata_file_storage_label", classes="init_org_metadata_page_label"),
+                RadioSet(
+                    RadioButton(label="IPFS", id="init_org_metadata_file_storage_ipfs_radio", classes="init_org_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="init_org_metadata_file_storage_filecoin_radio", classes="init_org_metadata_page_radio"),
+                    id="init_org_metadata_file_storage_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="init_org_metadata_back_button"),
                     Button(label="Initialize", id="init_org_metadata_confirm_button"),
@@ -2660,13 +2761,17 @@ class init_org_metadata_page(Screen):
             meta_file = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_meta_path_div").get_child_by_id("init_org_metadata_meta_path_input").value
             reg_addr = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_registry_div").get_child_by_id("init_org_metadata_registry_input").value
             org_type = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_page_type_div").get_child_by_id("init_org_metadata_type_select").value
+            ipfs = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_file_storage_radio_set").get_child_by_id("init_org_metadata_file_storage_ipfs_radio").value
+            filecoin = self.get_child_by_id("init_org_metadata_page").get_child_by_id("init_org_metadata_page_content").get_child_by_id("init_org_metadata_file_storage_radio_set").get_child_by_id("init_org_metadata_file_storage_filecoin_radio").value
 
             load_params = {
                 "name": org_name,
                 "id": org_id,
                 "file": meta_file,
                 "reg": reg_addr,
-                "type": org_type
+                "type": org_type,
+                "ipfs": ipfs,
+                "filecoin": filecoin
             }
             load_aprx_time = "10s."
             load_screen_redirect = "init_org_metadata"
@@ -2989,6 +3094,12 @@ class update_org_metadata_page(Screen):
                     RadioButton(label="Verbose transaction printing", id="update_org_metadata_verbose_radio", classes="update_org_metadata_page_radio"),
                     id="update_org_metadata_radio_set"
                 ),
+                Label("File Storage Selection", id="update_org_metadata_file_storage_label", classes="update_org_metadata_page_label"),
+                RadioSet(
+                    RadioButton(label="IPFS", id="update_org_metadata_file_storage_ipfs_radio", classes="update_org_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="update_org_metadata_file_storage_filecoin_radio", classes="update_org_metadata_page_radio"),
+                    id="update_org_metadata_file_storage_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="update_org_metadata_back_button"),
                     Button(label="Update Metadata on Blockchain", id="update_org_metadata_confirm_button"),
@@ -3052,6 +3163,8 @@ class update_org_metadata_page(Screen):
             index = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_index_div").get_child_by_id("update_org_metadata_index_input").value
             quiet = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_radio_set").get_child_by_id("update_org_metadata_quiet_radio").value
             verbose = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_radio_set").get_child_by_id("update_org_metadata_verbose_radio").value
+            ipfs = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_file_storage_radio_set").get_child_by_id("update_org_metadata_file_storage_ipfs_radio").value
+            filecoin = self.get_child_by_id("update_org_metadata_page").get_child_by_id("update_org_metadata_page_content").get_child_by_id("update_org_metadata_file_storage_radio_set").get_child_by_id("update_org_metadata_file_storage_filecoin_radio").value
 
             load_params = {
                 "id": org_id,
@@ -3059,7 +3172,9 @@ class update_org_metadata_page(Screen):
                 "mems": mem_list,
                 "index": index,
                 "quiet": quiet,
-                "verbose": verbose
+                "verbose": verbose,
+                "ipfs": ipfs,
+                "filecoin": filecoin
             }
             load_aprx_time = "45s."
             load_screen_redirect = "update_org_meta"
@@ -3724,6 +3839,12 @@ class org_manage_create_page(Screen):
                     RadioButton(label="Verbose transaction printing", id="org_manage_create_verbose_radio", classes="org_manage_create_page_radio"),
                     id="org_manage_create_radio_set"
                 ),
+                Label("File Storage Selection", id="org_manage_create_file_storage_label", classes="org_manage_create_page_label"),
+                RadioSet(
+                    RadioButton(label="IPFS", id="org_manage_create_file_storage_ipfs_radio", classes="org_manage_create_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="org_manage_create_file_storage_filecoin_radio", classes="org_manage_create_page_radio"),
+                    id="org_manage_create_file_storage_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="org_manage_create_back_button"),
                     Button(label="Create Organization", id="org_manage_create_confirm_button"),
@@ -3788,6 +3909,8 @@ class org_manage_create_page(Screen):
             index = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_index_div").get_child_by_id("org_manage_create_index_input").value
             quiet = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_quiet_radio").value
             verbose = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_radio_set").get_child_by_id("org_manage_create_verbose_radio").value
+            ipfs = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_file_storage_radio_set").get_child_by_id("org_manage_create_file_storage_ipfs_radio").value
+            filecoin = self.get_child_by_id("org_manage_create_page").get_child_by_id("org_manage_create_page_content").get_child_by_id("org_manage_create_file_storage_radio_set").get_child_by_id("org_manage_create_file_storage_filecoin_radio").value
 
             load_params = {
                 "id": org_id,
@@ -3796,7 +3919,9 @@ class org_manage_create_page(Screen):
                 "mems": mem_list,
                 "index": index,
                 "quiet": quiet,
-                "verbose": verbose
+                "verbose": verbose,
+                "ipfs": ipfs,
+                "filecoin": filecoin
             }
             load_aprx_time = "30s."
             load_screen_redirect = "org_create"
@@ -3923,6 +4048,7 @@ class services_page(Screen):
                     Button(label="View All", id="services_view_all_button"),
                     id="services_page_lower_button_div"
                 ),
+                Button(label="FileCoin Key", id="services_page_filecoin_key_button"),
                 id="services_page_content",
                 classes="content_page"
             ),
@@ -3950,6 +4076,8 @@ class services_page(Screen):
             self.app.push_screen(services_manage_page())
         elif event.button.id == "services_view_all_button":
             self.app.push_screen(services_view_all_page())
+        elif event.button.id == "services_page_filecoin_key_button":
+            self.app.push_screen(filecoin_key_page())
 
 class services_metadata_page(Screen):
     def compose(self) -> ComposeResult:
@@ -4073,6 +4201,12 @@ class init_service_metadata_page(Screen):
                     id="init_service_metadata_serv_type_div",
                     classes="init_service_metadata_page_div"
                 ),
+                Label("File Storage Selection", id="init_service_metadata_file_storage_label", classes="init_service_metadata_page_label"),
+                RadioSet(
+                    RadioButton(label="IPFS", id="init_service_metadata_file_storage_ipfs_radio", classes="init_service_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="init_service_metadata_file_storage_filecoin_radio", classes="init_service_metadata_page_radio"),
+                    id="init_service_metadata_file_storage_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="init_service_metadata_back_button"),
                     Button(label="Initialize Service Metadata", id="init_service_metadata_confirm_button"),
@@ -4129,6 +4263,9 @@ class init_service_metadata_page(Screen):
             fixed_price = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_price_div").get_child_by_id("init_service_metadata_price_input").value
             enc_type = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_enc_type_div").get_child_by_id("init_service_metadata_enc_type_select").value
             serv_type = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_serv_type_div").get_child_by_id("init_service_metadata_serv_type_select").value
+            ipfs = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_file_storage_radio_set").get_child_by_id("init_service_metadata_file_storage_ipfs_radio").value
+            filecoin = self.get_child_by_id("init_service_metadata_page").get_child_by_id("init_service_metadata_page_content").get_child_by_id("init_service_metadata_file_storage_radio_set").get_child_by_id("init_service_metadata_file_storage_filecoin_radio").value
+
             if enc_type == Select.BLANK:
                 enc_type = "proto"
             if serv_type == Select.BLANK:
@@ -4144,7 +4281,9 @@ class init_service_metadata_page(Screen):
                 "endpoints": endpoints,
                 "fixed_price": fixed_price,
                 "enc_type": enc_type,
-                "serv_type": serv_type
+                "serv_type": serv_type,
+                "ipfs": ipfs,
+                "filecoin": filecoin
             }
             load_aprx_time = "5s."
             load_screen_redirect = "init_service_metadata"
@@ -4225,6 +4364,12 @@ class service_metadata_set_model_page(Screen):
                     id="service_metadata_set_model_file_div",
                     classes="service_metadata_set_model_page_div"
                 ),
+                Label("File Storage Selection", id="service_metadata_set_model_file_storage_label", classes="service_metadata_set_model_page_label"),
+                RadioSet(
+                    RadioButton(label="IPFS", id="service_metadata_set_model_file_storage_ipfs_radio", classes="service_metadata_set_model_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="service_metadata_set_model_file_storage_filecoin_radio", classes="service_metadata_set_model_page_radio"),
+                    id="service_metadata_set_model_file_storage_radio_set"
+                ),
                 Horizontal(
                     Button("Back", id="service_metadata_set_model_back_button"),
                     Button("Set Model", id="service_metadata_set_model_confirm_button"),
@@ -4272,10 +4417,14 @@ class service_metadata_set_model_page(Screen):
         elif event.button.id == "service_metadata_set_model_confirm_button":
             proto_dir = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_proto_dir_div").get_child_by_id("service_metadata_set_model_proto_dir_input").value
             metadata_file = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_file_div").get_child_by_id("service_metadata_set_model_file_input").value
+            ipfs = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_file_storage_radio_set").get_child_by_id("service_metadata_set_model_file_storage_ipfs_radio").value
+            filecoin = self.get_child_by_id("service_metadata_set_model_page").get_child_by_id("service_metadata_set_model_page_content").get_child_by_id("service_metadata_set_model_file_storage_radio_set").get_child_by_id("service_metadata_set_model_file_storage_filecoin_radio").value
 
             load_params = {
                 "proto_dir": proto_dir,
-                "metadata_file": metadata_file
+                "metadata_file": metadata_file,
+                "ipfs": ipfs,
+                "filecoin": filecoin
             }
             load_aprx_time = "5s."
             load_screen_redirect = "service_metadata_set_model"
@@ -5400,6 +5549,12 @@ class service_metadata_update_metadata_page(Screen):
                     RadioButton(label="Verbose transaction printing", id="service_metadata_update_metadata_verbose_radio", classes="service_metadata_update_metadata_page_radio"),
                     id="service_metadata_update_metadata_radio_set"
                 ),
+                Label("File Storage Selection", id="service_metadata_update_metadata_file_storage_label", classes="service_metadata_update_metadata_page_label"),
+                RadioSet(
+                    RadioButton(label="IPFS", id="service_metadata_update_metadata_file_storage_ipfs_radio", classes="service_metadata_update_metadata_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="service_metadata_update_metadata_file_storage_filecoin_radio", classes="service_metadata_update_metadata_page_radio"),
+                    id="service_metadata_update_metadata_file_storage_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="service_metadata_update_metadata_back_button"),
                     Button(label="Update Metadata", id="service_metadata_update_metadata_confirm_button"),
@@ -5466,7 +5621,9 @@ class service_metadata_update_metadata_page(Screen):
             index = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_index_div").get_child_by_id("service_metadata_update_metadata_index_input").value
             quiet = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_quiet_radio").value
             verbose = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_radio_set").get_child_by_id("service_metadata_update_metadata_verbose_radio").value
-            
+            ipfs = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_file_storage_radio_set").get_child_by_id("service_metadata_update_metadata_file_storage_ipfs_radio").value
+            filecoin = self.get_child_by_id("service_metadata_update_metadata_page").get_child_by_id("service_metadata_update_metadata_page_content").get_child_by_id("service_metadata_update_metadata_file_storage_radio_set").get_child_by_id("service_metadata_update_metadata_file_storage_filecoin_radio").value
+
             load_params = {
                 "org_id": org_id,
                 "service_id": service_id,
@@ -5476,7 +5633,9 @@ class service_metadata_update_metadata_page(Screen):
                 "update_mpe": update_mpe,
                 "index": index,
                 "quiet": quiet,
-                "verbose": verbose
+                "verbose": verbose,
+                "ipfs": ipfs,
+                "filecoin": filecoin
             }
             load_aprx_time = "30s."
             load_screen_redirect = "service_metadata_update_metadata"
@@ -5880,6 +6039,12 @@ class publish_service_page(Screen):
                     RadioButton(label="Verbose transaction printing", id="publish_service_verbose_radio", classes="publish_service_page_radio"),
                     id="publish_service_radio_set"
                 ),
+                Label("File Storage Selection", id="publish_service_file_storage_label", classes="publish_service_page_label"),
+                RadioSet(
+                    RadioButton(label="IPFS", id="publish_service_file_storage_ipfs_radio", classes="publish_service_page_radio", value=True),
+                    RadioButton(label="Filecoin", id="publish_service_file_storage_filecoin_radio", classes="publish_service_page_radio"),
+                    id="publish_service_file_storage_radio_set"
+                ),
                 Horizontal(
                     Button(label="Back", id="publish_service_back_button"),
                     Button(label="Publish Service", id="publish_service_confirm_button"),
@@ -5946,6 +6111,8 @@ class publish_service_page(Screen):
             index = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_index_div").get_child_by_id("publish_service_index_input").value
             quiet = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_quiet_radio").value
             verbose = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_radio_set").get_child_by_id("publish_service_verbose_radio").value
+            ipfs = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_file_storage_radio_set").get_child_by_id("publish_service_file_storage_ipfs_radio").value
+            filecoin = self.get_child_by_id("publish_service_page").get_child_by_id("publish_service_page_content").get_child_by_id("publish_service_file_storage_radio_set").get_child_by_id("publish_service_file_storage_filecoin_radio").value
 
             load_params = {
                 "org_id": org_id,
@@ -5956,7 +6123,9 @@ class publish_service_page(Screen):
                 "update_mpe": update_mpe,
                 "index": index,
                 "quiet": quiet,
-                "verbose": verbose
+                "verbose": verbose,
+                "ipfs": ipfs,
+                "filecoin": filecoin
             }
             load_aprx_time = "20s."
             load_screen_redirect = "publish_service"
